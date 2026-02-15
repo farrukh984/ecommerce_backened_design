@@ -1,0 +1,73 @@
+/* ================= RESET & BASE ================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: #f7fafc;
+    color: #1c1c1c;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+ul {
+    list-style: none;
+}
+
+img {
+    max-width: 100%;
+    display: block;
+}
+
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+
+/* ================= GENERAL UTILITIES ================= */
+
+.see-all {
+    color: #0d6efd;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.arrow {
+    transition: 0.3s;
+}
+
+.filter-header.active .arrow {
+    transform: rotate(180deg);
+}
+
+
+
+
+
+
+
+
+
+
+
+/* css/
+├── base.css               # Reset, body, container, utilities
+├── header.css             # Top header, sub-navbar, mobile menu
+├── footer.css             # Main footer
+├── home.css               # Homepage: hero, deals, categories, inquiry, recommended, services, suppliers, newsletter
+├── products.css           # Products listing: filter sidebar, list/grid views, pagination
+├── product-detail.css     # Product detail page (mobile & desktop)
+├── cart.css               # Shopping cart page
+└── responsive.css         # Global responsive overrides (max-width 1024px, 768px, etc.) */
