@@ -36,14 +36,11 @@ class ProductController extends Controller
                 $query->whereIn('brand', (array) $request->brands);
             }
 
-            // Rating Filter (checkbox list)
+            // Rating Filter (Minimum Rating)
             if ($request->ratings) {
                 $rating_values = (array) $request->ratings;
-                $query->where(function($q) use ($rating_values) {
-                    foreach($rating_values as $rating) {
-                        $q->orWhere('rating', '=', $rating);
-                    }
-                });
+                $min_rating = min($rating_values);
+                $query->where('rating', '>=', $min_rating);
             }
 
             // Condition Filter (checkbox list) - using condition_id
@@ -80,12 +77,14 @@ class ProductController extends Controller
             $minPrice = Product::whereNotNull('price')->min('price') ?? 0;
             $maxPrice = Product::whereNotNull('price')->max('price') ?? 1000;
 
-            return view('products.index', compact('products', 'brands', 'conditions', 'ratings', 'features', 'minPrice', 'maxPrice'));
+            $categories = Category::orderBy('name')->get();
+
+            return view('products.index', compact('products', 'categories', 'brands', 'conditions', 'ratings', 'features', 'minPrice', 'maxPrice'));
         }
 
         public function show($id)
         {
-            $product = Product::with('category')->findOrFail($id);
+            $product = Product::with(['category', 'supplier', 'priceTiers', 'features', 'condition'])->findOrFail($id);
 
             // Similar products from same category
             $similarProducts = Product::where('category_id', $product->category_id)

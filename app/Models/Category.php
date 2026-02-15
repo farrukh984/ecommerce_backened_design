@@ -10,7 +10,8 @@ class Category extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name'];
+
+    protected $fillable = ['name', 'background_image']; // jo bhi columns hain
 
     public function products()
     {

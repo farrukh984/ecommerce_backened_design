@@ -21,6 +21,7 @@
             <thead>
                 <tr>
                     <th style="width: 80px;">ID</th>
+                    <th style="width: 100px;">Image</th>
                     <th>Name</th>
                     <th style="text-align: right;">Actions</th>
                 </tr>
@@ -29,6 +30,13 @@
                 @foreach($categories as $category)
                 <tr>
                     <td>#{{ $category->id }}</td>
+                    <td>
+                        @if($category->background_image)
+                            <img src="{{ asset('storage/'.$category->background_image) }}" width="60" style="border-radius: 4px; border: 1px solid #eee;">
+                        @else
+                            <div style="width: 60px; height: 40px; background: #eee; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #999;">No Image</div>
+                        @endif
+                    </td>
                     <td style="font-weight: 600;">{{ $category->name }}</td>
                     <td style="text-align: right;">
                         <div style="display: flex; justify-content: flex-end; gap: 8px;">

@@ -13,11 +13,26 @@ class Product extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name','description','price','old_price','image','brand','rating','category_id','condition_id'
+        'name', 'description', 'price', 'old_price', 'image', 'brand', 'rating', 'category_id', 'condition_id',
+        'supplier_id', 'is_negotiable', 'in_stock', 'type', 'material', 
+        'design_style', 'customization', 'protection', 'warranty', 
+        'model_number', 'item_number', 'size', 'memory', 'certificate', 'style'
     ];
 
-    protected $casts = [
-    ];
+    public function images()
+    {
+        return $this->hasMany(ProductImage::class);
+    }
+
+    public function supplier()
+    {
+        return $this->belongsTo(Supplier::class);
+    }
+
+    public function priceTiers()
+    {
+        return $this->hasMany(ProductPriceTier::class)->orderBy('min_qty');
+    }
 
     public function category()
     {

@@ -36,10 +36,31 @@
             </div>
             <div class="form-group">
                 <label>Brand</label>
-                <select name="brand_id" class="form-control" required>
+                <select name="brand_id" class="form-control">
                     <option value="">Select Brand</option>
                     @foreach($brands as $brand)
                         <option value="{{ $brand->id }}">{{ $brand->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Supplier</label>
+                @php $suppliers = \App\Models\Supplier::all(); @endphp
+                <select name="supplier_id" class="form-control">
+                    <option value="">Select Supplier</option>
+                    @foreach($suppliers as $sup)
+                        <option value="{{ $sup->id }}">{{ $sup->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Condition</label>
+                <select name="condition_id" class="form-control">
+                    @foreach($conditions as $cond)
+                        <option value="{{ $cond->id }}">{{ $cond->name }}</option>
                     @endforeach
                 </select>
             </div>
@@ -51,27 +72,41 @@
                 <input type="number" step="0.01" name="price" class="form-control" placeholder="0.00" required>
             </div>
             <div class="form-group">
-                <label>Old Price ($) - Optional</label>
+                <label>Old Price ($)</label>
                 <input type="number" step="0.01" name="old_price" class="form-control" placeholder="0.00">
+            </div>
+            <div class="form-group">
+                <label>Rating (1-5)</label>
+                <input type="number" step="0.1" name="rating" min="0" max="5" class="form-control" value="5">
             </div>
         </div>
 
         <div class="form-row">
             <div class="form-group">
-                <label>Condition</label>
-                <select name="condition_id" class="form-control" required>
-                    @foreach($conditions as $cond)
-                        <option value="{{ $cond->id }}">{{ $cond->name }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Rating (1-5)</label>
-                <input type="number" name="rating" min="1" max="5" class="form-control" value="5">
+                <label>Options</label>
+                <div style="display: flex; gap: 20px; align-items: center; padding: 10px; background: #f9f9f9; border-radius: 6px;">
+                    <label style="cursor: pointer;"><input type="hidden" name="in_stock" value="0"><input type="checkbox" name="in_stock" value="1" checked> In Stock</label>
+                    <label style="cursor: pointer;"><input type="hidden" name="is_negotiable" value="0"><input type="checkbox" name="is_negotiable" value="1"> Price Negotiable</label>
+                </div>
             </div>
         </div>
 
-        <div class="form-group">
+        <div class="specs-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 20px;">
+            <div class="form-group"><label>Type</label><input type="text" name="type" class="form-control" placeholder="e.g. Smart Watch"></div>
+            <div class="form-group"><label>Material</label><input type="text" name="material" class="form-control" placeholder="e.g. Leather"></div>
+            <div class="form-group"><label>Design Style</label><input type="text" name="design_style" class="form-control" placeholder="e.g. Modern"></div>
+            <div class="form-group"><label>Customization</label><input type="text" name="customization" class="form-control" placeholder="e.g. Logo Printing"></div>
+            <div class="form-group"><label>Protection</label><input type="text" name="protection" class="form-control" placeholder="e.g. 2-year warranty"></div>
+            <div class="form-group"><label>Warranty</label><input type="text" name="warranty" class="form-control" placeholder="e.g. Full support"></div>
+            <div class="form-group"><label>Model Number</label><input type="text" name="model_number" class="form-control" placeholder="e.g. SM-G991B"></div>
+            <div class="form-group"><label>Item Number</label><input type="text" name="item_number" class="form-control" placeholder="e.g. 100234"></div>
+            <div class="form-group"><label>Size</label><input type="text" name="size" class="form-control" placeholder="e.g. 42mm"></div>
+            <div class="form-group"><label>Memory</label><input type="text" name="memory" class="form-control" placeholder="e.g. 128GB"></div>
+            <div class="form-group"><label>Certificate</label><input type="text" name="certificate" class="form-control" placeholder="e.g. CE, RoHS"></div>
+            <div class="form-group"><label>Style</label><input type="text" name="style" class="form-control" placeholder="e.g. Sporty"></div>
+        </div>
+
+        <div class="form-group" style="margin-top: 20px;">
             <label>Features</label>
             <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; background: #fcfcfc; padding: 15px; border-radius: 8px; border: 1px solid var(--admin-border);">
                 @foreach($features as $feat)
@@ -88,13 +123,18 @@
         </div>
 
         <div class="form-group">
-            <label>Product Image</label>
+            <label>Main Product Image</label>
             <div style="display: flex; align-items: center; gap: 20px;">
-                <input type="file" name="image" class="form-control" style="flex: 1;" accept="image/*" onchange="previewImage(this)">
-                <div class="image-preview-box" id="imagePreview">
+                <input type="file" name="image" class="form-control" style="flex: 1;" accept="image/*" onchange="previewImage(this, 'mainPreview')">
+                <div class="image-preview-box" id="mainPreview">
                     <i class="fa-solid fa-image" style="font-size: 32px; color: var(--admin-text-sub);"></i>
                 </div>
             </div>
+        </div>
+
+        <div class="form-group">
+            <label>Gallery Images (Multiple)</label>
+            <input type="file" name="gallery[]" class="form-control" multiple accept="image/*">
         </div>
 
         <div style="margin-top: 40px; display: flex; gap: 12px;">
@@ -112,8 +152,8 @@
 
 @section('scripts')
 <script>
-    function previewImage(input) {
-        const preview = document.getElementById('imagePreview');
+    function previewImage(input, previewId) {
+        const preview = document.getElementById(previewId);
         if (input.files && input.files[0]) {
             const reader = new FileReader();
             reader.onload = function(e) {

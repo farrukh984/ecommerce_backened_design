@@ -98,14 +98,28 @@
     </div>
 
 
-    @foreach($categories as $category)
+    <!-- @foreach($categories as $category)
     <div class="category-section">
         <div class="category-left {{ $loop->iteration % 2 == 0 ? 'blue-bg' : 'green-bg' }}">
             <h3>{!! str_replace(' ', '<br>', $category->name) !!}</h3>
             <a href="#" class="btn-source">Source now</a>
         </div>
 
-        <div class="category-grid">
+    </div>
+    @endforeach  -->
+
+
+@foreach($categories as $category)
+<div class="category-section">
+    <div class="category-left {{ $loop->iteration % 2 == 0 ? 'blue-bg' : 'green-bg' }}" 
+         @if($category->background_image)
+             style="background-image: url('{{ asset('storage/'.$category->background_image) }}'); background-size: cover; background-position: center;"
+         @endif
+    >
+        <h3>{!! str_replace(' ', '<br>', $category->name) !!}</h3>
+        <a href="#" class="btn-source">Source now</a>
+    </div>
+            <div class="category-grid">
             @foreach($category->products->take(8) as $product)
             <div class="category-item">
                 <a href="{{ route('products.show', $product->id) }}" style="text-decoration: none; color: inherit; display: flex; align-items: center; width: 100%;">
@@ -122,8 +136,10 @@
             </div>
             @endforeach
         </div>
-    </div>
-    @endforeach 
+</div>
+@endforeach
+
+
 
 
 </div>

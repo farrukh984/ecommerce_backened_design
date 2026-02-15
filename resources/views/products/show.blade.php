@@ -46,8 +46,9 @@
             <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}">
             <div class="m-image-dots">
                 <span class="dot active"></span>
+                @foreach($product->images as $gImg)
                 <span class="dot"></span>
-                <span class="dot"></span>
+                @endforeach
             </div>
         </div>
 
@@ -57,10 +58,11 @@
             <!-- Rating Row -->
             <div class="m-rating-row">
                 <span class="m-stars">
+                    @php $rating = $product->rating ?? 0; @endphp
                     @for($i = 1; $i <= 5; $i++)
-                        @if($i <= floor($product->rating ?? 4.5))
+                        @if($i <= floor($rating))
                             <i class="fa-solid fa-star"></i>
-                        @elseif($i - 0.5 <= ($product->rating ?? 4.5))
+                        @elseif($i == ceil($rating) && ($rating - floor($rating)) >= 0.3)
                             <i class="fa-solid fa-star-half-stroke"></i>
                         @else
                             <i class="fa-regular fa-star"></i>
@@ -76,8 +78,9 @@
 
             <!-- Price -->
             <div class="m-price-section">
-                <span class="m-price-red">${{ number_format($product->price, 2) }}</span>
-                <span class="m-price-range">(50-100 pcs)</span>
+                @php $firstTier = $product->priceTiers->first(); @endphp
+                <span class="m-price-red">${{ number_format($firstTier->price ?? $product->price, 2) }}</span>
+                <span class="m-price-range">({{ ($firstTier->min_qty ?? 50) . '-' . ($firstTier->max_qty ?? '100') }} pcs)</span>
             </div>
 
             <!-- Send Inquiry Button -->
@@ -92,41 +95,41 @@
             <div class="m-specs-list">
                 <div class="m-spec-item">
                     <span class="m-spec-label">Condition</span>
-                    <span class="m-spec-value">Brand new</span>
+                    <span class="m-spec-value">{{ $product->condition->name ?? 'Brand new' }}</span>
                 </div>
                 <div class="m-spec-item">
                     <span class="m-spec-label">Material</span>
-                    <span class="m-spec-value">Plastic</span>
+                    <span class="m-spec-value">{{ $product->material ?? 'Plastic material' }}</span>
                 </div>
                 <div class="m-spec-item">
                     <span class="m-spec-label">Category</span>
-                    <span class="m-spec-value">Electronics, gadgets</span>
+                    <span class="m-spec-value">{{ $product->category->name ?? 'Electronics, gadgets' }}</span>
                 </div>
                 <div class="m-spec-item">
                     <span class="m-spec-label">Item num</span>
-                    <span class="m-spec-value">23421</span>
+                    <span class="m-spec-value">{{ $product->item_number ?? '23421' }}</span>
                 </div>
             </div>
 
             <!-- Description Preview -->
             <div class="m-description">
-                <p>Info about edu item is an ideal companion for anyone engaged in learning. The drone provides precise and ...</p>
-                <a href="#" class="m-read-more">Read more</a>
+                <p>{{ Str::limit($product->description, 100) }}</p>
+                <a href="#description-tab" class="m-read-more">Read more</a>
             </div>
         </div>
 
         <!-- Supplier Card -->
         <div class="m-supplier-card">
             <div class="m-supplier-header">
-                <div class="m-supplier-avatar">R</div>
+                <div class="m-supplier-avatar">{{ substr($product->supplier->name ?? 'R', 0, 1) }}</div>
                 <div class="m-supplier-info">
                     <span class="m-sup-label">Supplier</span>
-                    <strong>Guanjio Trading LLC</strong>
+                    <strong>{{ $product->supplier->name ?? 'Guanjio Trading LLC' }}</strong>
                 </div>
                 <i class="fa-solid fa-chevron-right"></i>
             </div>
             <div class="m-supplier-badges">
-                <span><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='14'%3E%3Crect width='20' height='14' fill='%23000'/%3E%3Crect y='5' width='20' height='4' fill='%23D00'/%3E%3Crect y='9' width='20' height='5' fill='%23FFCE00'/%3E%3C/svg%3E" alt="Germany"> Germany</span>
+                <span>{{ $product->supplier->location ?? 'Germany' }}</span>
                 <span><i class="fa-solid fa-circle-check"></i> Verified</span>
                 <span><i class="fa-solid fa-truck"></i> Shipping</span>
             </div>
@@ -159,24 +162,20 @@
                 <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" id="mainProductImg">
             </div>
             <div class="thumb-list">
-                <div class="thumb-item active">
-                    <img src="{{ asset('storage/' . $product->image) }}" alt="Thumbnail 1">
+                <div class="thumb-item active" onclick="changeMainImg('{{ asset('storage/' . $product->image) }}', this)">
+                    <img src="{{ asset('storage/' . $product->image) }}" alt="Main Image">
                 </div>
+                @foreach($product->images as $gImg)
+                <div class="thumb-item" onclick="changeMainImg('{{ asset('storage/' . $gImg->image) }}', this)">
+                    <img src="{{ asset('storage/' . $gImg->image) }}" alt="Gallery Image">
+                </div>
+                @endforeach
+                {{-- Fill up to 6 with placeholders if needed for design consistency --}}
+                @for($i = $product->images->count() + 1; $i < 6; $i++)
                 <div class="thumb-item">
-                    <img src="https://via.placeholder.com/80x80/f5f5f5/666666?text=2" alt="Thumbnail 2">
+                    <img src="https://via.placeholder.com/80x80/f5f5f5/666666?text=+" alt="Placeholder">
                 </div>
-                <div class="thumb-item">
-                    <img src="https://via.placeholder.com/80x80/f5f5f5/666666?text=3" alt="Thumbnail 3">
-                </div>
-                <div class="thumb-item">
-                    <img src="https://via.placeholder.com/80x80/f5f5f5/666666?text=4" alt="Thumbnail 4">
-                </div>
-                <div class="thumb-item">
-                    <img src="https://via.placeholder.com/80x80/f5f5f5/666666?text=5" alt="Thumbnail 5">
-                </div>
-                <div class="thumb-item">
-                    <img src="https://via.placeholder.com/80x80/f5f5f5/666666?text=6" alt="Thumbnail 6">
-                </div>
+                @endfor
             </div>
         </div>
 
@@ -184,24 +183,25 @@
         <div class="detail-main-info">
             
             <div class="stock-status">
-                <i class="fa-solid fa-check"></i> In stock
+                <i class="fa-solid fa-check"></i> {{ $product->in_stock ? 'In stock' : 'Limited stock' }}
             </div>
 
             <h1 class="detail-title">{{ $product->name }}</h1>
 
             <div class="detail-rating-row">
                 <span class="stars-display">
+                    @php $rating = $product->rating ?? 0; @endphp
                     @for($i = 1; $i <= 5; $i++)
-                        @if($i <= floor($product->rating ?? 4.5))
+                        @if($i <= floor($rating))
                             <i class="fa-solid fa-star"></i>
-                        @elseif($i - 0.5 <= ($product->rating ?? 4.5))
+                        @elseif($i == ceil($rating) && ($rating - floor($rating)) >= 0.3)
                             <i class="fa-solid fa-star-half-stroke"></i>
                         @else
                             <i class="fa-regular fa-star"></i>
                         @endif
                     @endfor
                 </span>
-                <span class="rating-num">{{ $product->rating ?? '4.5' }}</span>
+                <span class="rating-num">{{ number_format($rating, 1) }}</span>
                 <span class="dot-sep">•</span>
                 <span class="detail-reviews"><i class="fa-regular fa-comment-dots"></i> 32 reviews</span>
                 <span class="dot-sep">•</span>
@@ -209,50 +209,66 @@
             </div>
 
             <div class="price-tier-block">
-                <div class="price-col active">
-                    <span class="p-price">$98.00</span>
-                    <span class="p-qty">50-100 pcs</span>
-                </div>
-                <div class="price-col">
-                    <span class="p-price">$90.00</span>
-                    <span class="p-qty">100-700 pcs</span>
-                </div>
-                <div class="price-col">
-                    <span class="p-price">$75.00</span>
-                    <span class="p-qty">700+ pcs</span>
-                </div>
+                @php $tiers = $product->priceTiers->take(3); @endphp
+                @if($tiers->count() > 0)
+                    @foreach($tiers as $tier)
+                    <div class="price-col {{ $loop->first ? 'active' : '' }}">
+                        <span class="p-price">${{ number_format($tier->price, 2) }}</span>
+                        <span class="p-qty">{{ $tier->min_qty }}{{ $tier->max_qty ? '-'.$tier->max_qty : '+' }} pcs</span>
+                    </div>
+                    @endforeach
+                    @for($i = $tiers->count(); $i < 3; $i++)
+                    <div class="price-col">
+                        <span class="p-price">${{ number_format($product->price * (1 - 0.1 * ($i+1)), 2) }}</span>
+                        <span class="p-qty">{{ (100 * ($i+1)) }}+ pcs</span>
+                    </div>
+                    @endfor
+                @else
+                    <div class="price-col active">
+                        <span class="p-price">${{ number_format($product->price, 2) }}</span>
+                        <span class="p-qty">50-100 pcs</span>
+                    </div>
+                    <div class="price-col">
+                        <span class="p-price">${{ number_format($product->price * 0.9, 2) }}</span>
+                        <span class="p-qty">100-700 pcs</span>
+                    </div>
+                    <div class="price-col">
+                        <span class="p-price">${{ number_format($product->price * 0.8, 2) }}</span>
+                        <span class="p-qty">700+ pcs</span>
+                    </div>
+                @endif
             </div>
 
             <div class="clean-specs">
                 <div class="spec-row">
                     <span class="s-label">Price:</span>
-                    <span class="s-value">Negotiable</span>
+                    <span class="s-value">{{ $product->is_negotiable ? 'Negotiable' : 'Fixed' }}</span>
                 </div>
                 <div class="spec-border"></div>
                 <div class="spec-row">
                     <span class="s-label">Type:</span>
-                    <span class="s-value">Classic shoes</span>
+                    <span class="s-value">{{ $product->type ?? 'Classic style' }}</span>
                 </div>
                 <div class="spec-row">
                     <span class="s-label">Material:</span>
-                    <span class="s-value">Plastic material</span>
+                    <span class="s-value">{{ $product->material ?? 'Plastic material' }}</span>
                 </div>
                 <div class="spec-row">
                     <span class="s-label">Design:</span>
-                    <span class="s-value">Modern nice</span>
+                    <span class="s-value">{{ $product->design_style ?? 'Modern nice' }}</span>
                 </div>
                 <div class="spec-border"></div>
                 <div class="spec-row">
                     <span class="s-label">Customization:</span>
-                    <span class="s-value">Customized logo and design custom packages</span>
+                    <span class="s-value">{{ $product->customization ?? 'Customized logo and design custom packages' }}</span>
                 </div>
                 <div class="spec-row">
                     <span class="s-label">Protection:</span>
-                    <span class="s-value">Refund Policy</span>
+                    <span class="s-value">{{ $product->protection ?? 'Refund Policy' }}</span>
                 </div>
                 <div class="spec-row">
                     <span class="s-label">Warranty:</span>
-                    <span class="s-value">2 years full warranty</span>
+                    <span class="s-value">{{ $product->warranty ?? '2 years full warranty' }}</span>
                 </div>
                 <div class="spec-border"></div>
             </div>
@@ -263,19 +279,19 @@
         <div class="detail-right-sidebar">
             <div class="supplier-card-box">
                 <div class="s-header">
-                    <div class="s-avatar">R</div>
+                    <div class="s-avatar">{{ substr($product->supplier->name ?? 'R', 0, 1) }}</div>
                     <div class="s-info">
                         <span class="s-label-text">Supplier</span>
-                        <strong>Guardia Trading LLC</strong>
-                        <span class="s-location">Germany, Berlin</span>
+                        <strong>{{ $product->supplier->name ?? 'Guardia Trading LLC' }}</strong>
+                        <span class="s-location">{{ $product->supplier->location ?? 'Germany, Berlin' }}</span>
                     </div>
                 </div>
                 <div class="s-divider"></div>
                 <div class="s-meta-row">
-                    <i class="fa-solid fa-shield-halved"></i> <span>Verified Seller</span>
+                    <i class="fa-solid fa-shield-halved"></i> <span>{{ $product->supplier && $product->supplier->is_verified ? 'Verified Seller' : 'Standard Seller' }}</span>
                 </div>
                 <div class="s-meta-row">
-                    <i class="fa-solid fa-globe"></i> <span>Worldwide shipping</span>
+                    <i class="fa-solid fa-globe"></i> <span>{{ $product->supplier && $product->supplier->has_worldwide_shipping ? 'Worldwide shipping' : 'Local shipping' }}</span>
                 </div>
                 <div class="s-actions">
                     <button class="btn-pry-blue">Send inquiry</button>
@@ -305,23 +321,25 @@
 
             <div class="tab-content active" id="description-tab">
                 <div class="desc-text-block">
-                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.</p>
+                    <p>{{ $product->description }}</p>
                     <p>Quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
                 </div>
 
                 <table class="desc-specs-table">
-                    <tr><td>Model</td><td>#8768857</td></tr>
-                    <tr><td>Style</td><td>Classic style</td></tr>
-                    <tr><td>Certificate</td><td>ISO-9845212</td></tr>
-                    <tr><td>Size</td><td>34mm x 450mm x 19mm</td></tr>
-                    <tr><td>Memory</td><td>36GB RAM</td></tr>
+                    <tr><td>Model</td><td>{{ $product->model_number ?? '#8768857' }}</td></tr>
+                    <tr><td>Style</td><td>{{ $product->style ?? 'Classic style' }}</td></tr>
+                    <tr><td>Certificate</td><td>{{ $product->certificate ?? 'ISO-9845212' }}</td></tr>
+                    <tr><td>Size</td><td>{{ $product->size ?? '34mm x 450mm x 19mm' }}</td></tr>
+                    <tr><td>Memory</td><td>{{ $product->memory ?? '36GB RAM' }}</td></tr>
                 </table>
 
                 <ul class="check-list">
-                    <li><i class="fa-solid fa-check"></i> Some great feature name here</li>
-                    <li><i class="fa-solid fa-check"></i> Lorem ipsum dolor sit amet, consectetur</li>
-                    <li><i class="fa-solid fa-check"></i> Duis aute irure dolor in reprehenderit</li>
-                    <li><i class="fa-solid fa-check"></i> Some great feature name here</li>
+                    @forelse($product->features as $feat)
+                        <li><i class="fa-solid fa-check"></i> {{ $feat->name }}</li>
+                    @empty
+                        <li><i class="fa-solid fa-check"></i> Quality assured product</li>
+                        <li><i class="fa-solid fa-check"></i> Standard manufacturing process</li>
+                    @endforelse
                 </ul>
             </div>
         </div>
@@ -334,7 +352,7 @@
                     <img src="{{ asset('storage/' . $yml->image) }}" alt="{{ $yml->name }}">
                     <div class="yml-info">
                         <h5>{{ Str::limit($yml->name, 35) }}</h5>
-                        <span class="yml-price">${{ number_format($yml->price, 2) }} - $99.50</span>
+                        <span class="yml-price">${{ number_format($yml->price, 2) }} - ${{ number_format($yml->price * 1.2, 2) }}</span>
                     </div>
                 </a>
                 @endforeach
@@ -354,7 +372,7 @@
                 </div>
                 <div class="rel-info">
                     <h5>{{ Str::limit($rel->name, 30) }}</h5>
-                    <span class="rel-price">${{ number_format($rel->price, 2) }}-$40.00</span>
+                    <span class="rel-price">${{ number_format($rel->price, 2) }} - ${{ number_format($rel->price * 1.5, 2) }}</span>
                 </div>
             </a>
             @endforeach
@@ -374,4 +392,16 @@
 
 </div>
 
+@section('scripts')
+<script>
+    function changeMainImg(src, el) {
+        document.getElementById('mainProductImg').src = src;
+        
+        // Update active thumbnail
+        document.querySelectorAll('.thumb-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        el.classList.add('active');
+    }
+</script>
 @endsection

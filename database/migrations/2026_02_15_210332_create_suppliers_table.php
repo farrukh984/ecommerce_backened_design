@@ -11,16 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('categories', function (Blueprint $table) {
+        Schema::create('suppliers', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->unsignedBigInteger('parent_id')->nullable();
-            $table->string('icon')->nullable();
-            $table->string('image')->nullable();
-            $table->string('background_image')->nullable();
+            $table->string('location')->nullable();
+            $table->string('country_flag')->nullable();
+            $table->boolean('is_verified')->default(false);
+            $table->boolean('has_worldwide_shipping')->default(true);
             $table->timestamps();
-
-            $table->foreign('parent_id')->references('id')->on('categories')->onDelete('no action');
         });
     }
 
@@ -29,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('categories');
+        Schema::dropIfExists('suppliers');
     }
 };

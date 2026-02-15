@@ -104,6 +104,62 @@
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
 }
 
+.hidden-item {
+    display: none;
+}
+
+.visible-item {
+    display: block !important;
+}
+
+.filter-list {
+    transition: all 0.3s ease;
+    max-height: 180px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+/* Custom scrollbar for filter list */
+.filter-list::-webkit-scrollbar {
+    width: 4px;
+}
+
+.filter-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.filter-list::-webkit-scrollbar-thumb {
+    background: #cbd5e0;
+    border-radius: 10px;
+}
+
+.filter-list.expanded {
+    max-height: 400px;
+}
+
+.see-all-link {
+    color: #0d6efd;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+}
+
+.see-all-link:hover {
+    text-decoration: underline;
+}
+
+.rating-label-text {
+    font-size: 13px;
+    color: #505050;
+    margin-left: 8px;
+    font-weight: 500;
+}
+
 .hero-image {
     position: absolute;
     right: 0;
@@ -338,46 +394,53 @@
 }
 
 .category-left {
-    width: 240px;
-    padding: 30px 25px;
+    width: 250px;
+    padding: 20px;
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     position: relative;
     overflow: hidden;
 }
 
 .green-bg {
-    background: linear-gradient(135deg, #d1e6cc 0%, #cfe8d3 100%);
+    background: #FEEED1;
+    /* Soft yellowish from screenshot */
 }
 
 .blue-bg {
-    background: linear-gradient(135deg, #cdd5e4 0%, #d8dce5 100%);
+    background: #D5E1ED;
+    /* Soft bluish from screenshot */
 }
 
 .category-left h3 {
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 700;
     color: #1c1c1c;
-    margin-bottom: 18px;
-    line-height: 1.3;
+    margin-bottom: 15px;
+    line-height: 1.2;
+    margin-top: 10px;
 }
 
 .btn-source {
     display: inline-block;
-    padding: 9px 20px;
+    padding: 8px 16px;
     background: #fff;
     color: #1c1c1c;
     border-radius: 6px;
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
     width: fit-content;
-    transition: box-shadow 0.2s;
+    text-decoration: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s;
+    border: 1px solid transparent;
 }
 
 .btn-source:hover {
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
 }
 
 .category-grid {
@@ -759,4 +822,33 @@
 
 .newsletter-form button:hover {
     background: #0b5ed7;
+}
+
+
+/* Subtle gradient to ensure text readability on any image while keeping it light */
+.category-left[style*="background-image"] {
+    background-size: cover !important;
+    background-position: right center !important;
+    color: #1c1c1c;
+    position: relative;
+    z-index: 1;
+}
+
+.category-left[style*="background-image"]::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* Fades from light-safe-area on the left to transparent on the right */
+    background: linear-gradient(to right, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0) 60%);
+    z-index: -1;
+}
+
+.category-left h3 {
+    margin-top: 10px;
+    max-width: 160px;
+    font-size: 20px;
+    font-weight: 700;
 }

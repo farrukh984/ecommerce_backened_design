@@ -35,10 +35,26 @@ class ProductController extends Controller
             'price' => 'nullable|numeric',
             'old_price' => 'nullable|numeric',
             'image' => 'nullable|image|max:2048',
+            'gallery.*' => 'nullable|image|max:2048',
             'brand_id' => 'nullable|exists:brands,id',
             'category_id' => 'nullable|exists:categories,id',
-            'rating' => 'nullable|integer|min:0|max:5',
+            'supplier_id' => 'nullable|exists:suppliers,id',
+            'rating' => 'nullable|numeric|min:0|max:5',
             'condition_id' => 'nullable|exists:conditions,id',
+            'is_negotiable' => 'nullable|boolean',
+            'in_stock' => 'nullable|boolean',
+            'type' => 'nullable|string',
+            'material' => 'nullable|string',
+            'design_style' => 'nullable|string',
+            'customization' => 'nullable|string',
+            'protection' => 'nullable|string',
+            'warranty' => 'nullable|string',
+            'model_number' => 'nullable|string',
+            'item_number' => 'nullable|string',
+            'size' => 'nullable|string',
+            'memory' => 'nullable|string',
+            'certificate' => 'nullable|string',
+            'style' => 'nullable|string',
             'features' => 'nullable|array',
             'features.*' => 'exists:features,id',
         ]);
@@ -51,21 +67,26 @@ class ProductController extends Controller
         }
         unset($data['brand_id']);
 
-        // Extract features for later attachment
+        // Extract features
         $features = $data['features'] ?? [];
         unset($data['features']);
 
         // handle image upload
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('products', 'public');
-            $data['image'] = $path;
+            $data['image'] = $request->file('image')->store('products', 'public');
         }
 
         $product = Product::create($data);
         
         // Attach features
-        if (!empty($features)) {
-            $product->features()->attach($features);
+        $product->features()->attach($features);
+
+        // Handle Gallery
+        if ($request->hasFile('gallery')) {
+            foreach ($request->file('gallery') as $img) {
+                $path = $img->store('products/gallery', 'public');
+                $product->images()->create(['image' => $path]);
+            }
         }
 
         return redirect()->route('admin.products.index');
@@ -77,7 +98,8 @@ class ProductController extends Controller
         $brands = Brand::orderBy('name')->get();
         $conditions = Condition::orderBy('name')->get();
         $features = Feature::orderBy('name')->get();
-        return view('admin.products.edit', compact('product','categories','brands','conditions','features'));
+        $suppliers = \App\Models\Supplier::orderBy('name')->get();
+        return view('admin.products.edit', compact('product','categories','brands','conditions','features', 'suppliers'));
     }
 
     public function update(Request $request, Product $product)
@@ -88,15 +110,30 @@ class ProductController extends Controller
             'price' => 'nullable|numeric',
             'old_price' => 'nullable|numeric',
             'image' => 'nullable|image|max:2048',
+            'gallery.*' => 'nullable|image|max:2048',
             'brand_id' => 'nullable|exists:brands,id',
             'category_id' => 'nullable|exists:categories,id',
-            'rating' => 'nullable|integer|min:0|max:5',
+            'supplier_id' => 'nullable|exists:suppliers,id',
+            'rating' => 'nullable|numeric|min:0|max:5',
             'condition_id' => 'nullable|exists:conditions,id',
+            'is_negotiable' => 'nullable|boolean',
+            'in_stock' => 'nullable|boolean',
+            'type' => 'nullable|string',
+            'material' => 'nullable|string',
+            'design_style' => 'nullable|string',
+            'customization' => 'nullable|string',
+            'protection' => 'nullable|string',
+            'warranty' => 'nullable|string',
+            'model_number' => 'nullable|string',
+            'item_number' => 'nullable|string',
+            'size' => 'nullable|string',
+            'memory' => 'nullable|string',
+            'certificate' => 'nullable|string',
+            'style' => 'nullable|string',
             'features' => 'nullable|array',
             'features.*' => 'exists:features,id',
         ]);
 
-        // Resolve brand_id to brand name
         $data['brand'] = null;
         if (!empty($data['brand_id'])) {
             $brand = Brand::find($data['brand_id']);
@@ -104,20 +141,23 @@ class ProductController extends Controller
         }
         unset($data['brand_id']);
 
-        // Extract features for later attachment
         $features = $data['features'] ?? [];
         unset($data['features']);
 
-        // handle image upload (replace)
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('products', 'public');
-            $data['image'] = $path;
+            $data['image'] = $request->file('image')->store('products', 'public');
         }
 
         $product->update($data);
-        
-        // Sync features
         $product->features()->sync($features);
+
+        // Handle Gallery (append)
+        if ($request->hasFile('gallery')) {
+            foreach ($request->file('gallery') as $img) {
+                $path = $img->store('products/gallery', 'public');
+                $product->images()->create(['image' => $path]);
+            }
+        }
 
         return redirect()->route('admin.products.index');
     }

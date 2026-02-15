@@ -30,51 +30,67 @@
                 <!-- Category -->
                 <div class="filter-group">
                     <div class="filter-title">Category</div>
-                    <ul>
+                    <ul class="filter-list" id="list-categories">
                         @foreach($categories ?? [] as $cat)
                             @php
                                 $catValue = is_object($cat) ? $cat->id : $cat;
                                 $catLabel = is_object($cat) ? $cat->name : $cat;
                             @endphp
-                            <li>
+                            <li class="{{ $loop->iteration > 5 ? 'hidden-item' : '' }}">
                                 <a href="{{ request()->fullUrlWithQuery(['category' => $catValue]) }}"
                                    class="{{ request('category') == $catValue ? 'active-filter' : '' }}">
                                     {{ $catLabel }}
                                 </a>
                             </li>
                         @endforeach
-                        <li><a href="#" class="see-all-link">See all</a></li>
                     </ul>
+                    @if(count($categories ?? []) > 5)
+                        <a href="javascript:void(0)" class="see-all-link" onclick="toggleFilterItems(this, 'list-categories')">
+                            <span>See all</span> <i class="fa-solid fa-chevron-down"></i>
+                        </a>
+                    @endif
                 </div>
 
                 <!-- Brands -->
                 <div class="filter-group">
                     <div class="filter-title">Brands</div>
-                    @foreach($brands ?? [] as $brand)
-                        <label class="filter-check">
-                            <input type="checkbox" name="brands[]" value="{{ $brand }}"
-                                {{ in_array($brand, request('brands', [])) ? 'checked' : '' }}>
-                            <span>{{ $brand }}</span>
-                        </label>
-                    @endforeach
-                    <a href="#" class="see-all-link">See all</a>
+                    <div class="filter-list" id="list-brands">
+                        @foreach($brands ?? [] as $brand)
+                            <label class="filter-check {{ $loop->iteration > 5 ? 'hidden-item' : '' }}">
+                                <input type="checkbox" name="brands[]" value="{{ $brand }}"
+                                    {{ in_array($brand, request('brands', [])) ? 'checked' : '' }}>
+                                <span>{{ $brand }}</span>
+                            </label>
+                        @endforeach
+                    </div>
+                    @if(count($brands ?? []) > 5)
+                        <a href="javascript:void(0)" class="see-all-link" onclick="toggleFilterItems(this, 'list-brands')">
+                            <span>See all</span> <i class="fa-solid fa-chevron-down"></i>
+                        </a>
+                    @endif
                 </div>
 
                 <!-- Features -->
                 <div class="filter-group">
                     <div class="filter-title">Features</div>
-                    @foreach($features ?? [] as $feature)
-                        @php
-                            $featValue = is_object($feature) ? $feature->id : $feature;
-                            $featLabel = is_object($feature) ? $feature->name : $feature;
-                        @endphp
-                        <label class="filter-check">
-                            <input type="checkbox" name="features[]" value="{{ $featValue }}"
-                                {{ in_array($featValue, request('features', [])) ? 'checked' : '' }}>
-                            <span>{{ $featLabel }}</span>
-                        </label>
-                    @endforeach
-                    <a href="#" class="see-all-link">See all</a>
+                    <div class="filter-list" id="list-features">
+                        @foreach($features ?? [] as $feature)
+                            @php
+                                $featValue = is_object($feature) ? $feature->id : $feature;
+                                $featLabel = is_object($feature) ? $feature->name : $feature;
+                            @endphp
+                            <label class="filter-check {{ $loop->iteration > 5 ? 'hidden-item' : '' }}">
+                                <input type="checkbox" name="features[]" value="{{ $featValue }}"
+                                    {{ in_array($featValue, request('features', [])) ? 'checked' : '' }}>
+                                <span>{{ $featLabel }}</span>
+                            </label>
+                        @endforeach
+                    </div>
+                    @if(count($features ?? []) > 5)
+                        <a href="javascript:void(0)" class="see-all-link" onclick="toggleFilterItems(this, 'list-features')">
+                            <span>See all</span> <i class="fa-solid fa-chevron-down"></i>
+                        </a>
+                    @endif
                 </div>
 
                 <!-- Price Range -->
@@ -101,37 +117,48 @@
                 <div class="filter-group">
                     <div class="filter-title">Condition</div>
                     @php $conditionOptions = ['Any', 'Refurbished', 'Brand new', 'Old items']; @endphp
-                    @foreach($conditions ?? $conditionOptions as $condition)
-                        @php
-                            $condValue = is_object($condition) ? $condition->id : $condition;
-                            $condLabel = is_object($condition) ? $condition->name : $condition;
-                        @endphp
-                        <label class="filter-radio">
-                            <input type="radio" name="condition" value="{{ $condValue }}"
-                                {{ request('condition') == $condValue ? 'checked' : '' }}
-                                {{ $loop->first && !request('condition') ? 'checked' : '' }}>
-                            <span>{{ $condLabel }}</span>
-                        </label>
-                    @endforeach
+                    <div class="filter-list" id="list-conditions">
+                        @foreach($conditions ?? $conditionOptions as $condition)
+                            @php
+                                $condValue = is_object($condition) ? $condition->id : $condition;
+                                $condLabel = is_object($condition) ? $condition->name : $condition;
+                            @endphp
+                            <label class="filter-radio {{ $loop->iteration > 5 ? 'hidden-item' : '' }}">
+                                <input type="radio" name="condition" value="{{ $condValue }}"
+                                    {{ request('condition') == $condValue ? 'checked' : '' }}
+                                    {{ $loop->first && !request('condition') ? 'checked' : '' }}>
+                                <span>{{ $condLabel }}</span>
+                            </label>
+                        @endforeach
+                    </div>
+                    @if(count($conditions ?? $conditionOptions) > 5)
+                        <a href="javascript:void(0)" class="see-all-link" onclick="toggleFilterItems(this, 'list-conditions')">
+                            <span>See all</span> <i class="fa-solid fa-chevron-down"></i>
+                        </a>
+                    @endif
                 </div>
 
                 <!-- Ratings -->
                 <div class="filter-group">
                     <div class="filter-title">Ratings</div>
-                    @foreach([5, 4, 3, 2, 1] as $star)
-                        <label class="filter-check">
-                            <input type="checkbox" name="ratings[]" value="{{ $star }}"
-                                {{ in_array($star, request('ratings', [])) ? 'checked' : '' }}>
-                            <span class="star-rating">
-                                @for($i = 0; $i < $star; $i++)
-                                    <i class="fa-solid fa-star"></i>
-                                @endfor
-                                @for($i = $star; $i < 5; $i++)
-                                    <i class="fa-regular fa-star"></i>
-                                @endfor
-                            </span>
-                        </label>
-                    @endforeach
+                    <div class="filter-list" id="list-ratings">
+                        @foreach([5, 4, 3, 2] as $star)
+                            <label class="filter-check">
+                                <input type="checkbox" name="ratings[]" value="{{ $star }}"
+                                    {{ in_array($star, request('ratings', [])) ? 'checked' : '' }}
+                                    onclick="document.querySelectorAll('input[name=\'ratings[]\']').forEach(i => i !== this && (i.checked = false)); this.form.submit();">
+                                <span class="star-rating">
+                                    @for($i = 0; $i < $star; $i++)
+                                        <i class="fa-solid fa-star"></i>
+                                    @endfor
+                                    @for($i = $star; $i < 5; $i++)
+                                        <i class="fa-regular fa-star"></i>
+                                    @endfor
+                                    <span class="rating-label-text">{{ number_format($star, 1) }} & up</span>
+                                </span>
+                            </label>
+                        @endforeach
+                    </div>
                 </div>
 
             </form>
@@ -241,13 +268,15 @@
                     </button>
 
                     <!-- Image -->
-                    <div class="product-img">
+                    <a href="{{ route('products.show', $product->id) }}" class="product-img">
                         <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}">
-                    </div>
+                    </a>
 
                     <!-- Info -->
                     <div class="product-info">
-                        <h3 class="product-title">{{ $product->name }}</h3>
+                        <a href="{{ route('products.show', $product->id) }}" class="product-title-link">
+                            <h3 class="product-title">{{ $product->name }}</h3>
+                        </a>
 
                         <div class="product-price">
                             <span class="price-current">${{ number_format($product->price, 2) }}</span>
@@ -258,9 +287,12 @@
 
                         <div class="product-rating">
                             <span class="stars-display">
+                                @php $rating = $product->rating ?? 0; @endphp
                                 @for($i = 1; $i <= 5; $i++)
-                                    @if($i <= ($product->rating ?? 0))
+                                    @if($i <= floor($rating))
                                         <i class="fa-solid fa-star"></i>
+                                    @elseif($i == ceil($rating) && ($rating - floor($rating)) >= 0.3)
+                                        <i class="fa-solid fa-star-half-stroke"></i>
                                     @else
                                         <i class="fa-regular fa-star"></i>
                                     @endif
@@ -394,6 +426,45 @@ document.addEventListener('DOMContentLoaded', function() {
         closeFilterBtn.addEventListener('click', closeFilter);
     }
 
+    // ===== CLICKABLE CARD IN GRID VIEW =====
+    container.addEventListener('click', function(e) {
+        // Only trigger if we are in grid-view
+        if (!container.classList.contains('grid-view')) return;
+
+        const card = e.target.closest('.product-card');
+        const wishlistBtn = e.target.closest('.wishlist-btn');
+        
+        // If we clicked the card but NOT the wishlist button
+        if (card && !wishlistBtn) {
+            const productId = card.getAttribute('data-id');
+            window.location.href = `/products/${productId}`;
+        }
+    });
+
 });
+
+// Global function for sidebar filter toggle
+function toggleFilterItems(link, listId) {
+    const list = document.getElementById(listId);
+    const hiddenItems = list.querySelectorAll('.hidden-item');
+    const label = link.querySelector('span');
+    const icon = link.querySelector('i');
+    
+    if (label.innerText === 'See all') {
+        hiddenItems.forEach(item => {
+            item.classList.add('visible-item');
+        });
+        list.classList.add('expanded');
+        label.innerText = 'See less';
+        icon.classList.replace('fa-chevron-down', 'fa-chevron-up');
+    } else {
+        hiddenItems.forEach(item => {
+            item.classList.remove('visible-item');
+        });
+        list.classList.remove('expanded');
+        label.innerText = 'See all';
+        icon.classList.replace('fa-chevron-up', 'fa-chevron-down');
+    }
+}
 </script>
 @endsection

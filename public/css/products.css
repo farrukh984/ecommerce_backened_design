@@ -632,6 +632,16 @@
     margin-bottom: 8px;
 }
 
+.product-title-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.product-title-link:hover .product-title {
+    color: #0d6efd;
+}
+
 .products-container.list-view .product-price {
     margin-bottom: 8px;
 }
@@ -733,6 +743,10 @@
 
 .products-container.grid-view .product-card:hover {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.products-container.grid-view .product-card {
+    cursor: pointer;
 }
 
 .products-container.grid-view .product-img {

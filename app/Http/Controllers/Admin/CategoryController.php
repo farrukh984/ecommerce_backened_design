@@ -21,8 +21,17 @@ class CategoryController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate(['name' => 'required|string|unique:categories,name']);
-        Category::create(['name' => $request->name]);
+        $data = $request->validate([
+            'name' => 'required|string|unique:categories,name',
+            'background_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+
+        if ($request->hasFile('background_image')) {
+            $path = $request->file('background_image')->store('categories', 'public');
+            $data['background_image'] = $path;
+        }
+
+        Category::create($data);
         return redirect()->route('admin.categories.index');
     }
 
@@ -33,8 +42,17 @@ class CategoryController extends Controller
 
     public function update(Request $request, Category $category)
     {
-        $request->validate(['name' => 'required|string|unique:categories,name,' . $category->id]);
-        $category->update(['name' => $request->name]);
+        $data = $request->validate([
+            'name' => 'required|string|unique:categories,name,' . $category->id,
+            'background_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+
+        if ($request->hasFile('background_image')) {
+            $path = $request->file('background_image')->store('categories', 'public');
+            $data['background_image'] = $path;
+        }
+
+        $category->update($data);
         return redirect()->route('admin.categories.index');
     }
 
