@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\UserDashboardController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ConditionController;
@@ -16,12 +17,26 @@ use App\Http\Controllers\Admin\ProductController as AdminProductController;
 |--------------------------------------------------------------------------
 */
 
+use App\Http\Controllers\CartController;
+
 Route::get('/home', [HomeController::class, 'index'])->name('home');
-Route::view('/cart', 'pages.cart')->name('cart');
+
+Route::controller(CartController::class)->group(function () {
+    Route::get('/cart', 'index')->name('cart');
+    Route::post('/cart/add/{id}', 'add')->name('cart.add');
+    Route::post('/cart/update', 'update')->name('cart.update');
+    Route::post('/cart/remove', 'remove')->name('cart.remove');
+    Route::post('/cart/save-later/{id}', 'saveForLater')->name('cart.saveLater');
+    Route::post('/cart/move-to-cart/{id}', 'moveToCart')->name('cart.moveToCart');
+    Route::post('/cart/remove-saved/{id}', 'removeSaved')->name('cart.removeSaved');
+    Route::get('/checkout', 'showCheckout')->name('cart.checkout');
+    Route::post('/checkout/place-order', 'placeOrder')->name('cart.placeOrder');
+});
 
 Route::controller(ProductController::class)->group(function () {
     Route::get('/products', 'index')->name('products.index');
     Route::get('/products/{id}', 'show')->name('products.show');
+    Route::post('/wishlist/toggle/{id}', 'toggleWishlist')->name('wishlist.toggle');
 });
 
 // Static / Placeholder routes
@@ -69,5 +84,9 @@ Route::middleware(['auth', 'is_admin'])
 */
 
 Route::middleware(['auth', 'is_user'])->group(function () {
-    Route::view('/dashboard', 'user.dashboard')->name('user.dashboard');
+    Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('user.dashboard');
+    Route::get('/dashboard/orders', [UserDashboardController::class, 'orders'])->name('user.orders');
+    Route::get('/dashboard/wishlist', [UserDashboardController::class, 'wishlist'])->name('user.wishlist');
+    Route::get('/dashboard/profile', [UserDashboardController::class, 'profile'])->name('user.profile');
+    Route::post('/dashboard/profile', [UserDashboardController::class, 'updateProfile'])->name('user.profile.update');
 });

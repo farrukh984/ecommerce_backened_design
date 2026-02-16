@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\WishlistItem;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
@@ -32,12 +33,13 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate(); // Security practice
+            $this->syncGuestWishlist($request);
 
             if (auth()->user()->role === 'admin') {
                 return redirect()->route('admin.dashboard');
             }
 
-            return redirect('/home');
+            return redirect()->route('user.dashboard');
         }
 
         return back()->withErrors(['password' => 'Incorrect password']);
@@ -70,5 +72,22 @@ class AuthController extends Controller
     {
         Auth::logout();
         return redirect('/');
+    }
+
+    private function syncGuestWishlist(Request $request): void
+    {
+        $wishlist = $request->session()->get('wishlist', []);
+        if (empty($wishlist)) {
+            return;
+        }
+
+        foreach ($wishlist as $productId) {
+            WishlistItem::firstOrCreate([
+                'user_id' => auth()->id(),
+                'product_id' => $productId,
+            ]);
+        }
+
+        $request->session()->forget('wishlist');
     }
 }

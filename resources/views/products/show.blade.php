@@ -1,6 +1,15 @@
 @extends('layouts.app')
 
+@section('body_class', 'product-detail-page')
+
 @section('content')
+
+@php
+    $wishlistIds = auth()->check()
+        ? auth()->user()->wishlistItems()->pluck('product_id')->all()
+        : session()->get('wishlist', []);
+    $inWishlist = in_array($product->id, $wishlistIds);
+@endphp
 
 <div class="container product-detail-wrapper">
 
@@ -43,11 +52,21 @@
         
         <!-- Mobile Image Section -->
         <div class="mobile-image-wrapper">
-            <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}">
-            <div class="m-image-dots">
-                <span class="dot active"></span>
+            <div class="m-image-slider" id="mobileImageSlider">
+                <div class="m-slide">
+                    <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}">
+                </div>
                 @foreach($product->images as $gImg)
-                <span class="dot"></span>
+                <div class="m-slide">
+                    <img src="{{ asset('storage/' . $gImg->image) }}" alt="Gallery Image">
+                </div>
+                @endforeach
+            </div>
+            <div class="m-image-dots">
+                <span class="dot active" data-index="0"></span>
+                @php $dotIdx = 1; @endphp
+                @foreach($product->images as $gImg)
+                <span class="dot" data-index="{{ $dotIdx++ }}"></span>
                 @endforeach
             </div>
         </div>
@@ -83,11 +102,23 @@
                 <span class="m-price-range">({{ ($firstTier->min_qty ?? 50) . '-' . ($firstTier->max_qty ?? '100') }} pcs)</span>
             </div>
 
-            <!-- Send Inquiry Button -->
+            <!-- Add to Cart (Inquiry) Section -->
+            <form action="{{ route('cart.add', $product->id) }}" method="POST">
+                @csrf
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                    <div class="qty-control" style="display: flex; align-items: center; border: 1px solid #dee2e7; border-radius: 6px; overflow: hidden; height: 40px;">
+                        <button type="button" onclick="changeQty(-1, 'm-qty')" style="width: 35px; height: 100%; border: none; background: #f7f7f7; font-size: 18px; cursor: pointer;">-</button>
+                        <input type="number" name="quantity" id="m-qty" value="1" min="1" style="width: 40px; text-align: center; border: none; font-size: 14px; font-weight: 600; outline: none; -moz-appearance: textfield;">
+                        <button type="button" onclick="changeQty(1, 'm-qty')" style="width: 35px; height: 100%; border: none; background: #f7f7f7; font-size: 16px; cursor: pointer;">+</button>
+                    </div>
+                    <button type="submit" class="btn-m-inquiry" style="flex: 1; border: none;">Send inquiry</button>
+                </div>
+            </form>
+
             <div class="m-button-row">
-                <button class="btn-m-inquiry">Send inquiry</button>
-                <button class="btn-m-heart">
-                    <i class="fa-regular fa-heart"></i>
+                <button class="btn-m-heart wishlist-toggle" data-id="{{ $product->id }}" style="width: 100%; height: 40px; flex-direction: row; gap: 8px; font-size: 14px; {{ $inWishlist ? 'color: #fa3434; border-color: #fa3434;' : '' }}">
+                    <i class="{{ $inWishlist ? 'fa-solid' : 'fa-regular' }} fa-heart"></i> 
+                    <span class="wish-text">{{ $inWishlist ? 'Added to wishlist' : 'Add to wishlist' }}</span>
                 </button>
             </div>
 
@@ -113,8 +144,10 @@
 
             <!-- Description Preview -->
             <div class="m-description">
-                <p>{{ Str::limit($product->description, 100) }}</p>
-                <a href="#description-tab" class="m-read-more">Read more</a>
+                <div class="description-expand-box" id="mobileDescBox">
+                    <p>{{ $product->description }}</p>
+                </div>
+                <a href="javascript:void(0)" class="m-read-more-btn" id="mobileDescBtn" style="display: none;" onclick="toggleReadMore('mobileDescBox', this)">Read more</a>
             </div>
         </div>
 
@@ -293,15 +326,27 @@
                 <div class="s-meta-row">
                     <i class="fa-solid fa-globe"></i> <span>{{ $product->supplier && $product->supplier->has_worldwide_shipping ? 'Worldwide shipping' : 'Local shipping' }}</span>
                 </div>
-                <div class="s-actions">
-                    <button class="btn-pry-blue">Send inquiry</button>
-                    <a href="#" class="btn-sec-link">Seller's profile</a>
-                </div>
+                <form action="{{ route('cart.add', $product->id) }}" method="POST">
+                    @csrf
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; font-size: 13px; color: #505050; margin-bottom: 8px;">Quantity:</label>
+                        <div style="display: flex; align-items: center; border: 1px solid #dee2e7; border-radius: 6px; overflow: hidden; height: 36px; width: 110px;">
+                            <button type="button" onclick="changeQty(-1, 'd-qty')" style="width: 35px; height: 100%; border: none; background: #f7f7f7; font-size: 18px; cursor: pointer;">-</button>
+                            <input type="number" name="quantity" id="d-qty" value="1" min="1" style="width: 40px; text-align: center; border: none; font-size: 14px; font-weight: 600; outline: none;">
+                            <button type="button" onclick="changeQty(1, 'd-qty')" style="width: 35px; height: 100%; border: none; background: #f7f7f7; font-size: 16px; cursor: pointer;">+</button>
+                        </div>
+                    </div>
+                    <div class="s-actions">
+                        <button type="submit" class="btn-pry-blue" style="width: 100%; margin-bottom: 10px; border: none;">Send inquiry</button>
+                        <a href="#" class="btn-sec-link">Seller's profile</a>
+                    </div>
+                </form>
             </div>
 
             <div class="save-later-box">
-                <a href="#" class="btn-text-icon">
-                    <i class="fa-regular fa-heart"></i> Save for later
+                <a href="javascript:void(0)" class="btn-text-icon wishlist-toggle {{ $inWishlist ? 'text-danger' : '' }}" data-id="{{ $product->id }}">
+                    <i class="{{ $inWishlist ? 'fa-solid' : 'fa-regular' }} fa-heart"></i> 
+                    <span class="wish-text">{{ $inWishlist ? 'Saved in wishlist' : 'Save for later' }}</span>
                 </a>
             </div>
         </div>
@@ -320,17 +365,17 @@
             </div>
 
             <div class="tab-content active" id="description-tab">
-                <div class="desc-text-block">
+                <div class="description-expand-box" id="desktopDescBox">
                     <p>{{ $product->description }}</p>
-                    <p>Quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
                 </div>
-
-                <table class="desc-specs-table">
-                    <tr><td>Model</td><td>{{ $product->model_number ?? '#8768857' }}</td></tr>
+                <a href="javascript:void(0)" class="m-read-more-btn" id="desktopDescBtn" style="display: none; margin-top: 10px;" onclick="toggleReadMore('desktopDescBox', this)">Read more</a>
+                
+                <table class="desc-specs-table" style="margin-top: 20px;">
+                    <tr><td>Model</td><td>{{ $product->model_number ?? '#'.str_pad($product->id, 7, '0', STR_PAD_LEFT) }}</td></tr>
                     <tr><td>Style</td><td>{{ $product->style ?? 'Classic style' }}</td></tr>
                     <tr><td>Certificate</td><td>{{ $product->certificate ?? 'ISO-9845212' }}</td></tr>
-                    <tr><td>Size</td><td>{{ $product->size ?? '34mm x 450mm x 19mm' }}</td></tr>
-                    <tr><td>Memory</td><td>{{ $product->memory ?? '36GB RAM' }}</td></tr>
+                    <tr><td>Size</td><td>{{ $product->size ?? 'Standard' }}</td></tr>
+                    <tr><td>Memory</td><td>{{ $product->memory ?? 'N/A' }}</td></tr>
                 </table>
 
                 <ul class="check-list">
@@ -338,15 +383,72 @@
                         <li><i class="fa-solid fa-check"></i> {{ $feat->name }}</li>
                     @empty
                         <li><i class="fa-solid fa-check"></i> Quality assured product</li>
-                        <li><i class="fa-solid fa-check"></i> Standard manufacturing process</li>
+                        <li><i class="fa-solid fa-check"></i> {{ $product->material ?? 'Premium material' }}</li>
                     @endforelse
                 </ul>
+            </div>
+
+            <div class="tab-content" id="reviews-tab" style="display: none;">
+                <h4>Customer Reviews</h4>
+                <div class="reviews-list" style="margin-top: 20px;">
+                    @forelse($product->reviews ?? [] as $review)
+                        <div class="review-item" style="margin-bottom: 20px; border-bottom: 1px solid #eff2f4; padding-bottom: 15px;">
+                            <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 5px;">
+                                <strong style="font-size: 15px;">{{ $review->user->name ?? 'Anonymous' }}</strong>
+                                <span style="color: #ff9017; font-size: 12px;">
+                                    @for($i=1; $i<=5; $i++)
+                                        <i class="fa-{{ $i <= ($review->rating ?? 5) ? 'solid' : 'regular' }} fa-star"></i>
+                                    @endfor
+                                </span>
+                            </div>
+                            <p style="color: #505050; font-size: 14px;">{{ $review->comment ?? 'Great product, matches the description perfectly.' }}</p>
+                        </div>
+                    @empty
+                        <div style="text-align: center; padding: 40px 0;">
+                            <i class="fa-regular fa-comment-dots" style="font-size: 40px; color: #dee2e7; margin-bottom: 15px; display: block;"></i>
+                            <p style="color: #8b96a5;">No reviews for this product yet.</p>
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+
+            <div class="tab-content" id="shipping-tab" style="display: none;">
+                <h4>Shipping Information</h4>
+                <div style="margin-top: 20px; color: #505050; font-size: 14px; line-height: 1.8;">
+                    <p><i class="fa-solid fa-truck" style="color: #0d6efd; margin-right: 10px;"></i> <strong>Shipping From:</strong> {{ $product->supplier->location ?? 'Global Warehouse' }}</p>
+                    <p><i class="fa-solid fa-calendar-check" style="color: #0d6efd; margin-right: 10px;"></i> <strong>Estimated Delivery:</strong> 7 - 15 Business Days</p>
+                    <p><i class="fa-solid fa-shield-heart" style="color: #0d6efd; margin-right: 10px;"></i> <strong>Shipping Protection:</strong> {{ $product->protection ?? 'Refund Policy covers your purchase.' }}</p>
+                    <hr style="border: none; border-top: 1px solid #eff2f4; margin: 20px 0;">
+                    <p>{{ $product->name }} will be packed using standard export packaging to ensure safety during transit from {{ $product->supplier->name ?? 'the supplier' }}.</p>
+                </div>
+            </div>
+
+            <div class="tab-content" id="about-tab" style="display: none;">
+                <h4>About Seller</h4>
+                <div style="margin-top: 20px; display: flex; gap: 20px; align-items: flex-start;">
+                    <div style="width: 80px; height: 80px; background: #f0f8ff; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 30px; color: #0d6efd; font-weight: bold; flex-shrink: 0;">
+                        {{ substr($product->supplier->name ?? 'S', 0, 1) }}
+                    </div>
+                    <div>
+                        <h5 style="font-size: 18px; margin-bottom: 5px; color: #1c1c1c;">{{ $product->supplier->name ?? 'Brand Supplier' }}</h5>
+                        <p style="color: #8b96a5; font-size: 14px; margin-bottom: 10px;"><i class="fa-solid fa-location-dot"></i> {{ $product->supplier->location ?? 'Global Location' }}</p>
+                        <div style="display: flex; gap: 10px;">
+                            @if($product->supplier && $product->supplier->is_verified)
+                                <span style="background: #e5f8ed; color: #00b517; padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: 500;"><i class="fa-solid fa-circle-check"></i> Verified</span>
+                            @endif
+                            <span style="background: #f0f8ff; color: #0d6efd; padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: 500;"><i class="fa-solid fa-globe"></i> Global Export</span>
+                        </div>
+                    </div>
+                </div>
+                <div style="margin-top: 20px; color: #505050; font-size: 14px; line-height: 1.6;">
+                    <p>Established supplier specialized in {{ $product->category->name ?? 'General Goods' }} and related categories. Known for high-quality {{ $product->material ?? 'products' }} and reliable service.</p>
+                </div>
             </div>
         </div>
 
         <div class="detail-right-content">
             <div class="you-box">
-                <h3>You may like</h3>
+                <h3>Recommended for you</h3>
                 @foreach($youMayLike->take(5) as $yml)
                 <a href="{{ route('products.show', $yml->id) }}" class="yml-item">
                     <img src="{{ asset('storage/' . $yml->image) }}" alt="{{ $yml->name }}">
@@ -392,6 +494,8 @@
 
 </div>
 
+@endsection
+
 @section('scripts')
 <script>
     function changeMainImg(src, el) {
@@ -403,5 +507,136 @@
         });
         el.classList.add('active');
     }
+
+    // Tab Switching Logic
+    document.querySelectorAll('.tab-btn').forEach(button => {
+        button.addEventListener('click', () => {
+            const tabName = button.getAttribute('data-tab');
+            
+            // Update active button
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            
+            // Show target content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.style.display = 'none';
+                content.classList.remove('active');
+            });
+            
+            const targetContent = document.getElementById(tabName + '-tab');
+            if (targetContent) {
+                targetContent.style.display = 'block';
+                targetContent.classList.add('active');
+                
+                // Trigger overflow check if switching back to description
+                if (tabName === 'description') {
+                    setTimeout(checkOverflow, 50);
+                }
+            }
+        });
+    });
+
+    // Mobile Slider dot tracking
+    document.addEventListener('DOMContentLoaded', function() {
+        const slider = document.getElementById('mobileImageSlider');
+        const dots = document.querySelectorAll('.m-image-dots .dot');
+
+        if (slider && dots.length > 0) {
+            slider.addEventListener('scroll', () => {
+                const scrollLeft = slider.scrollLeft;
+                const width = slider.offsetWidth;
+                const activeIndex = Math.round(scrollLeft / width);
+                
+                dots.forEach((dot, idx) => {
+                    if (idx === activeIndex) {
+                        dot.classList.add('active');
+                    } else {
+                        dot.classList.remove('active');
+                    }
+                });
+            });
+        }
+    });
+
+    function toggleReadMore(containerId, btn) {
+        const container = document.getElementById(containerId);
+        if (container.classList.contains('expanded')) {
+            container.classList.remove('expanded');
+            btn.innerText = 'Read more';
+        } else {
+            container.classList.add('expanded');
+            btn.innerText = 'Read less';
+        }
+    }
+
+    // Auto-detect if description needs "Read More" button
+    function checkOverflow() {
+        const mobileBox = document.getElementById('mobileDescBox');
+        const mobileBtn = document.getElementById('mobileDescBtn');
+        const desktopBox = document.getElementById('desktopDescBox');
+        const desktopBtn = document.getElementById('desktopDescBtn');
+
+        if (mobileBox && mobileBtn) {
+            if (mobileBox.scrollHeight > mobileBox.clientHeight + 5) {
+                mobileBtn.style.display = 'inline-block';
+            }
+        }
+
+        if (desktopBox && desktopBtn) {
+            if (desktopBox.scrollHeight > desktopBox.clientHeight + 5) {
+                desktopBtn.style.display = 'inline-block';
+            }
+        }
+    }
+
+    window.addEventListener('load', checkOverflow);
+    window.addEventListener('resize', checkOverflow);
+
+    function changeQty(amt, inputId) {
+        const input = document.getElementById(inputId);
+        let val = parseInt(input.value) + amt;
+        if (val < 1) val = 1;
+        input.value = val;
+    }
+
+    // Wishlist Toggle Logic
+    document.querySelectorAll('.wishlist-toggle').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const id = this.getAttribute('data-id');
+            const self = this;
+            
+            const url = "{{ route('wishlist.toggle', ':id') }}".replace(':id', id);
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': "{{ csrf_token() }}",
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                const icons = document.querySelectorAll(`.wishlist-toggle[data-id="${id}"] i`);
+                const texts = document.querySelectorAll(`.wishlist-toggle[data-id="${id}"] .wish-text`);
+                
+                if (data.status === 'added') {
+                    icons.forEach(i => { i.classList.replace('fa-regular', 'fa-solid'); });
+                    texts.forEach(t => { t.innerText = t.parentElement.classList.contains('btn-m-heart') ? 'Added to wishlist' : 'Saved in wishlist'; });
+                    document.querySelectorAll(`.wishlist-toggle[data-id="${id}"]`).forEach(b => {
+                        b.style.color = '#fa3434';
+                        if(b.classList.contains('btn-m-heart')) b.style.borderColor = '#fa3434';
+                    });
+                } else {
+                    icons.forEach(i => { i.classList.replace('fa-solid', 'fa-regular'); });
+                    texts.forEach(t => { t.innerText = t.parentElement.classList.contains('btn-m-heart') ? 'Add to wishlist' : 'Save for later'; });
+                    document.querySelectorAll(`.wishlist-toggle[data-id="${id}"]`).forEach(b => {
+                        b.style.color = '';
+                        if(b.classList.contains('btn-m-heart')) b.style.borderColor = '';
+                    });
+                }
+            });
+        });
+    });
 </script>
 @endsection

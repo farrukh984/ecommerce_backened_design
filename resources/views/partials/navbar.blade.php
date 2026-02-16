@@ -28,19 +28,19 @@
 
         <!-- Desktop icons -->
         <div class="header-icons">
-            <a href="#" class="icon-item">
+            <a href="#" class="icon-item" id="profileTrigger">
                 <i class="fa-regular fa-user"></i>
                 <span>Profile</span>
             </a>
-            <a href="#" class="icon-item">
+            <a href="#" class="icon-item" id="messageTrigger">
                 <i class="fa-regular fa-comment-dots"></i>
                 <span>Message</span>
             </a>
-            <a href="#" class="icon-item">
+            <a href="#" class="icon-item" id="ordersTrigger">
                 <i class="fa-regular fa-heart"></i>
                 <span>Orders</span>
             </a>
-            <a href="#" class="icon-item">
+            <a href="#" class="icon-item" id="cartTrigger">
                 <i class="fa-solid fa-cart-shopping"></i>
                 <span>My cart</span>
             </a>
@@ -48,8 +48,8 @@
 
         <!-- Mobile: cart + user icons (visible only on mobile) -->
         <div class="header-icons-mobile">
-            <a href="#"><i class="fa-solid fa-cart-shopping"></i></a>
-            <a href="#"><i class="fa-regular fa-user"></i></a>
+            <a href="#" id="mCartTrigger"><i class="fa-solid fa-cart-shopping"></i></a>
+            <a href="#" id="mProfileTrigger"><i class="fa-regular fa-user"></i></a>
         </div>
 
     </div>

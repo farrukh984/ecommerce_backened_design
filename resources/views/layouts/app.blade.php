@@ -11,6 +11,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
@@ -25,20 +26,34 @@
 <link rel="stylesheet" href="{{ asset('css/products.css') }}">
 <link rel="stylesheet" href="{{ asset('css/product-detail.css') }}">
 <link rel="stylesheet" href="{{ asset('css/cart.css') }}">
+<link rel="stylesheet" href="{{ asset('css/sidebars.css') }}">
 <link rel="stylesheet" href="{{ asset('css/responsive.css') }}">
+<link rel="stylesheet" href="{{ asset('css/checkout.css') }}">
+
 
 
 </head>
-<body>
+<body class="@yield('body_class')">
 
-    @include('partials.navbar')
+    @hasSection('hide_chrome')
+    @else
+        @include('partials.navbar')
+    @endif
 
     <main>
         @yield('content')
     </main>
 
-    @include('partials.footer')
+    @hasSection('hide_chrome')
+    @else
+        @include('partials.footer')
+        @include('partials.sidebars')
+    @endif
 
+    @hasSection('hide_chrome')
+    @else
+        <script src="{{ asset('js/sidebars.js') }}"></script>
+    @endif
     @yield('scripts')
 
 </body>

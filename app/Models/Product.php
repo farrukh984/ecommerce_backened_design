@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Category;
 use App\Models\Condition;
 use App\Models\Feature;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Product extends Model
 {
@@ -49,6 +50,11 @@ class Product extends Model
         return $this->belongsToMany(Feature::class, 'product_features');
     }
 
+    public function wishlistItems(): HasMany
+    {
+        return $this->hasMany(WishlistItem::class);
+    }
+
 
 public function getDiscountAttribute()
 {
@@ -63,4 +69,3 @@ public function getDiscountAttribute()
 
 
 }
-

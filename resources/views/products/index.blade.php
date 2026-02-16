@@ -2,17 +2,31 @@
 
 @section('content')
 
+@php
+    $wishlistIds = auth()->check()
+        ? auth()->user()->wishlistItems()->pluck('product_id')->all()
+        : session()->get('wishlist', []);
+@endphp
+
 <div class="container listing-wrapper">
 
     <!-- ============ BREADCRUMB ============ -->
     <div class="breadcrumb-bar">
         <a href="/home">Home</a>
         <i class="fa-solid fa-chevron-right"></i>
-        <a href="#">Clothings</a>
-        <i class="fa-solid fa-chevron-right"></i>
-        <a href="#">Men's wear</a>
-        <i class="fa-solid fa-chevron-right"></i>
-        <span>Summer clothing</span>
+        @if($currentCategory)
+            @if($currentCategory->parent && $currentCategory->parent->parent)
+                <a href="{{ route('products.index', ['category' => $currentCategory->parent->parent->id]) }}">{{ $currentCategory->parent->parent->name }}</a>
+                <i class="fa-solid fa-chevron-right"></i>
+            @endif
+            @if($currentCategory->parent)
+                <a href="{{ route('products.index', ['category' => $currentCategory->parent->id]) }}">{{ $currentCategory->parent->name }}</a>
+                <i class="fa-solid fa-chevron-right"></i>
+            @endif
+            <span>{{ $currentCategory->name }}</span>
+        @else
+            <span>All Products</span>
+        @endif
     </div>
 
     <div class="listing-layout">
@@ -263,8 +277,9 @@
                 <div class="product-card" data-id="{{ $product->id }}">
 
                     <!-- Wishlist -->
-                    <button class="wishlist-btn" title="Add to wishlist">
-                        <i class="fa-regular fa-heart"></i>
+                    @php $inWishlist = in_array($product->id, $wishlistIds); @endphp
+                    <button class="wishlist-btn wishlist-toggle" data-id="{{ $product->id }}" title="{{ $inWishlist ? 'Remove from wishlist' : 'Add to wishlist' }}">
+                        <i class="{{ $inWishlist ? 'fa-solid' : 'fa-regular' }} fa-heart" style="{{ $inWishlist ? 'color: #fa3434;' : '' }}"></i>
                     </button>
 
                     <!-- Image -->
@@ -439,6 +454,39 @@ document.addEventListener('DOMContentLoaded', function() {
             const productId = card.getAttribute('data-id');
             window.location.href = `/products/${productId}`;
         }
+    });
+
+    // Wishlist Toggle Logic
+    document.querySelectorAll('.wishlist-toggle').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation(); // Prevent card click
+            const id = this.getAttribute('data-id');
+            const self = this;
+            
+            const url = "{{ route('wishlist.toggle', ':id') }}".replace(':id', id);
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': "{{ csrf_token() }}",
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                const icon = self.querySelector('i');
+                if (data.status === 'added') {
+                    icon.classList.replace('fa-regular', 'fa-solid');
+                    icon.style.color = '#fa3434';
+                    self.title = 'Remove from wishlist';
+                } else {
+                    icon.classList.replace('fa-solid', 'fa-regular');
+                    icon.style.color = '';
+                    self.title = 'Add to wishlist';
+                }
+            });
+        });
     });
 
 });

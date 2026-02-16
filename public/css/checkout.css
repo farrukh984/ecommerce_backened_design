@@ -1,0 +1,288 @@
+/* ===== CHECKOUT PAGE – HOME THEME ===== */
+/* Matches home.css color scheme: blues, grays, clean borders, subtle shadows */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --primary: #0d6efd;
+  --primary-dark: #0b5ed7;
+  --primary-light: #4895ef;
+  --secondary: #f38332;
+  --gray-bg: #f4f5f7;
+  --card-bg: #ffffff;
+  --text-dark: #1c1c1c;
+  --text-medium: #505050;
+  --text-light: #8b96a5;
+  --border-color: #e3e8ee;
+  --border-focus: #0d6efd;
+  --radius: 8px;
+  --radius-lg: 16px;
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  --shadow-hover: 0 8px 20px rgba(0, 0, 0, 0.08);
+  --transition: all 0.2s ease;
+}
+
+body {
+  background: var(--gray-bg);
+  font-family: 'Inter', sans-serif;
+}
+
+/* ===== CONTAINER SPACING ===== */
+.container.py-5 {
+  padding-top: 40px !important;
+  padding-bottom: 40px !important;
+}
+
+/* ===== CARDS ===== */
+.card {
+  border: 1px solid var(--border-color) !important;
+  background: var(--card-bg);
+  border-radius: var(--radius-lg) !important;
+  transition: var(--transition);
+}
+
+.card:hover {
+  box-shadow: var(--shadow-hover) !important;
+}
+
+.card-body {
+  padding: 1.5rem !important;
+}
+
+@media (min-width: 768px) {
+  .card-body.p-md-5 {
+    padding: 2.5rem !important;
+  }
+}
+
+/* ===== FORM STYLES (similar to auth forms) ===== */
+.form-label {
+  font-weight: 500;
+  color: var(--text-medium);
+  margin-bottom: 6px;
+  font-size: 0.9rem;
+}
+
+.form-control {
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius) !important;
+  padding: 0.75rem 1rem;
+  font-size: 0.95rem;
+  color: var(--text-dark);
+  background: #fff;
+  transition: var(--transition);
+}
+
+.form-control:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
+  outline: none;
+}
+
+textarea.form-control {
+  min-height: 100px;
+  resize: vertical;
+}
+
+/* ===== ORDER SUMMARY CARD ===== */
+.position-sticky {
+  top: 20px;
+  z-index: 10;
+}
+
+/* Product items in summary */
+.d-flex.align-items-center.mb-3 {
+  background: var(--gray-bg);
+  padding: 12px;
+  border-radius: var(--radius);
+  transition: var(--transition);
+}
+
+.d-flex.align-items-center.mb-3:hover {
+  background: #e9ecef;
+}
+
+.d-flex.align-items-center.mb-3 img {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: var(--radius);
+  border: 1px solid var(--border-color);
+}
+
+.d-flex.align-items-center.mb-3 .ms-3 {
+  flex: 1;
+}
+
+.d-flex.align-items-center.mb-3 .fw-semibold:last-child {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+/* Summary totals */
+.d-flex.justify-content-between {
+  color: var(--text-medium);
+  font-size: 0.95rem;
+}
+
+.d-flex.justify-content-between span:last-child {
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+hr {
+  border-color: var(--border-color);
+  opacity: 0.6;
+  margin: 1.2rem 0;
+}
+
+/* Total row */
+.fw-bold.fs-5 {
+  font-size: 1.25rem !important;
+  color: var(--text-dark);
+}
+
+.fw-bold.fs-5 span:last-child {
+  color: var(--primary);
+  font-size: 1.5rem;
+}
+
+/* ===== BUTTON ===== */
+.btn-primary {
+  background: var(--primary);
+  border: none;
+  border-radius: var(--radius) !important;
+  padding: 0.9rem 1.5rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  transition: var(--transition);
+  box-shadow: 0 4px 6px rgba(13, 110, 253, 0.2);
+}
+
+.btn-primary:hover {
+  background: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 12px rgba(13, 110, 253, 0.25);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+/* ===== ALERTS ===== */
+.alert {
+  border-radius: var(--radius) !important;
+  border-left-width: 4px;
+  border-left-style: solid;
+  font-size: 0.95rem;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.alert-danger {
+  background: #ffe6e6;
+  border-left-color: #dc3545;
+  color: #a71d2a;
+}
+
+/* ===== RESPONSIVE (matches your breakpoints) ===== */
+
+/* Tablets (max-width: 1024px) – keep as is, but ensure sticky works */
+@media (max-width: 1024px) {
+  .position-sticky {
+    position: relative !important;
+    top: 0 !important;
+  }
+}
+
+/* Mobile (max-width: 768px) */
+@media (max-width: 768px) {
+  .container.py-5 {
+    padding-top: 20px !important;
+    padding-bottom: 20px !important;
+  }
+
+  .row.g-4 {
+    --bs-gutter-y: 1.5rem;
+  }
+
+  .card-body {
+    padding: 1.25rem !important;
+  }
+
+  .card-body.p-md-5 {
+    padding: 1.25rem !important;
+  }
+
+  .d-flex.align-items-center.mb-3 {
+    padding: 10px;
+  }
+
+  .d-flex.align-items-center.mb-3 img {
+    width: 40px;
+    height: 40px;
+  }
+
+  .fw-bold.fs-5 span:last-child {
+    font-size: 1.3rem;
+  }
+
+  /* Ensure full-width on mobile */
+  .col-lg-4 {
+    margin-top: 1rem;
+  }
+}
+
+/* Small mobile (max-width: 480px) */
+@media (max-width: 480px) {
+  .container {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .card-body {
+    padding: 1rem !important;
+  }
+
+  .row.g-4 {
+    --bs-gutter-x: 1rem;
+  }
+
+  .form-control {
+    font-size: 0.9rem;
+    padding: 0.65rem 0.9rem;
+  }
+
+  .d-flex.align-items-center.mb-3 {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .d-flex.align-items-center.mb-3 .ms-3 {
+    margin-left: 0 !important;
+    width: calc(100% - 58px);
+  }
+
+  .d-flex.align-items-center.mb-3 .fw-semibold:last-child {
+    width: 100%;
+    text-align: right;
+    margin-top: 5px;
+  }
+
+  .btn-primary {
+    padding: 0.8rem 1.2rem;
+    font-size: 0.95rem;
+  }
+}
+
+/* Extra small (max-width: 360px) */
+@media (max-width: 360px) {
+  .fw-bold.fs-5 {
+    font-size: 1.1rem !important;
+  }
+
+  .fw-bold.fs-5 span:last-child {
+    font-size: 1.2rem;
+  }
+}

@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\Category;
 use App\Models\Condition;
 use App\Models\Feature;
+use App\Models\WishlistItem;
 
 
 class ProductController extends Controller
@@ -78,8 +79,9 @@ class ProductController extends Controller
             $maxPrice = Product::whereNotNull('price')->max('price') ?? 1000;
 
             $categories = Category::orderBy('name')->get();
+            $currentCategory = $request->category ? Category::with('parent.parent')->find($request->category) : null;
 
-            return view('products.index', compact('products', 'categories', 'brands', 'conditions', 'ratings', 'features', 'minPrice', 'maxPrice'));
+            return view('products.index', compact('products', 'categories', 'brands', 'conditions', 'ratings', 'features', 'minPrice', 'maxPrice', 'currentCategory'));
         }
 
         public function show($id)
@@ -101,13 +103,64 @@ class ProductController extends Controller
                 $similarProducts = $similarProducts->merge($more);
             }
 
-            // You may also like (random products)
-            $youMayLike = Product::where('id', '!=', $product->id)
-                ->inRandomOrder()
-                ->limit(6)
+            // You may also like: Show Liked products (Wishlist)
+            $wishlistIds = auth()->check()
+                ? auth()->user()->wishlistItems()->pluck('product_id')->all()
+                : session()->get('wishlist', []);
+            $youMayLike = Product::whereIn('id', $wishlistIds)
+                ->where('id', '!=', $product->id)
+                ->take(6)
                 ->get();
 
+            // If wishlist is empty or small, fill with random products
+            if($youMayLike->count() < 6) {
+                $countNeeded = 6 - $youMayLike->count();
+                $randomExtra = Product::whereNotIn('id', array_merge($wishlistIds, [$product->id]))
+                    ->inRandomOrder()
+                    ->take($countNeeded)
+                    ->get();
+                $youMayLike = $youMayLike->merge($randomExtra);
+            }
+
             return view('products.show', compact('product', 'similarProducts', 'youMayLike'));
+        }
+
+    public function toggleWishlist(Request $request, $id)
+    {
+            if (auth()->check()) {
+                $wishlistItem = WishlistItem::where('user_id', auth()->id())
+                    ->where('product_id', $id)
+                    ->first();
+
+                if ($wishlistItem) {
+                    $wishlistItem->delete();
+                    $status = 'removed';
+                } else {
+                    WishlistItem::create([
+                        'user_id' => auth()->id(),
+                        'product_id' => $id,
+                    ]);
+                    $status = 'added';
+                }
+
+                $count = WishlistItem::where('user_id', auth()->id())->count();
+            } else {
+                $wishlist = session()->get('wishlist', []);
+                if (isset($wishlist[$id])) {
+                    unset($wishlist[$id]);
+                    $status = 'removed';
+                } else {
+                    $wishlist[$id] = $id;
+                    $status = 'added';
+                }
+                session()->put('wishlist', $wishlist);
+                $count = count($wishlist);
+            }
+
+            if ($request->ajax()) {
+                return response()->json(['status' => $status, 'count' => $count]);
+            }
+            return redirect()->back();
         }
 
 
