@@ -199,6 +199,15 @@ class CartController extends Controller
 
         session()->forget('cart');
 
+        // If AJAX request, return JSON for SweetAlert
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Your order has been placed successfully!',
+                'redirect' => route('user.orders'),
+            ]);
+        }
+
         return redirect()->route('user.orders')->with('success', 'Order placed successfully.');
     }
 }

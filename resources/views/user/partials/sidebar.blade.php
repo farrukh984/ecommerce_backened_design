@@ -1,7 +1,11 @@
 <aside class="dashboard-sidebar">
     <div class="user-profile-mini">
-        <div class="user-avatar">
-            {{ substr(auth()->user()->name, 0, 1) }}
+        <div class="user-avatar" style="overflow: hidden;">
+            @if(auth()->user()->profile_image)
+                <img src="{{ asset('storage/' . auth()->user()->profile_image) }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;">
+            @else
+                {{ substr(auth()->user()->name, 0, 1) }}
+            @endif
         </div>
         <div class="user-info">
             <h4>{{ auth()->user()->name }}</h4>

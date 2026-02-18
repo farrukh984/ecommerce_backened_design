@@ -1,4 +1,4 @@
- <?php
+<?php
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -10,6 +10,9 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ConditionController;
 use App\Http\Controllers\Admin\FeatureController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
+use App\Http\Controllers\Admin\OrderController as AdminOrderController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
+use App\Http\Controllers\Admin\ProfileController as AdminProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -75,6 +78,18 @@ Route::middleware(['auth', 'is_admin'])
             'features'   => FeatureController::class,
             'products'   => AdminProductController::class,
         ]);
+
+        // Orders
+        Route::get('/orders', [AdminOrderController::class, 'index'])->name('orders.index');
+        Route::get('/orders/{order}', [AdminOrderController::class, 'show'])->name('orders.show');
+        Route::patch('/orders/{order}/status', [AdminOrderController::class, 'updateStatus'])->name('orders.updateStatus');
+
+        // Users
+        Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
+
+        // Admin Profile
+        Route::get('/profile', [AdminProfileController::class, 'index'])->name('profile');
+        Route::post('/profile', [AdminProfileController::class, 'update'])->name('profile.update');
     });
 
 /*

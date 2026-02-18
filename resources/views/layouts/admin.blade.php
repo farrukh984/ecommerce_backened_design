@@ -41,12 +41,23 @@
                     <i class="fa-solid fa-copyright"></i> Brands
                 </a>
 
+                <div class="menu-label" style="margin-top: 24px;">Management</div>
+                <a href="{{ route('admin.orders.index') }}" class="menu-item {{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
+                    <i class="fa-solid fa-bag-shopping"></i> Orders
+                </a>
+                <a href="{{ route('admin.users.index') }}" class="menu-item {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
+                    <i class="fa-solid fa-users"></i> Users
+                </a>
+
                 <div class="menu-label" style="margin-top: 24px;">Settings</div>
                 <a href="{{ route('admin.features.index') }}" class="menu-item {{ request()->routeIs('admin.features.*') ? 'active' : '' }}">
                     <i class="fa-solid fa-sliders"></i> Features
                 </a>
                 <a href="{{ route('admin.conditions.index') }}" class="menu-item {{ request()->routeIs('admin.conditions.*') ? 'active' : '' }}">
                     <i class="fa-solid fa-tags"></i> Conditions
+                </a>
+                <a href="{{ route('admin.profile') }}" class="menu-item {{ request()->routeIs('admin.profile*') ? 'active' : '' }}">
+                    <i class="fa-solid fa-user-gear"></i> Profile Settings
                 </a>
 
                 <div class="menu-label" style="margin-top: 24px;">Actions</div>
@@ -59,10 +70,14 @@
             </div>
 
             <div class="sidebar-footer">
-                <div class="user-profile-badge">
-                    <div class="user-avatar-small">{{ substr(auth()->user()->name, 0, 1) }}</div>
+                <a href="{{ route('admin.profile') }}" class="user-profile-badge" style="text-decoration: none;">
+                    @if(auth()->user()->profile_image)
+                        <img src="{{ asset('storage/' . auth()->user()->profile_image) }}" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover;">
+                    @else
+                        <div class="user-avatar-small">{{ substr(auth()->user()->name, 0, 1) }}</div>
+                    @endif
                     <span>{{ explode(' ', auth()->user()->name)[0] }}</span>
-                </div>
+                </a>
             </div>
         </aside>
 

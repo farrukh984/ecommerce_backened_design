@@ -36,6 +36,9 @@
                                 $statusClass = match(strtolower($order->status)) {
                                     'delivered', 'completed' => 'completed',
                                     'canceled', 'cancelled', 'failed' => 'canceled',
+                                    'approved' => 'approved',
+                                    'processing' => 'processing',
+                                    'shipped' => 'shipped',
                                     default => 'pending',
                                 };
                             @endphp

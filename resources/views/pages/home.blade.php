@@ -11,11 +11,10 @@
             <ul>
                 @foreach($categories as $category)
                 <li class="{{ $loop->first ? 'active' : '' }}">
-                    <i class="fa-solid fa-folder"></i>
                     {{ $category->name }}
                 </li>
                 @endforeach 
-                <li><i class="fa-solid fa-ellipsis"></i> More category</li>
+                <li>More category</li>
             </ul>
         </div>
 
@@ -32,11 +31,15 @@
 
         <div class="hero-right">
             <div class="card blue-card">
-                <div class="card-avatar">
-                    <i class="fa-regular fa-circle-user"></i>
+                <div class="user-welcome">
+                    <div class="card-avatar">
+                        <i class="fa-regular fa-circle-user"></i>
+                    </div>
+                    <div class="welcome-text">
+                        <h4>Hi, {{ auth()->check() ? auth()->user()->name : 'user' }}</h4>
+                        <p>let's get started</p>
+                    </div>
                 </div>
-                <h4>Hi, {{ auth()->check() ? auth()->user()->name : 'user' }}</h4>
-                <p>let's get started</p>
                 @if(!auth()->check())
                     <a href="{{ route('register') }}" class="btn-join">Join now</a>
                     <a href="{{ route('login') }}" class="btn-login">Log in</a>
