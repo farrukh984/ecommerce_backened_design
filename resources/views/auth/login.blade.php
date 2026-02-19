@@ -78,7 +78,7 @@
                         <span class="checkmark"></span>
                         <span>Remember me</span>
                     </label>
-                    <a href="#" class="forgot-link">Forgot Password?</a>
+                    <a href="{{ route('password.request') }}" class="forgot-link">Forgot Password?</a>
                 </div>
 
                 <button type="submit" class="btn-submit">

@@ -14,6 +14,9 @@ use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\ProfileController as AdminProfileController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\ResetPasswordController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -75,6 +78,27 @@ Route::get('/auth/callback/google', [GoogleController::class, 'handleGoogleCallb
 Route::get('/auth/google/redirect', [GoogleController::class, 'redirectToGoogle']);
 Route::get('/auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
 
+
+/*
+|--------------------------------------------------------------------------
+| Password Reset Routes
+|--------------------------------------------------------------------------
+*/
+
+
+Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])
+    ->name('password.request');
+
+Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])
+    ->name('password.email');
+
+Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])
+    ->name('password.reset');
+
+Route::post('/reset-password', [ResetPasswordController::class, 'reset'])
+    ->name('password.update');
+
+
 /*
 |--------------------------------------------------------------------------
 | Admin Routes (Protected)
@@ -121,3 +145,4 @@ Route::middleware(['auth', 'is_user'])->group(function () {
     Route::get('/dashboard/profile', [UserDashboardController::class, 'profile'])->name('user.profile');
     Route::post('/dashboard/profile', [UserDashboardController::class, 'updateProfile'])->name('user.profile.update');
 });
+
