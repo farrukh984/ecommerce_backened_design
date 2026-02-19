@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UserDashboardController;
@@ -21,8 +22,13 @@ use App\Http\Controllers\Admin\ProfileController as AdminProfileController;
 */
 
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\InquiryController;
 
 Route::get('/home', [HomeController::class, 'index'])->name('home');
+
+// Inquiry and Newsletter routes
+Route::post('/inquiry/send', [InquiryController::class, 'send'])->name('inquiry.send');
+Route::post('/newsletter/subscribe', [InquiryController::class, 'subscribe'])->name('newsletter.subscribe');
 
 Route::controller(CartController::class)->group(function () {
     Route::get('/cart', 'index')->name('cart');
@@ -57,7 +63,17 @@ Route::controller(AuthController::class)->group(function () {
     Route::get('/register', 'register')->name('register');
     Route::post('/register', 'registerStore')->name('register.store');
     Route::post('/logout', 'logout')->name('logout');
+    // Admin OTP verification views
+    Route::get('/admin/otp', 'showAdminOtp')->name('admin.otp');
+    Route::post('/admin/otp/verify', 'verifyAdminOtp')->name('admin.otp.verify');
 });
+
+// Google OAuth
+Route::get('/auth/redirect/google', [GoogleController::class, 'redirectToGoogle'])->name('google.redirect');
+Route::get('/auth/callback/google', [GoogleController::class, 'handleGoogleCallback'])->name('google.callback');
+// Also accept the common Google callback/redirect paths (matches your .env)
+Route::get('/auth/google/redirect', [GoogleController::class, 'redirectToGoogle']);
+Route::get('/auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
 
 /*
 |--------------------------------------------------------------------------

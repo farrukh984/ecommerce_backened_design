@@ -211,15 +211,29 @@
     margin-bottom: 12px;
 }
 
-.card-avatar {
+/* .card-avatar {
     font-size: 42px;
     color: #bdc4cc;
-    /* Gray avatar color */
+    Gray avatar color
     display: flex;
     justify-content: center;
     align-items: center;
     line-height: 1;
+} */
+
+.card-avatar {
+    width: 42px;          /* Fixed width matching the icon size */
+    height: 42px;         /* Fixed height */
+    border-radius: 50%;   /* Makes it circular */
+    overflow: hidden;     /* Ensures the image stays inside the circle */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 42px;      /* For the icon fallback */
+    color: #bdc4cc;
+    line-height: 1;
 }
+
 
 .welcome-text h4 {
     font-size: 14px;

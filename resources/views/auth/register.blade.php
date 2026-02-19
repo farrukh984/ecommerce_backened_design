@@ -83,9 +83,9 @@
                 </div>
 
                 <div class="social-buttons">
-                    <button type="button" class="btn-social google">
+                    <a href="{{ route('google.redirect') }}" class="btn-social google">
                         <i class="fa-brands fa-google"></i> Google
-                    </button>
+                    </a>
                     <button type="button" class="btn-social facebook">
                         <i class="fa-brands fa-facebook-f"></i> Facebook
                     </button>

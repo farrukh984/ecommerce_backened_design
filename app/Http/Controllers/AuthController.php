@@ -7,6 +7,9 @@ use App\Models\User;
 use App\Models\WishlistItem;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\AdminOtpMail;
 
 class AuthController extends Controller
 {
@@ -31,18 +34,80 @@ class AuthController extends Controller
                 ->withErrors(['email' => 'You are not registered. Please register first.']);
         }
 
+        // Verify password manually so we can handle admin OTP flow before logging in
+        if (! Hash::check($request->password, $user->password)) {
+            return back()->withErrors(['password' => 'Incorrect password']);
+        }
+
+        // If admin, send OTP email and require OTP verification
+        if ($user->role === 'admin') {
+            $otp = rand(100000, 999999);
+            Cache::put('admin_otp_' . $user->id, $otp, now()->addMinutes(10));
+            // store pending admin id in session
+            $request->session()->put('pending_admin_id', $user->id);
+
+            // send OTP email
+            try {
+                Mail::to($user->email)->send(new AdminOtpMail($user, $otp));
+            } catch (\Throwable $e) {
+                // Log or ignore; for now return an error message
+                return back()->withErrors(['email' => 'Unable to send OTP email.']);
+            }
+
+            return redirect()->route('admin.otp')->with('success', 'OTP sent to admin email.');
+        }
+
+        // Regular user login
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate(); // Security practice
             $this->syncGuestWishlist($request);
-
-            if (auth()->user()->role === 'admin') {
-                return redirect()->route('admin.dashboard');
-            }
 
             return redirect()->route('user.dashboard');
         }
 
         return back()->withErrors(['password' => 'Incorrect password']);
+    }
+
+    // Show OTP input page for admin
+    public function showAdminOtp(Request $request)
+    {
+        if (! $request->session()->has('pending_admin_id')) {
+            return redirect()->route('login');
+        }
+
+        return view('auth.admin_otp');
+    }
+
+    // Verify OTP for admin and log them in
+    public function verifyAdminOtp(Request $request)
+    {
+        $request->validate([
+            'otp' => 'required|digits:6'
+        ]);
+
+        $pendingId = $request->session()->get('pending_admin_id');
+        if (! $pendingId) {
+            return redirect()->route('login')->withErrors(['otp' => 'No pending admin login. Please login again.']);
+        }
+
+        $cached = Cache::get('admin_otp_' . $pendingId);
+        if (! $cached || $cached != $request->otp) {
+            return back()->withErrors(['otp' => 'Invalid or expired OTP']);
+        }
+
+        // OTP matched — clear cache and session, log the admin in
+        Cache::forget('admin_otp_' . $pendingId);
+        $request->session()->forget('pending_admin_id');
+
+        $user = User::find($pendingId);
+        if (! $user) {
+            return redirect()->route('login')->withErrors(['email' => 'User not found']);
+        }
+
+        Auth::login($user, true);
+        try { request()->session()->regenerate(); } catch (\Throwable $e) {}
+
+        return redirect()->route('admin.dashboard');
     }
 
     // Show Register

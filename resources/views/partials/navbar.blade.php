@@ -7,8 +7,10 @@
         </button>
 
         <div class="logo">
-            <span class="logo-icon"><i class="fa-solid fa-lock"></i></span>
-            <span class="brand-name">Brand</span>
+            <a href="{{ route('home') }}" style="text-decoration: none; color: inherit; display: flex; align-items: center;">
+                <span class="logo-icon"><i class="fa-solid fa-lock"></i></span>
+                <span class="brand-name">Brand</span>
+            </a>
         </div>
 
         <div class="search-box">
@@ -28,19 +30,27 @@
 
         <!-- Desktop icons -->
         <div class="header-icons">
-            <a href="#" class="icon-item" id="profileTrigger">
-                <i class="fa-regular fa-user"></i>
+            <a href="javascript:void(0)" class="icon-item" id="profileTrigger">
+                @auth
+                    @if(auth()->user()->profile_image)
+                        <img src="{{ asset('storage/' . auth()->user()->profile_image) }}" alt="Profile" style="width: 20px; height: 20px; border-radius: 50%; object-fit: cover;">
+                    @else
+                        <i class="fa-regular fa-user"></i>
+                    @endif
+                @else
+                    <i class="fa-regular fa-user"></i>
+                @endauth
                 <span>Profile</span>
             </a>
-            <a href="#" class="icon-item" id="messageTrigger">
+            <a href="javascript:void(0)" class="icon-item" id="messageTrigger">
                 <i class="fa-regular fa-comment-dots"></i>
                 <span>Message</span>
             </a>
-            <a href="#" class="icon-item" id="ordersTrigger">
+            <a href="javascript:void(0)" class="icon-item" id="ordersTrigger">
                 <i class="fa-regular fa-heart"></i>
                 <span>Orders</span>
             </a>
-            <a href="#" class="icon-item" id="cartTrigger">
+            <a href="javascript:void(0)" class="icon-item" id="cartTrigger">
                 <i class="fa-solid fa-cart-shopping"></i>
                 <span>My cart</span>
             </a>
@@ -48,8 +58,8 @@
 
         <!-- Mobile: cart + user icons (visible only on mobile) -->
         <div class="header-icons-mobile">
-            <a href="#" id="mCartTrigger"><i class="fa-solid fa-cart-shopping"></i></a>
-            <a href="#" id="mProfileTrigger"><i class="fa-regular fa-user"></i></a>
+            <a href="javascript:void(0)" id="mCartTrigger"><i class="fa-solid fa-cart-shopping"></i></a>
+            <a href="javascript:void(0)" id="mProfileTrigger"><i class="fa-regular fa-user"></i></a>
         </div>
 
     </div>
@@ -67,25 +77,24 @@
     <!-- Mobile Category Tabs (scrollable) -->
     <div class="mobile-category-tabs">
         <div class="category-tabs-scroll">
-            <a href="#" class="cat-tab active">All category</a>
-            <a href="#" class="cat-tab">Gadgets</a>
-            <a href="#" class="cat-tab">Clothes</a>
-            <a href="#" class="cat-tab">Accessories</a>
-            <a href="#" class="cat-tab">Electronics</a>
-            <a href="#" class="cat-tab">Sports</a>
-            <a href="#" class="cat-tab">Home</a>
+            <a href="{{ route('products.index') }}" class="cat-tab {{ !request('category') ? 'active' : '' }}">All category</a>
+            @if(isset($categories))
+                @foreach($categories->take(6) as $cat)
+                    <a href="{{ route('products.index', ['category' => $cat->id]) }}" class="cat-tab {{ request('category') == $cat->id ? 'active' : '' }}">{{ $cat->name }}</a>
+                @endforeach
+            @endif
         </div>
     </div>
 
     <nav class="sub-navbar">
         <div class="container sub-flex">
             <div class="menu-links">
-                <a href="#"><i class="fa-solid fa-bars"></i> All category</a>
-                <a href="#">Hot offers</a>
-                <a href="#">Gift boxes</a>
-                <a href="#">Projects</a>
-                <a href="#">Menu item</a>
-                <a href="#">Help <i class="fa-solid fa-chevron-down"></i></a>
+                <a href="{{ route('products.index') }}"><i class="fa-solid fa-bars"></i> All category</a>
+                <a href="{{ route('products.index', ['q' => 'hot']) }}">Hot offers</a>
+                <a href="{{ route('products.index') }}">Gift boxes</a>
+                <a href="{{ route('products.index') }}">Projects</a>
+                <a href="{{ route('products.index') }}">Menu item</a>
+                <a href="{{ route('home') }}#inquiry-section">Help <i class="fa-solid fa-chevron-down"></i></a>
             </div>
             <div class="right-links">
                 <span>English, USD <i class="fa-solid fa-chevron-down"></i></span>
@@ -112,24 +121,29 @@
 
         <!-- Primary Navigation -->
         <nav class="sidebar-nav">
-            <a href="/home"><i class="fa-solid fa-house"></i> Home</a>
-            <a href="#"><i class="fa-solid fa-list"></i> Categories</a>
-            <a href="#"><i class="fa-regular fa-heart"></i> Favorites</a>
-            <a href="#"><i class="fa-regular fa-clipboard"></i> My orders</a>
+            <a href="{{ route('home') }}"><i class="fa-solid fa-house"></i> Home</a>
+            <a href="{{ route('products.index') }}"><i class="fa-solid fa-list"></i> Categories</a>
+            @auth
+                <a href="{{ route('user.wishlist') }}"><i class="fa-regular fa-heart"></i> Favorites</a>
+                <a href="{{ route('user.orders') }}"><i class="fa-regular fa-clipboard"></i> My orders</a>
+            @else
+                <a href="{{ route('login') }}"><i class="fa-regular fa-heart"></i> Favorites</a>
+                <a href="{{ route('login') }}"><i class="fa-regular fa-clipboard"></i> My orders</a>
+            @endauth
         </nav>
 
         <!-- Settings Section -->
         <div class="sidebar-settings">
-            <a href="#"><i class="fa-solid fa-globe"></i> English | USD</a>
-            <a href="#"><i class="fa-solid fa-headset"></i> Contact us</a>
-            <a href="#"><i class="fa-solid fa-building"></i> About</a>
+            <a href="javascript:void(0)"><i class="fa-solid fa-globe"></i> English | USD</a>
+            <a href="{{ route('home') }}#inquiry-section"><i class="fa-solid fa-headset"></i> Contact us</a>
+            <a href="{{ route('home') }}"><i class="fa-solid fa-building"></i> About</a>
         </div>
 
         <!-- Footer Links -->
         <div class="sidebar-footer-links">
-            <a href="#">User agreement</a>
-            <a href="#">Partnership</a>
-            <a href="#">Privacy policy</a>
+            <a href="javascript:void(0)">User agreement</a>
+            <a href="javascript:void(0)">Partnership</a>
+            <a href="javascript:void(0)">Privacy policy</a>
         </div>
 
     </div>

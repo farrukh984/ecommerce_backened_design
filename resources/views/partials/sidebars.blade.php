@@ -10,16 +10,22 @@
     <div class="sidebar-content">
         @auth
             <div class="user-profile-header">
-                <div class="profile-avatar">{{ substr(auth()->user()->name, 0, 1) }}</div>
+                <div class="profile-avatar">
+                    @if(auth()->user()->profile_image)
+                        <img src="{{ asset('storage/' . auth()->user()->profile_image) }}" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                    @else
+                        {{ substr(auth()->user()->name, 0, 1) }}
+                    @endif
+                </div>
                 <div class="profile-info">
                     <strong>{{ auth()->user()->name }}</strong>
                     <span>{{ auth()->user()->email }}</span>
                 </div>
             </div>
             <ul class="sidebar-menu">
-                <li><a href="#"><i class="fa-regular fa-user"></i> Account Settings</a></li>
-                <li><a href="#"><i class="fa-solid fa-location-dot"></i> Shipping Address</a></li>
-                <li><a href="#"><i class="fa-solid fa-gear"></i> Preferences</a></li>
+                <li><a href="{{ route('user.profile') }}"><i class="fa-regular fa-user"></i> Account Settings</a></li>
+                <li><a href="{{ route('user.profile') }}"><i class="fa-solid fa-location-dot"></i> Shipping Address</a></li>
+                <li><a href="{{ route('user.profile') }}"><i class="fa-solid fa-gear"></i> Preferences</a></li>
                 <li class="menu-divider"></li>
                 <li>
                     <form action="{{ route('logout') }}" method="POST">
