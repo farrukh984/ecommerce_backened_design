@@ -67,6 +67,17 @@
                 <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="menu-item" style="color: #eb001b;">
                     <i class="fa-solid fa-right-from-bracket" style="color: #eb001b;"></i> Logout
                 </a>
+
+                <!-- Sidebar Profile Strength -->
+                <div style="padding: 10px 16px; margin-top: 20px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; font-size: 11px;">
+                        <span style="font-weight: 600; color: #64748b;">Profile Strength</span>
+                        <span style="font-weight: 700; color: var(--admin-primary);">{{ auth()->user()->profile_completion }}%</span>
+                    </div>
+                    <div style="width: 100%; height: 6px; background: #f1f5f9; border-radius: 3px; overflow: hidden; border: 1px solid #e2e8f0;">
+                        <div style="width: {{ auth()->user()->profile_completion }}%; height: 100%; background: linear-gradient(90deg, var(--admin-primary), var(--admin-secondary)); border-radius: 3px;"></div>
+                    </div>
+                </div>
             </div>
 
             <div class="sidebar-footer">

@@ -13,6 +13,17 @@
         </div>
     </div>
 
+    <!-- Sidebar Profile Strength -->
+    <div style="padding: 0 20px; margin-bottom: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; font-size: 11px;">
+            <span style="font-weight: 600; color: #64748b;">Profile Strength</span>
+            <span style="font-weight: 700; color: var(--primary-color);">{{ auth()->user()->profile_completion }}%</span>
+        </div>
+        <div style="width: 100%; height: 6px; background: #f1f5f9; border-radius: 3px; overflow: hidden;">
+            <div style="width: {{ auth()->user()->profile_completion }}%; height: 100%; background: linear-gradient(90deg, #3b82f6, #06b6d4); border-radius: 3px;"></div>
+        </div>
+    </div>
+
     <nav class="sidebar-nav">
         <a href="{{ route('user.dashboard') }}" class="nav-item {{ ($active ?? '') === 'overview' ? 'active' : '' }}">
             <i class="fa-solid fa-house-chimney"></i> My Overview

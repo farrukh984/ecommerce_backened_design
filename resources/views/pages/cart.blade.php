@@ -3,6 +3,11 @@
 @section('content')
 
 <div class="container cart-wrapper">
+@extends('layouts.app')
+
+@section('content')
+
+<div class="container cart-wrapper">
 
     <!-- ============ CART HEADER ============ -->
     <div class="cart-header">
@@ -11,6 +16,18 @@
         </a>
         <h1>My cart ({{ count($cart) }})</h1>
     </div>
+
+    @if(session('success'))
+        <div style="background: #dcfce7; color: #166534; padding: 12px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #bbf7d0;">
+            <i class="fa-solid fa-circle-check"></i> {{ session('success') }}
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div style="background: #fee2e2; color: #991b1b; padding: 12px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #fecaca;">
+            <i class="fa-solid fa-circle-exclamation"></i> {{ session('error') }}
+        </div>
+    @endif
 
     @if(count($cart) > 0)
     <div class="cart-layout">
@@ -116,38 +133,35 @@
 
         <!-- ============ CART SIDEBAR (Order Summary) ============ -->
         <div class="cart-sidebar">
-            @php 
-                $discount = 80.00;
-                $shipping = 0.00; 
-                $tax = $subtotal * 0.05; 
-                $total = $subtotal - $discount + $tax + $shipping;
-            @endphp
             
             <div class="coupon-box">
                 <p>Have a coupon?</p>
-                <div class="coupon-input-row">
-                    <input type="text" placeholder="Add coupon">
-                    <button class="btn-apply-coupon">Apply</button>
-                </div>
+                <form action="{{ route('cart.applyCoupon') }}" method="POST">
+                    @csrf
+                    <div class="coupon-input-row">
+                        <input type="text" name="coupon" placeholder="Add coupon" value="{{ session('applied_coupon') }}">
+                        <button type="submit" class="btn-apply-coupon">Apply</button>
+                    </div>
+                </form>
             </div>
 
             <div class="order-summary">
                 <div class="summary-row">
                     <span>Subtotal:</span>
-                    <span>${{ number_format($subtotal, 2) }}</span>
+                    <span>${{ number_format($totals['subtotal'], 2) }}</span>
                 </div>
                 <div class="summary-row">
                     <span>Discount:</span>
-                    <span class="text-discount">- ${{ number_format($discount, 2) }}</span>
+                    <span class="text-discount">- ${{ number_format($totals['discount'], 2) }}</span>
                 </div>
                 <div class="summary-row">
-                    <span>Tax:</span>
-                    <span class="text-tax">+ ${{ number_format($tax, 2) }}</span>
+                    <span>Tax (5%):</span>
+                    <span class="text-tax">+ ${{ number_format($totals['tax'], 2) }}</span>
                 </div>
                 <hr class="summary-divider">
                 <div class="summary-row summary-total">
                     <span>Total:</span>
-                    <span class="total-price">${{ number_format($total, 2) }}</span>
+                    <span class="total-price">${{ number_format($totals['total'], 2) }}</span>
                 </div>
 
                 @auth
@@ -173,29 +187,26 @@
 
     <!-- ============ MOBILE ORDER SUMMARY ============ -->
     <div class="mobile-order-summary">
-        @php 
-            $discount = 80.00;
-            $shipping = 10.00; 
-            $tax = $subtotal * 0.05; 
-            $total = $subtotal - $discount + $tax + $shipping;
-        @endphp
-        
         <div class="mobile-summary-content">
             <div class="summary-row">
                 <span>Items ({{ count($cart) }}):</span>
-                <span>${{ number_format($subtotal, 2) }}</span>
+                <span>${{ number_format($totals['subtotal'], 2) }}</span>
             </div>
             <div class="summary-row">
                 <span>Shipping:</span>
-                <span>${{ number_format($shipping, 2) }}</span>
+                <span>${{ number_format($totals['shipping'], 2) }}</span>
             </div>
             <div class="summary-row">
                 <span>Tax:</span>
-                <span>${{ number_format($tax, 2) }}</span>
+                <span>${{ number_format($totals['tax'], 2) }}</span>
+            </div>
+            <div class="summary-row">
+                <span>Discount:</span>
+                <span class="text-discount">-${{ number_format($totals['discount'], 2) }}</span>
             </div>
             <div class="summary-row summary-total-mobile">
                 <strong>Total:</strong>
-                <strong>${{ number_format($total, 2) }}</strong>
+                <strong>${{ number_format($totals['total'], 2) }}</strong>
             </div>
         </div>
 

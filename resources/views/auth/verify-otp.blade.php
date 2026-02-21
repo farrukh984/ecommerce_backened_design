@@ -1,6 +1,6 @@
 @extends('layouts.auth')
 
-@section('title', 'Forgot Password')
+@section('title', 'Verify OTP')
 
 @section('styles')
     <link rel="stylesheet" href="{{ asset('css/login.css') }}">
@@ -13,8 +13,8 @@
         <div class="brand-showcase">
             <h1 class="brand-logo"><i class="fa-solid fa-bag-shopping"></i> ShopBrand.</h1>
             <div class="showcase-content">
-                <h2>Forgot<br>Password?</h2>
-                <p>No worries, we'll send you reset instructions. Enter your email below.</p>
+                <h2>Verify Your Identity</h2>
+                <p>Please check your email for the 6‑digit OTP code to reset your password. It expires in 10 minutes.</p>
             </div>
             <!-- Decorative animated circles -->
             <div class="visual-art">
@@ -34,13 +34,13 @@
             </div>
 
             <div class="form-header">
-                <h3>Reset password</h3>
-                <p>Enter your email and we'll send you a password reset link.</p>
+                <h3>Enter OTP</h3>
+                <p>We've sent a 6‑digit code to {{ session('reset_email') }}.</p>
             </div>
 
-            @if(session('status') || session('success'))
+            @if(session('success'))
                 <div class="alert alert-success">
-                    <i class="fa-solid fa-circle-check"></i> {{ session('status') ?? session('success') }}
+                    <i class="fa-solid fa-circle-check"></i> {{ session('success') }}
                 </div>
             @endif
 
@@ -54,24 +54,24 @@
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('password.email') }}">
+            <form method="POST" action="{{ route('password.otp.verify') }}">
                 @csrf
 
                 <div class="form-group">
                     <div class="input-wrapper">
-                        <input type="email" name="email" id="email" placeholder=" " value="{{ old('email') }}" required autofocus>
-                        <span class="icon"><i class="fa-regular fa-envelope"></i></span>
-                        <label for="email">Email Address</label>
+                        <input type="text" name="otp" id="otp" placeholder=" " required maxlength="6" inputmode="numeric" pattern="\d*" autofocus>
+                        <span class="icon"><i class="fa-solid fa-shield-halved"></i></span>
+                        <label for="otp">6‑digit OTP Code</label>
                     </div>
                 </div>
 
                 <button type="submit" class="btn-submit">
-                    Send Reset Link <i class="fa-solid fa-paper-plane"></i>
+                    Verify Code <i class="fa-solid fa-paper-plane"></i>
                 </button>
             </form>
 
             <div class="bottom-text">
-                <a href="{{ route('login') }}">← Back to login</a>
+                <a href="{{ route('password.request') }}">← Try another email</a>
             </div>
         </div>
     </div>

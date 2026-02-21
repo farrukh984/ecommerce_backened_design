@@ -39,7 +39,7 @@
                 <button class="close-filter-btn" id="closeFilterBtn"><i class="fa-solid fa-xmark"></i></button>
             </div>
 
-            <form method="GET" action="{{ route('products.index') }}">
+            <form method="GET" action="{{ route('products.index') }}" id="filterForm">
 
                 <!-- Category -->
                 <div class="filter-group">
@@ -186,8 +186,8 @@
             <div class="top-bar">
                 <div class="top-bar-left">
                     <div>
-                        <strong>{{ $products->total() ?? $products->count() }}</strong> items in
-                        <strong>Mobile accessory</strong>
+                        <strong>{{ $products->total() }}</strong> items in
+                        <strong>{{ $currentCategory ? $currentCategory->name : 'All Products' }}</strong>
                     </div>
                     
                     <!-- Mobile Filter Toggle -->
@@ -198,16 +198,14 @@
 
                 <div class="top-bar-right">
                     <label class="verified-check">
-                        <input type="checkbox"> Verified only
+                        <input type="checkbox" name="verified" value="1" {{ request('verified') ? 'checked' : '' }} onchange="this.form.submit()" form="filterForm"> Verified only
                     </label>
-
-                    <select class="sort-select">
-                        <option>Featured</option>
-                        <option>Lowest price</option>
-                        <option>Highest price</option>
-                        <option>Newest</option>
+                    <select class="sort-select" name="sort" onchange="this.form.submit()" form="filterForm">
+                        <option value="featured" {{ request('sort') == 'featured' ? 'selected' : '' }}>Featured</option>
+                        <option value="price_low" {{ request('sort') == 'price_low' ? 'selected' : '' }}>Lowest price</option>
+                        <option value="price_high" {{ request('sort') == 'price_high' ? 'selected' : '' }}>Highest price</option>
+                        <option value="newest" {{ request('sort') == 'newest' ? 'selected' : '' }}>Newest</option>
                     </select>
-
                     <!-- View Toggle Buttons -->
                     <div class="view-toggle">
                         <button class="view-btn active" id="listViewBtn" title="List view">
@@ -349,9 +347,9 @@
                 </div>
 
                 <div class="page-numbers">
-                    @if(method_exists($products, 'links'))
-                        {{ $products->appends(request()->query())->links() }}
-                    @endif
+                    {{ $products->links() }}
+
+
                 </div>
             </div>
 

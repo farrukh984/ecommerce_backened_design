@@ -15,17 +15,50 @@ class CartController extends Controller
         $subtotal = collect($cart)->sum(fn ($item) => $item['price'] * $item['quantity']);
         $tax = round($subtotal * 0.05, 2);
         $shipping = 0;
-        $discount = 0;
+        
+        // Dynamic Discount from Session
+        $couponDiscount = session()->get('coupon_discount', 0);
+        $discount = $couponDiscount > 0 ? $couponDiscount : 0;
+        
         $total = round($subtotal - $discount + $tax + $shipping, 2);
 
         return compact('subtotal', 'tax', 'shipping', 'discount', 'total');
+    }
+
+    public function applyCoupon(Request $request)
+    {
+        if (!auth()->check()) {
+            return redirect()->back()->with('error', 'Please login to apply coupon.');
+        }
+
+        $coupon = $request->input('coupon');
+        $user = auth()->user();
+
+        if ($coupon === $user->unique_coupon_code) {
+            if ($user->is_coupon_eligible) {
+                // Apply 10% discount on subtotal
+                $cart = session()->get('cart', []);
+                $subtotal = collect($cart)->sum(fn ($item) => $item['price'] * $item['quantity']);
+                $discount = round($subtotal * 0.10, 2);
+                
+                session()->put('coupon_discount', $discount);
+                session()->put('applied_coupon', $coupon);
+                
+                return redirect()->back()->with('success', 'Coupon applied successfully! You got 10% off.');
+            } else {
+                return redirect()->back()->with('error', 'This coupon is not yet active for your account.');
+            }
+        }
+
+        return redirect()->back()->with('error', 'Invalid coupon code or does not belong to you.');
     }
 
     public function index()
     {
         $cart = session()->get('cart', []);
         $saved = session()->get('saved', []);
-        return view('pages.cart', compact('cart', 'saved'));
+        $totals = $this->getCartTotals($cart);
+        return view('pages.cart', compact('cart', 'saved', 'totals'));
     }
     
     public function add(Request $request, $id)

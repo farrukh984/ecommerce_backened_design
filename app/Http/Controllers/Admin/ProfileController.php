@@ -22,7 +22,14 @@ class ProfileController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:100',
             'email' => ['required', 'email', 'max:150', Rule::unique('users', 'email')->ignore($user->id)],
+            'phone' => 'nullable|string|max:20',
+            'address' => 'nullable|string|max:255',
+            'city' => 'nullable|string|max:100',
+            'state' => 'nullable|string|max:100',
+            'zip_code' => 'nullable|string|max:20',
+            'country' => 'nullable|string|max:100',
             'profile_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'cover_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
             'current_password' => 'nullable|string',
             'new_password' => 'nullable|string|min:6|confirmed',
         ]);
@@ -39,8 +46,20 @@ class ProfileController extends Controller
             $user->profile_image = $path;
         }
 
+        if ($request->hasFile('cover_image')) {
+            $path = $request->file('cover_image')->store('cover_images', 'public');
+            $user->cover_image = $path;
+        }
+
         $user->name = $validated['name'];
         $user->email = $validated['email'];
+        $user->phone = $validated['phone'];
+        $user->address = $validated['address'];
+        $user->city = $validated['city'];
+        $user->state = $validated['state'];
+        $user->zip_code = $validated['zip_code'];
+        $user->country = $validated['country'] ?? 'Pakistan';
+        
         $user->save();
 
         return back()->with('success', 'Profile updated successfully.');

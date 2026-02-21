@@ -43,10 +43,25 @@
                     <i class="fa-solid fa-gem"></i>
                 </div>
                 <div class="stat-info">
-                    <h3>{{ $stats['loyalty_points'] }}</h3>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <h3>{{ $stats['loyalty_points'] }}</h3>
+                        <span style="font-size: 11px; background: #f3e8ff; color: #6b21a8; padding: 2px 8px; border-radius: 20px; font-weight: 700;">{{ $stats['rank'] }}</span>
+                    </div>
                     <p>Loyalty Points</p>
                 </div>
             </div>
+
+            @if($stats['coupon_eligible'])
+            <div class="stat-card" style="background: linear-gradient(135deg, #0d6efd, #4895ef); color: white;">
+                <div class="stat-icon" style="background: rgba(255,255,255,0.2); color: white;">
+                    <i class="fa-solid fa-ticket"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 style="color: white; font-size: 14px;">{{ $stats['coupon_code'] }}</h3>
+                    <p style="color: rgba(255,255,255,0.8);">Your Unique Coupon Active!</p>
+                </div>
+            </div>
+            @endif
 
             <div class="stat-card">
                 <div class="stat-icon orange">

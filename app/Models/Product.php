@@ -15,7 +15,7 @@ class Product extends Model
 
     protected $fillable = [
         'name', 'description', 'price', 'old_price', 'image', 'brand', 'rating', 'category_id', 'condition_id',
-        'supplier_id', 'is_negotiable', 'in_stock', 'type', 'material', 
+        'supplier_id', 'is_negotiable', 'is_verified', 'in_stock', 'type', 'material', 
         'design_style', 'customization', 'protection', 'warranty', 
         'model_number', 'item_number', 'size', 'memory', 'certificate', 'style'
     ];

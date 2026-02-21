@@ -43,6 +43,7 @@ Route::controller(CartController::class)->group(function () {
     Route::post('/cart/remove-saved/{id}', 'removeSaved')->name('cart.removeSaved');
     Route::get('/checkout', 'showCheckout')->name('cart.checkout');
     Route::post('/checkout/place-order', 'placeOrder')->name('cart.placeOrder');
+    Route::post('/cart/coupon', 'applyCoupon')->name('cart.applyCoupon');
 });
 
 Route::controller(ProductController::class)->group(function () {
@@ -91,6 +92,12 @@ Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkReques
 
 Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])
     ->name('password.email');
+
+Route::get('/forgot-password/otp', [ForgotPasswordController::class, 'showOtpForm'])
+    ->name('password.otp');
+
+Route::post('/forgot-password/otp', [ForgotPasswordController::class, 'verifyOtp'])
+    ->name('password.otp.verify');
 
 Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])
     ->name('password.reset');

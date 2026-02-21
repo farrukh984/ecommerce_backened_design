@@ -64,10 +64,34 @@ class ProductController extends Controller
                 $query->whereBetween('price', [$request->min_price, $request->max_price]);
             }
 
+            // Verified Only Filter
+            if ($request->has('verified')) {
+                $query->where('is_verified', true);
+            }
+
+            // Sorting
+            $sort = $request->query('sort', 'featured');
+            switch ($sort) {
+                case 'price_low':
+                    $query->orderBy('price', 'asc');
+                    break;
+                case 'price_high':
+                    $query->orderBy('price', 'desc');
+                    break;
+                case 'newest':
+                    $query->orderBy('created_at', 'desc');
+                    break;
+                case 'featured':
+                default:
+                    $query->orderBy('rating', 'desc');
+                    break;
+            }
+
             $products = $query->paginate(9)->withQueryString();
 
             // Dynamic filter data
-            $brands = Product::whereNotNull('brand')->distinct()->pluck('brand')->sort();
+            $brands = \App\Models\Brand::orderBy('name')->pluck('name');
+
             $conditions = Condition::orderBy('name')->get();
             $ratings = [5, 4, 3, 2, 1];
 

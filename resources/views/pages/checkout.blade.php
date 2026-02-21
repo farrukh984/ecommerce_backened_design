@@ -69,37 +69,37 @@
                                 <label class="form-field-label">
                                     <i class="fa-solid fa-phone"></i> Phone
                                 </label>
-                                <input type="text" name="phone" class="form-field-input" value="{{ old('phone') }}" required placeholder="+92 300 1234567">
+                                <input type="text" name="phone" class="form-field-input" value="{{ old('phone', auth()->user()->phone) }}" required placeholder="+92 300 1234567">
                             </div>
                             <div class="form-field">
                                 <label class="form-field-label">
                                     <i class="fa-solid fa-map-pin"></i> Zip Code
                                 </label>
-                                <input type="text" name="zip_code" class="form-field-input" value="{{ old('zip_code') }}" required placeholder="54000">
+                                <input type="text" name="zip_code" class="form-field-input" value="{{ old('zip_code', auth()->user()->zip_code) }}" required placeholder="54000">
                             </div>
                             <div class="form-field full-width">
                                 <label class="form-field-label">
                                     <i class="fa-solid fa-location-dot"></i> Address
                                 </label>
-                                <input type="text" name="address" class="form-field-input" value="{{ old('address') }}" required placeholder="123 Main Street, Block A">
+                                <input type="text" name="address" class="form-field-input" value="{{ old('address', auth()->user()->address) }}" required placeholder="123 Main Street, Block A">
                             </div>
                             <div class="form-field">
                                 <label class="form-field-label">
                                     <i class="fa-solid fa-city"></i> City
                                 </label>
-                                <input type="text" name="city" class="form-field-input" value="{{ old('city') }}" required placeholder="Lahore">
+                                <input type="text" name="city" class="form-field-input" value="{{ old('city', auth()->user()->city) }}" required placeholder="Lahore">
                             </div>
                             <div class="form-field">
                                 <label class="form-field-label">
                                     <i class="fa-solid fa-map"></i> State
                                 </label>
-                                <input type="text" name="state" class="form-field-input" value="{{ old('state') }}" placeholder="Punjab">
+                                <input type="text" name="state" class="form-field-input" value="{{ old('state', auth()->user()->state) }}" placeholder="Punjab">
                             </div>
                             <div class="form-field">
                                 <label class="form-field-label">
                                     <i class="fa-solid fa-globe"></i> Country
                                 </label>
-                                <input type="text" name="country" class="form-field-input" value="{{ old('country', 'Pakistan') }}" required placeholder="Pakistan">
+                                <input type="text" name="country" class="form-field-input" value="{{ old('country', auth()->user()->country ?? 'Pakistan') }}" required placeholder="Pakistan">
                             </div>
                             <div class="form-field full-width">
                                 <label class="form-field-label">
