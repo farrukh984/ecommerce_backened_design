@@ -15,7 +15,7 @@ class ProductController extends Controller
 
         public function index(Request $request)
         {
-            $query = Product::query()->with('category');
+            $query = Product::query()->where('is_active', true)->with('category');
 
             // Search by q (name or category)
             if ($q = $request->query('q')) {
@@ -110,7 +110,7 @@ class ProductController extends Controller
 
         public function show($id)
         {
-            $product = Product::with(['category', 'supplier', 'priceTiers', 'features', 'condition'])->findOrFail($id);
+            $product = Product::where('is_active', true)->with(['category', 'supplier', 'priceTiers', 'features', 'condition'])->findOrFail($id);
 
             // Similar products from same category
             $similarProducts = Product::where('category_id', $product->category_id)

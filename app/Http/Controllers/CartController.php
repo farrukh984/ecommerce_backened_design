@@ -64,6 +64,11 @@ class CartController extends Controller
     public function add(Request $request, $id)
     {
         $product = Product::findOrFail($id);
+
+        if ($product->stock_quantity <= 0) {
+            return redirect()->back()->with('error', 'Sorry, this product is currently sold out.');
+        }
+
         $cart = session()->get('cart', []);
         $quantity = $request->input('quantity', 1);
 
@@ -74,8 +79,18 @@ class CartController extends Controller
         ];
 
         if (isset($cart[$id])) {
-            $cart[$id]['quantity'] += $quantity;
+            $newQty = $cart[$id]['quantity'] + $quantity;
+            if ($newQty > $product->stock_quantity) {
+                $cart[$id]['quantity'] = $product->stock_quantity;
+                session()->put('cart', $cart);
+                return redirect()->route('cart')->with('warning', 'Only ' . $product->stock_quantity . ' items available. Quantity adjusted.');
+            }
+            $cart[$id]['quantity'] = $newQty;
         } else {
+            if ($quantity > $product->stock_quantity) {
+                $quantity = $product->stock_quantity;
+                $warning = 'Only ' . $product->stock_quantity . ' items available. Quantity adjusted.';
+            }
             $cart[$id] = [
                 "name"       => $product->name,
                 "quantity"   => $quantity,
@@ -87,7 +102,7 @@ class CartController extends Controller
         }
 
         session()->put('cart', $cart);
-        return redirect()->route('cart')->with('success', 'Product added to cart!');
+        return redirect()->route('cart')->with('success', $warning ?? 'Product added to cart!');
     }
 
     public function remove(Request $request)
@@ -110,8 +125,19 @@ class CartController extends Controller
     public function update(Request $request)
     {
         if ($request->id && $request->quantity) {
+            $product = Product::find($request->id);
+            if (!$product) return redirect()->back();
+
             $cart = session()->get('cart');
-            $cart[$request->id]["quantity"] = $request->quantity;
+            $requestedQty = (int) $request->quantity;
+
+            if ($requestedQty > $product->stock_quantity) {
+                $cart[$request->id]["quantity"] = $product->stock_quantity;
+                session()->put('cart', $cart);
+                return redirect()->back()->with('warning', 'Only ' . $product->stock_quantity . ' items available.');
+            }
+
+            $cart[$request->id]["quantity"] = $requestedQty;
             session()->put('cart', $cart);
             session()->flash('success', 'Cart updated successfully');
         }
@@ -227,6 +253,18 @@ class CartController extends Controller
                     'price' => $item['price'],
                     'attributes' => $item['attributes'] ?? null,
                 ]);
+
+                // Update Product Stock
+                $product = Product::find($item['id']);
+                if ($product) {
+                    $product->decrement('stock_quantity', $item['quantity']);
+                    $product->increment('sold_count', $item['quantity']);
+                    
+                    // Update in_stock status if quantity is 0 or less
+                    if ($product->stock_quantity <= 0) {
+                        $product->update(['in_stock' => false, 'stock_quantity' => 0]);
+                    }
+                }
             }
         });
 

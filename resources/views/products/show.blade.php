@@ -89,7 +89,7 @@
                     @endfor
                 </span>
                 <span class="m-reviews"><i class="fa-regular fa-comment-dots"></i> 32 reviews</span>
-                <span class="m-sold"><i class="fa-solid fa-basket-shopping"></i> 154 sold</span>
+                <span class="m-sold"><i class="fa-solid fa-basket-shopping"></i> {{ $product->sold_count ?? 154 }} sold</span>
             </div>
 
             <!-- Product Name -->
@@ -111,7 +111,11 @@
                         <input type="number" name="quantity" id="m-qty" value="1" min="1" style="width: 40px; text-align: center; border: none; font-size: 14px; font-weight: 600; outline: none; -moz-appearance: textfield;">
                         <button type="button" onclick="changeQty(1, 'm-qty')" style="width: 35px; height: 100%; border: none; background: #f7f7f7; font-size: 16px; cursor: pointer;">+</button>
                     </div>
-                    <button type="submit" class="btn-m-inquiry" style="flex: 1; border: none;">Send inquiry</button>
+                    @if($product->stock_quantity > 0)
+                        <button type="submit" class="btn-m-inquiry" style="flex: 1; border: none;">Send inquiry</button>
+                    @else
+                        <button type="button" class="btn-m-inquiry" style="flex: 1; border: none; background: #94a3b8; cursor: not-allowed;" disabled>Sold Out</button>
+                    @endif
                 </div>
             </form>
 
@@ -215,8 +219,9 @@
         <!-- CENTER COLUMN: PRODUCT INFO -->
         <div class="detail-main-info">
             
-            <div class="stock-status">
-                <i class="fa-solid fa-check"></i> {{ $product->in_stock ? 'In stock' : 'Limited stock' }}
+            <div class="stock-status {{ $product->stock_quantity > 0 ? '' : 'text-danger' }}">
+                <i class="fa-solid {{ $product->stock_quantity > 0 ? 'fa-check' : 'fa-xmark' }}"></i> 
+                {{ $product->stock_quantity > 0 ? 'In stock (' . $product->stock_quantity . ' pcs)' : 'Sold Out' }}
             </div>
 
             <h1 class="detail-title">{{ $product->name }}</h1>
@@ -238,7 +243,7 @@
                 <span class="dot-sep">•</span>
                 <span class="detail-reviews"><i class="fa-regular fa-comment-dots"></i> 32 reviews</span>
                 <span class="dot-sep">•</span>
-                <span class="detail-sold"><i class="fa-solid fa-basket-shopping"></i> 154 sold</span>
+                <span class="detail-sold"><i class="fa-solid fa-basket-shopping"></i> {{ $product->sold_count ?? 154 }} sold</span>
             </div>
 
             <div class="price-tier-block">
@@ -337,7 +342,11 @@
                         </div>
                     </div>
                     <div class="s-actions">
-                        <button type="submit" class="btn-pry-blue" style="width: 100%; margin-bottom: 10px; border: none;">Send inquiry</button>
+                        @if($product->stock_quantity > 0)
+                            <button type="submit" class="btn-pry-blue" style="width: 100%; margin-bottom: 10px; border: none;">Send inquiry</button>
+                        @else
+                            <button type="button" class="btn-pry-blue" style="width: 100%; margin-bottom: 10px; border: none; background: #94a3b8; cursor: not-allowed;" disabled>Sold Out</button>
+                        @endif
                         <a href="#" class="btn-sec-link">Seller's profile</a>
                     </div>
                 </form>

@@ -83,10 +83,15 @@
 
         <div class="form-row">
             <div class="form-group">
-                <label>Options</label>
+                <label>Options & Stock</label>
                 <div style="display: flex; gap: 20px; align-items: center; padding: 10px; background: #f9f9f9; border-radius: 6px;">
-                    <label style="cursor: pointer;"><input type="hidden" name="in_stock" value="0"><input type="checkbox" name="in_stock" value="1" checked> In Stock</label>
-                    <label style="cursor: pointer;"><input type="hidden" name="is_negotiable" value="0"><input type="checkbox" name="is_negotiable" value="1"> Price Negotiable</label>
+                    <label style="cursor: pointer; margin-bottom: 0;"><input type="hidden" name="in_stock" value="0"><input type="checkbox" name="in_stock" value="1" checked> In Stock</label>
+                    <label style="cursor: pointer; margin-bottom: 0;"><input type="hidden" name="is_negotiable" value="0"><input type="checkbox" name="is_negotiable" value="1"> Price Negotiable</label>
+                    <label style="cursor: pointer; margin-bottom: 0;"><input type="hidden" name="is_active" value="0"><input type="checkbox" name="is_active" value="1" checked> Enabled / Active</label>
+                    <div style="margin-left: auto; display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 13px; font-weight: 600;">Stock Qty:</span>
+                        <input type="number" name="stock_quantity" class="form-control" value="100" style="width: 80px; height: 30px; padding: 2px 8px;">
+                    </div>
                 </div>
             </div>
         </div>

@@ -313,7 +313,10 @@
                             </span>
                             <span class="rating-num">{{ $product->rating ?? '0' }}</span>
                             <span class="dot-sep">·</span>
-                            <span class="orders-count">154 orders</span>
+                            @if($product->stock_quantity <= 0)
+                                <span style="background: #fee2e2; color: #ef4444; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; margin-right: 8px;">Sold Out</span>
+                            @endif
+                            <span class="orders-count">{{ $product->sold_count ?? 154 }} orders</span>
                             <span class="free-ship"><i class="fa-solid fa-truck"></i> Free Shipping</span>
                         </div>
 

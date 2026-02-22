@@ -26,7 +26,9 @@
                     <th>Product Details</th>
                     <th>Category</th>
                     <th>Price</th>
+                    <th>Stock</th>
                     <th>Status</th>
+                    <th>Visibility</th>
                     <th style="text-align: right;">Actions</th>
                 </tr>
             </thead>
@@ -55,7 +57,28 @@
                         @endif
                     </td>
                     <td>
-                        <span class="status-label status-active">Live</span>
+                        <div style="font-weight: 700; color: {{ $product->stock_quantity < 10 ? '#eb001b' : '#1c1c1c' }};">
+                            {{ $product->stock_quantity }} pcs
+                            @if($product->stock_quantity > 0 && $product->stock_quantity < 10)
+                                <div style="font-size: 10px; color: #ff9017; font-weight: 600;"><i class="fa-solid fa-triangle-exclamation"></i> Low Stock</div>
+                            @elseif($product->stock_quantity == 0)
+                                <div style="font-size: 10px; color: #eb001b; font-weight: 600;"><i class="fa-solid fa-circle-xmark"></i> Out of Stock</div>
+                            @endif
+                        </div>
+                    </td>
+                    <td>
+                        @if($product->stock_quantity > 0)
+                            <span class="status-label status-active" style="background: #e5f8ed; color: #00b517;">Live</span>
+                        @else
+                            <span class="status-label" style="background: #fee2e2; color: #eb001b; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;">Sold Out</span>
+                        @endif
+                    </td>
+                    <td>
+                        @if($product->is_active)
+                            <span style="color: #0d6efd; font-weight: 600;"><i class="fa-solid fa-eye"></i> Visible</span>
+                        @else
+                            <span style="color: #64748b; font-weight: 600;"><i class="fa-solid fa-eye-slash"></i> Hidden</span>
+                        @endif
                     </td>
                     <td style="text-align: right;">
                         <div style="display: flex; justify-content: flex-end; gap: 8px;">

@@ -137,6 +137,12 @@ Route::middleware(['auth', 'is_admin'])
         // Admin Profile
         Route::get('/profile', [AdminProfileController::class, 'index'])->name('profile');
         Route::post('/profile', [AdminProfileController::class, 'update'])->name('profile.update');
+
+        // Admin Messaging
+        Route::get('/messages', [App\Http\Controllers\MessageController::class, 'index'])->name('messages.index');
+        Route::get('/messages/{id}', [App\Http\Controllers\MessageController::class, 'chat'])->name('messages.chat');
+        Route::get('/messages/{id}/poll', [App\Http\Controllers\MessageController::class, 'getMessages'])->name('messages.poll');
+        Route::post('/messages/send', [App\Http\Controllers\MessageController::class, 'send'])->name('messages.send');
     });
 
 /*
@@ -151,5 +157,11 @@ Route::middleware(['auth', 'is_user'])->group(function () {
     Route::get('/dashboard/wishlist', [UserDashboardController::class, 'wishlist'])->name('user.wishlist');
     Route::get('/dashboard/profile', [UserDashboardController::class, 'profile'])->name('user.profile');
     Route::post('/dashboard/profile', [UserDashboardController::class, 'updateProfile'])->name('user.profile.update');
+
+    // Messaging Routes
+    Route::get('/dashboard/messages', [App\Http\Controllers\MessageController::class, 'index'])->name('user.messages');
+    Route::get('/dashboard/messages/{id}', [App\Http\Controllers\MessageController::class, 'chat'])->name('user.messages.chat');
+    Route::get('/dashboard/messages/{id}/poll', [App\Http\Controllers\MessageController::class, 'getMessages'])->name('user.messages.poll');
+    Route::post('/dashboard/messages/send', [App\Http\Controllers\MessageController::class, 'send'])->name('user.messages.send');
 });
 

@@ -48,6 +48,18 @@
                 <a href="{{ route('admin.users.index') }}" class="menu-item {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
                     <i class="fa-solid fa-users"></i> Users
                 </a>
+                <a href="{{ route('admin.messages.index') }}" class="menu-item {{ request()->routeIs('admin.messages.*') ? 'active' : '' }}">
+                    <i class="fa-solid fa-comment-dots"></i> Messages
+                    @php
+                        $unreadAdminCount = \App\Models\Message::where('is_read', false)
+                            ->whereHas('conversation', function($q) {
+                                $q->where('receiver_id', auth()->id());
+                            })->count();
+                    @endphp
+                    @if($unreadAdminCount > 0)
+                        <span style="background: var(--admin-primary); color: white; border-radius: 50%; padding: 2px 8px; font-size: 10px; margin-left: auto;">{{ $unreadAdminCount }}</span>
+                    @endif
+                </a>
 
                 <div class="menu-label" style="margin-top: 24px;">Settings</div>
                 <a href="{{ route('admin.features.index') }}" class="menu-item {{ request()->routeIs('admin.features.*') ? 'active' : '' }}">
@@ -101,6 +113,15 @@
                     <h1>@yield('header_title', 'Dashboard')</h1>
                 </div>
                 <div class="topbar-right">
+                    @php
+                        $lowStockCount = \App\Models\Product::where('stock_quantity', '<', 10)->count();
+                    @endphp
+                    @if($lowStockCount > 0)
+                        <a href="{{ route('admin.products.index') }}" class="stock-warning-pill" style="margin-right: 15px; background: #fff7ed; border: 1px solid #ffedd5; color: #9a3412; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 8px; text-decoration: none;">
+                            <i class="fa-solid fa-triangle-exclamation" style="color: #ea580c;"></i>
+                            {{ $lowStockCount }} Low Stock Items
+                        </a>
+                    @endif
                     <a href="/" target="_blank" class="btn-outline" style="text-decoration: none;">
                         <i class="fa-solid fa-arrow-up-right-from-square"></i> Visit Site
                     </a>

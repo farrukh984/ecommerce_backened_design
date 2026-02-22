@@ -43,6 +43,21 @@
             <i class="fa-solid fa-user-gear"></i> Profile Settings
         </a>
 
+        <a href="{{ route('user.messages') }}" class="nav-item {{ ($active ?? '') === 'messages' ? 'active' : '' }}">
+            <i class="fa-solid fa-comment-dots"></i> Messages 
+            @php
+                $unreadCount = \App\Models\Message::where('is_read', false)
+                    ->where('user_id', '!=', auth()->id())
+                    ->whereHas('conversation', function($q) {
+                        $q->where('sender_id', auth()->id())
+                          ->orWhere('receiver_id', auth()->id());
+                    })->count();
+            @endphp
+            @if($unreadCount > 0)
+                <span class="badge" style="background: #ef4444; color: white; border-radius: 20px; padding: 2px 8px; font-size: 11px; margin-left: auto; font-weight: 700; box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);">{{ $unreadCount }}</span>
+            @endif
+        </a>
+
         <form method="POST" action="{{ route('logout') }}" style="margin-top: auto;">
             @csrf
             <button type="submit" class="nav-item logout-btn" style="background: none; border: none; width: 100%; cursor: pointer;">
