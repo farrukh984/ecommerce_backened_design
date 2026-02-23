@@ -15,12 +15,16 @@ class IsUser
      */
 
     public function handle($request, Closure $next)
-{
-    if (auth()->check() && auth()->user()->role === 'user') {
-        return $next($request);
-    }
+    {
+        if (auth()->check() && (auth()->user()->role === 'user' || auth()->user()->role === 'admin')) {
+            return $next($request);
+        }
 
-    abort(403);
-}
+        if ($request->expectsJson()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        abort(403, 'Unauthorized access. Only registered users can access this page.');
+    }
 
 }

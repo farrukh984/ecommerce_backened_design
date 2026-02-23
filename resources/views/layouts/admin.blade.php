@@ -19,37 +19,40 @@
         <aside class="admin-sidebar" id="sidebar">
             <div class="sidebar-logo">
                 <div class="logo-box">
-                    <i class="fa-solid fa-lock"></i>
+                    <i class="fa-solid fa-shield-halved"></i>
                 </div>
                 <span>ADMIN PANEL</span>
             </div>
 
             <div class="sidebar-menu">
-                <div class="menu-label">Main</div>
+                <div class="menu-label">Analytics</div>
                 <a href="{{ route('admin.dashboard') }}" class="menu-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-                    <i class="fa-solid fa-house"></i> Overview
+                    <i class="fa-solid fa-chart-pie"></i> Overview
                 </a>
                 
-                <div class="menu-label" style="margin-top: 24px;">Catalog</div>
+                <div class="menu-label">Catalog Management</div>
                 <a href="{{ route('admin.products.index') }}" class="menu-item {{ request()->routeIs('admin.products.*') ? 'active' : '' }}">
-                    <i class="fa-solid fa-box"></i> Products
+                    <i class="fa-solid fa-boxes-stacked"></i> Products
                 </a>
                 <a href="{{ route('admin.categories.index') }}" class="menu-item {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
-                    <i class="fa-solid fa-list"></i> Categories
+                    <i class="fa-solid fa-indent"></i> Categories
                 </a>
                 <a href="{{ route('admin.brands.index') }}" class="menu-item {{ request()->routeIs('admin.brands.*') ? 'active' : '' }}">
                     <i class="fa-solid fa-copyright"></i> Brands
                 </a>
+                <a href="{{ route('admin.deals.index') }}" class="menu-item {{ request()->routeIs('admin.deals.*') ? 'active' : '' }}">
+                    <i class="fa-solid fa-fire"></i> Deals & Offers
+                </a>
 
-                <div class="menu-label" style="margin-top: 24px;">Management</div>
+                <div class="menu-label">Customer Operations</div>
                 <a href="{{ route('admin.orders.index') }}" class="menu-item {{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
-                    <i class="fa-solid fa-bag-shopping"></i> Orders
+                    <i class="fa-solid fa-receipt"></i> Orders
                 </a>
                 <a href="{{ route('admin.users.index') }}" class="menu-item {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
-                    <i class="fa-solid fa-users"></i> Users
+                    <i class="fa-solid fa-user-group"></i> User Base
                 </a>
                 <a href="{{ route('admin.messages.index') }}" class="menu-item {{ request()->routeIs('admin.messages.*') ? 'active' : '' }}">
-                    <i class="fa-solid fa-comment-dots"></i> Messages
+                    <i class="fa-solid fa-comments"></i> Inquiries
                     @php
                         $unreadAdminCount = \App\Models\Message::where('is_read', false)
                             ->whereHas('conversation', function($q) {
@@ -57,49 +60,41 @@
                             })->count();
                     @endphp
                     @if($unreadAdminCount > 0)
-                        <span style="background: var(--admin-primary); color: white; border-radius: 50%; padding: 2px 8px; font-size: 10px; margin-left: auto;">{{ $unreadAdminCount }}</span>
+                        <span style="background: white; color: var(--admin-primary); border-radius: 6px; padding: 2px 8px; font-size: 10px; font-weight: 800; margin-left: auto; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">{{ $unreadAdminCount }}</span>
                     @endif
                 </a>
 
-                <div class="menu-label" style="margin-top: 24px;">Settings</div>
+                <div class="menu-label">System</div>
                 <a href="{{ route('admin.features.index') }}" class="menu-item {{ request()->routeIs('admin.features.*') ? 'active' : '' }}">
-                    <i class="fa-solid fa-sliders"></i> Features
+                    <i class="fa-solid fa-sliders"></i> Site Features
                 </a>
                 <a href="{{ route('admin.conditions.index') }}" class="menu-item {{ request()->routeIs('admin.conditions.*') ? 'active' : '' }}">
-                    <i class="fa-solid fa-tags"></i> Conditions
+                    <i class="fa-solid fa-tags"></i> Tag Conditions
                 </a>
                 <a href="{{ route('admin.profile') }}" class="menu-item {{ request()->routeIs('admin.profile*') ? 'active' : '' }}">
-                    <i class="fa-solid fa-user-gear"></i> Profile Settings
+                    <i class="fa-solid fa-user-shield"></i> Account Settings
                 </a>
 
-                <div class="menu-label" style="margin-top: 24px;">Actions</div>
+                <div class="menu-label">Session</div>
                 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                     @csrf
                 </form>
-                <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="menu-item" style="color: #eb001b;">
-                    <i class="fa-solid fa-right-from-bracket" style="color: #eb001b;"></i> Logout
+                <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="menu-item" style="color: #ef4444;">
+                    <i class="fa-solid fa-power-off" style="color: #ef4444;"></i> Secure Logout
                 </a>
-
-                <!-- Sidebar Profile Strength -->
-                <div style="padding: 10px 16px; margin-top: 20px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; font-size: 11px;">
-                        <span style="font-weight: 600; color: #64748b;">Profile Strength</span>
-                        <span style="font-weight: 700; color: var(--admin-primary);">{{ auth()->user()->profile_completion }}%</span>
-                    </div>
-                    <div style="width: 100%; height: 6px; background: #f1f5f9; border-radius: 3px; overflow: hidden; border: 1px solid #e2e8f0;">
-                        <div style="width: {{ auth()->user()->profile_completion }}%; height: 100%; background: linear-gradient(90deg, var(--admin-primary), var(--admin-secondary)); border-radius: 3px;"></div>
-                    </div>
-                </div>
             </div>
 
             <div class="sidebar-footer">
                 <a href="{{ route('admin.profile') }}" class="user-profile-badge" style="text-decoration: none;">
                     @if(auth()->user()->profile_image)
-                        <img src="{{ asset('storage/' . auth()->user()->profile_image) }}" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover;">
+                        <img src="{{ asset('storage/' . auth()->user()->profile_image) }}" style="width: 32px; height: 32px; border-radius: 10px; object-fit: cover; border: 2px solid white;">
                     @else
-                        <div class="user-avatar-small">{{ substr(auth()->user()->name, 0, 1) }}</div>
+                        <div class="user-avatar-small">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</div>
                     @endif
-                    <span>{{ explode(' ', auth()->user()->name)[0] }}</span>
+                    <div style="display: flex; flex-direction: column;">
+                        <span style="font-weight: 800; font-size: 13px; line-height: 1;">{{ explode(' ', auth()->user()->name)[0] }}</span>
+                        <span style="font-size: 10px; color: var(--admin-text-sub); margin-top: 2px;">Administrator</span>
+                    </div>
                 </a>
             </div>
         </aside>
@@ -117,13 +112,13 @@
                         $lowStockCount = \App\Models\Product::where('stock_quantity', '<', 10)->count();
                     @endphp
                     @if($lowStockCount > 0)
-                        <a href="{{ route('admin.products.index') }}" class="stock-warning-pill" style="margin-right: 15px; background: #fff7ed; border: 1px solid #ffedd5; color: #9a3412; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 8px; text-decoration: none;">
-                            <i class="fa-solid fa-triangle-exclamation" style="color: #ea580c;"></i>
-                            {{ $lowStockCount }} Low Stock Items
+                        <a href="{{ route('admin.products.index') }}" class="stock-warning-pill" style="margin-right: 15px; background: #fff7ed; border: 1px solid #ffedd5; color: #9a3412; padding: 10px 18px; border-radius: 14px; font-size: 12px; font-weight: 800; display: flex; align-items: center; gap: 10px; text-decoration: none; box-shadow: 0 4px 10px rgba(234, 88, 12, 0.1);">
+                            <i class="fa-solid fa-triangle-exclamation" style="color: #ea580c; font-size: 14px;"></i>
+                            {{ $lowStockCount }} Low Stock Alerts
                         </a>
                     @endif
                     <a href="/" target="_blank" class="btn-outline" style="text-decoration: none;">
-                        <i class="fa-solid fa-arrow-up-right-from-square"></i> Visit Site
+                        <i class="fa-solid fa-globe"></i> Visit Website
                     </a>
                 </div>
             </div>

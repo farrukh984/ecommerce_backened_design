@@ -6,267 +6,301 @@
 <link rel="stylesheet" href="{{ asset('css/user_dashboard.css') }}">
 <style>
     .chat-container {
-        display: flex;
-        height: calc(100vh - 40px);
+        display: grid;
+        grid-template-columns: 320px 1fr;
+        height: calc(100vh - 60px);
         background: #fff;
         border-radius: 16px;
         overflow: hidden;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-        margin: 20px;
+        border: 1px solid #f1f5f9;
     }
 
-    .chat-sidebar {
-        width: 350px;
+    /* Conversation List */
+    .conv-sidebar {
         border-right: 1px solid #f1f5f9;
         display: flex;
         flex-direction: column;
-        background: #f8fafc;
+        background: #fafbfc;
+        min-height: 0;
     }
-
-    .chat-sidebar-header {
-        padding: 24px;
-        border-bottom: 1px solid #f1f5f9;
-        background: #fff;
-    }
-
-    .chat-sidebar-header h2 {
-        font-size: 20px;
-        font-weight: 700;
-        color: #1e293b;
-        margin: 0;
-    }
-
-    .conversation-list {
-        flex: 1;
-        overflow-y: auto;
-    }
-
-    .conversation-item {
-        padding: 16px 24px;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        cursor: pointer;
-        transition: all 0.2s;
-        border-bottom: 1px solid #f1f5f9;
-        text-decoration: none;
-        color: inherit;
-    }
-
-    .conversation-item:hover {
-        background: #f1f5f9;
-    }
-
-    .conversation-item.active {
-        background: #eff6ff;
-        border-left: 4px solid var(--primary-color);
-    }
-
-    .user-avatar-small {
-        width: 48px;
-        height: 48px;
-        border-radius: 12px;
-        background: var(--primary-color);
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 700;
-        font-size: 18px;
-        flex-shrink: 0;
-    }
-
-    .conv-info {
-        flex: 1;
-        min-width: 0;
-    }
-
-    .conv-info h4 {
-        margin: 0;
-        font-size: 15px;
-        color: #1e293b;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .conv-info p {
-        margin: 4px 0 0;
-        font-size: 13px;
-        color: #64748b;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .conv-meta {
-        text-align: right;
-    }
-
-    .conv-time {
-        font-size: 11px;
-        color: #94a3b8;
-    }
-
-    .unread-dot {
-        width: 8px;
-        height: 8px;
-        background: var(--primary-color);
-        border-radius: 50%;
-        margin-top: 4px;
-        display: inline-block;
-    }
-
-    .chat-main {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        background: #fff;
-    }
-
-    .chat-header {
-        padding: 16px 24px;
+    .conv-sidebar-header {
+        padding: 20px;
         border-bottom: 1px solid #f1f5f9;
         display: flex;
         align-items: center;
         justify-content: space-between;
     }
-
-    .chat-user-info {
+    .conv-sidebar-header h3 {
+        font-size: 18px;
+        font-weight: 800;
+        color: #0f172a;
+        margin: 0;
+    }
+    .conv-list {
+        flex: 1;
+        overflow-y: auto;
+        min-height: 0;
+    }
+    .conv-list::-webkit-scrollbar {
+        width: 4px;
+    }
+    .conv-list::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .conv-list::-webkit-scrollbar-thumb {
+        background: #e2e8f0;
+        border-radius: 10px;
+    }
+    .conv-item {
         display: flex;
         align-items: center;
         gap: 12px;
+        padding: 14px 20px;
+        cursor: pointer;
+        transition: all 0.2s;
+        border-bottom: 1px solid #f8fafc;
+        text-decoration: none;
+        color: inherit;
     }
-
-    .messages-window {
-        flex: 1;
-        padding: 24px;
-        overflow-y: auto;
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-        background: #fdfdfd;
-    }
-
-    .message-bubble {
-        max-width: 70%;
-        padding: 12px 16px;
-        border-radius: 12px;
-        font-size: 14px;
-        line-height: 1.5;
-        position: relative;
-    }
-
-    .message-received {
-        align-self: flex-start;
-        background: #f1f5f9;
-        color: #1e293b;
-        border-bottom-left-radius: 2px;
-    }
-
-    .message-sent {
-        align-self: flex-end;
-        background: var(--primary-color);
-    
-        border-bottom-right-radius: 2px;
-    }
-
-    .message-wrapper {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 12px;
-        max-width: 85%;
-    }
-
-    .message-wrapper.sent {
-        flex-direction: row-reverse;
-        align-self: flex-end;
-    }
-
-    .message-wrapper.received {
-        align-self: flex-start;
-    }
-
-    .bubble-container {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .message-sender-name {
-        font-size: 11px;
-        font-weight: 600;
-        margin-bottom: 2px;
-        color: #64748b;
-    }
-
-    .sent .message-sender-name {
-        text-align: right;
-    }
-
-    .avatar-circle {
-        width: 32px;
-        height: 32px;
+    .conv-item:hover { background: #f1f5f9; }
+    .conv-item.active { background: #eff6ff; border-left: 3px solid #3b82f6; }
+    .conv-avatar {
+        width: 44px;
+        height: 44px;
         border-radius: 50%;
-        background: #e2e8f0;
+        object-fit: cover;
+        flex-shrink: 0;
+        border: 2px solid #e2e8f0;
+    }
+    .conv-avatar-placeholder {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+        color: white;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 12px;
         font-weight: 700;
+        font-size: 16px;
         flex-shrink: 0;
+    }
+    .conv-info {
+        flex: 1;
+        min-width: 0;
+    }
+    .conv-name {
+        font-weight: 700;
+        font-size: 14px;
+        color: #0f172a;
+        margin-bottom: 2px;
+    }
+    .conv-last-msg {
+        font-size: 12px;
+        color: #94a3b8;
+        white-space: nowrap;
         overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .conv-meta {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 4px;
+    }
+    .conv-time {
+        font-size: 11px;
+        color: #94a3b8;
+    }
+    .conv-unread-badge {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #3b82f6, #06b6d4);
+        color: white;
+        font-size: 10px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
-    .message-time {
+    /* Chat Window */
+    .chat-window {
+        display: flex;
+        flex-direction: column;
+        background: #fff;
+        min-height: 0;
+    }
+    .chat-header {
+        padding: 16px 24px;
+        border-bottom: 1px solid #f1f5f9;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        background: #fff;
+    }
+    .chat-header-info h4 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 700;
+        color: #0f172a;
+    }
+    .chat-header-info .online-status {
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .online-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        display: inline-block;
+    }
+    .online-dot.online { background: #22c55e; box-shadow: 0 0 6px rgba(34,197,94,0.4); }
+    .online-dot.offline { background: #94a3b8; }
+
+    .chat-messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        background: linear-gradient(180deg, #f8fafc, #ffffff);
+        min-height: 0;
+    }
+    .chat-messages::-webkit-scrollbar {
+        width: 5px;
+    }
+    .chat-messages::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .chat-messages::-webkit-scrollbar-thumb {
+        background: #d1d5db;
+        border-radius: 10px;
+    }
+    .chat-messages::-webkit-scrollbar-thumb:hover {
+        background: #9ca3af;
+    }
+    .msg-bubble {
+        max-width: 65%;
+        padding: 12px 18px;
+        border-radius: 18px;
+        font-size: 14px;
+        line-height: 1.6;
+        word-wrap: break-word;
+        position: relative;
+        animation: fadeInMsg 0.3s ease;
+    }
+    .msg-bubble.sent {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        color: white;
+        align-self: flex-end;
+        border-bottom-right-radius: 4px;
+    }
+    .msg-bubble.received {
+        background: #f1f5f9;
+        color: #1e293b;
+        align-self: flex-start;
+        border-bottom-left-radius: 4px;
+    }
+    .msg-time {
         font-size: 10px;
-        margin-top: 4px;
+        opacity: 0.7;
+        margin-top: 6px;
         display: flex;
         align-items: center;
         gap: 4px;
-        opacity: 0.8;
     }
-
-    .chat-footer {
-        padding: 20px 24px;
-        border-top: 1px solid #f1f5f9;
+    .msg-bubble.sent .msg-time { justify-content: flex-end; }
+    .msg-image {
+        max-width: 280px;
+        border-radius: 12px;
+        margin-bottom: 6px;
     }
-
-    .message-form {
+    .msg-avatar-group {
         display: flex;
-        gap: 12px;
+        align-items: flex-end;
+        gap: 10px;
     }
-
-    .message-input {
-        flex: 1;
-        padding: 12px 16px;
-        border: 1px solid #e2e8f0;
-        border-radius: 10px;
-        outline: none;
-        transition: border-color 0.2s;
+    .msg-avatar-group.sent {
+        flex-direction: row-reverse;
     }
-
-    .message-input:focus {
-        border-color: var(--primary-color);
+    .msg-mini-avatar {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        object-fit: cover;
+        flex-shrink: 0;
+        border: 2px solid #e2e8f0;
     }
-
-    .send-btn {
-        background: var(--primary-color);
-        /* color: white; */
-        border: none;
-        padding: 0 20px;
-        border-radius: 10px;
-        cursor: pointer;
-        transition: opacity 0.2s;
+    .msg-mini-avatar-placeholder {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+        color: #64748b;
         display: flex;
         align-items: center;
-        gap: 8px;
+        justify-content: center;
+        font-size: 11px;
+        font-weight: 700;
         flex-shrink: 0;
-        min-height: 44px;
     }
 
-    .send-btn:hover {
-        opacity: 0.9;
+    /* Chat Input */
+    .chat-input-area {
+        padding: 16px 24px;
+        border-top: 1px solid #f1f5f9;
+        background: #fff;
     }
+    .chat-input-form {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: #f8fafc;
+        border-radius: 16px;
+        padding: 6px 6px 6px 18px;
+        border: 1px solid #f1f5f9;
+        transition: border-color 0.2s;
+    }
+    .chat-input-form:focus-within {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59,130,246,0.08);
+    }
+    .chat-input-form input[type="text"] {
+        flex: 1;
+        border: none;
+        background: transparent;
+        font-size: 14px;
+        outline: none;
+        color: #1e293b;
+    }
+    .chat-input-form input[type="text"]::placeholder { color: #94a3b8; }
+    .chat-input-form label {
+        cursor: pointer;
+        padding: 8px;
+        color: #94a3b8;
+        transition: color 0.2s;
+    }
+    .chat-input-form label:hover { color: #3b82f6; }
+    .chat-send-btn {
+        padding: 10px 20px;
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .chat-send-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(59,130,246,0.3); }
 
     .empty-chat {
         flex: 1;
@@ -275,316 +309,328 @@
         align-items: center;
         justify-content: center;
         color: #94a3b8;
-        gap: 16px;
+        gap: 12px;
+    }
+    .empty-chat i { font-size: 60px; opacity: 0.2; }
+    .empty-chat h3 { color: #64748b; margin: 0; }
+    .empty-chat p { color: #94a3b8; font-size: 14px; margin: 0; }
+
+    .new-chat-btn {
+        padding: 8px 14px;
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s;
+        text-decoration: none;
+    }
+    .new-chat-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(59,130,246,0.3);
     }
 
-    .empty-chat i {
-        font-size: 64px;
+    .image-preview-container {
+        display: none;
+        padding: 8px 18px;
+        background: #f8fafc;
+        border-top: 1px solid #f1f5f9;
+    }
+    .image-preview-container img {
+        max-height: 80px;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+    }
+
+    @keyframes fadeInMsg {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 768px) {
+        .chat-container {
+            grid-template-columns: 1fr;
+        }
+        .conv-sidebar {
+            display: {{ isset($conversation) ? 'none' : 'flex' }};
+        }
+        .chat-window {
+            display: {{ isset($conversation) ? 'flex' : 'none' }};
+        }
     }
 </style>
 
 <div class="dashboard-container">
     @include('user.partials.sidebar', ['active' => 'messages'])
 
-    <main class="dashboard-main" style="padding: 0;">
+    <main class="dashboard-main" style="padding: 24px;">
         <div class="chat-container">
-            <!-- Sidebar -->
-            <div class="chat-sidebar">
-                <div class="chat-sidebar-header">
-                    <h2>Messages</h2>
+            <!-- Conversations List -->
+            <div class="conv-sidebar">
+                <div class="conv-sidebar-header">
+                    <h3>Messages</h3>
+                    <a href="{{ route('user.messages') }}" class="new-chat-btn" onclick="event.preventDefault(); startNewAdminChat();">
+                        <i class="fa-solid fa-plus"></i> New
+                    </a>
                 </div>
-                <div class="conversation-list">
-                    @if(!$hasAdminChat && isset($admin) && auth()->user()->role !== 'admin')
-                        <a href="javascript:void(0)" onclick="startNewChat()" class="conversation-item" style="border-left: 4px solid #34b7f1; background: #f0f9ff;">
-                            <div class="user-avatar-small" style="background: #34b7f1; color: white;">
-                                <i class="fa-solid fa-headset"></i>
-                            </div>
-                            <div class="conv-info">
-                                <h4>Admin Support</h4>
-                                <p style="color: #34b7f1; font-weight: 600;">Start a conversation</p>
-                            </div>
-                        </a>
-                    @endif
+                <div class="conv-list">
                     @forelse($conversations as $conv)
                         @php
                             $otherUser = $conv->sender_id === auth()->id() ? $conv->receiver : $conv->sender;
-                            $lastMsg = $conv->messages->last();
-                            $hasUnread = $conv->messages->where('is_read', false)->where('user_id', '!=', auth()->id())->count() > 0;
+                            $lastMsg = $conv->messages->sortByDesc('created_at')->first();
+                            $unread = $conv->messages->where('user_id', '!=', auth()->id())->where('is_read', false)->count();
                         @endphp
-                        <a href="{{ route('user.messages.chat', $conv->id) }}" class="conversation-item {{ isset($currentChat) && $currentChat->id === $conv->id ? 'active' : '' }}">
-                            <div class="user-avatar-small">
-                                @if($otherUser->profile_image)
-                                    <img src="{{ asset('storage/' . $otherUser->profile_image) }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;">
-                                @else
-                                    {{ substr($otherUser->name, 0, 1) }}
-                                @endif
-                            </div>
+                        <a href="{{ route('user.messages.chat', $conv->id) }}" class="conv-item {{ isset($conversation) && $conversation->id === $conv->id ? 'active' : '' }}">
+                            @if($otherUser->profile_image)
+                                <img src="{{ asset('storage/' . $otherUser->profile_image) }}" class="conv-avatar">
+                            @else
+                                <div class="conv-avatar-placeholder">{{ strtoupper(substr($otherUser->name, 0, 1)) }}</div>
+                            @endif
                             <div class="conv-info">
-                                <h4>{{ $otherUser->name }}</h4>
-                                <p>{{ $lastMsg ? $lastMsg->message : 'No messages yet' }}</p>
+                                <div class="conv-name">{{ $otherUser->name }} @if($otherUser->role === 'admin')<i class="fa-solid fa-circle-check" style="color: #3b82f6; font-size: 12px;"></i>@endif</div>
+                                <div class="conv-last-msg">
+                                    @if($lastMsg)
+                                        {{ $lastMsg->user_id === auth()->id() ? 'You: ' : '' }}{{ $lastMsg->type === 'image' ? '📷 Image' : Str::limit($lastMsg->message, 35) }}
+                                    @else
+                                        Start a conversation
+                                    @endif
+                                </div>
                             </div>
                             <div class="conv-meta">
-                                <span class="conv-time">{{ $conv->last_message_at ? $conv->last_message_at->diffForHumans(null, true) : '' }}</span>
-                                @if($hasUnread)
-                                    <span class="unread-dot"></span>
+                                @if($lastMsg)
+                                    <span class="conv-time">{{ $lastMsg->created_at->diffForHumans(null, true, true) }}</span>
+                                @endif
+                                @if($unread > 0)
+                                    <span class="conv-unread-badge">{{ $unread }}</span>
                                 @endif
                             </div>
                         </a>
                     @empty
-                        <div style="padding: 40px 24px; text-align: center; color: #94a3b8;">
-                            <p>No conversations found.</p>
-                            <button class="action-btn" onclick="startNewChat()">Contact Support</button>
+                        <div style="padding: 40px; text-align: center; color: #94a3b8;">
+                            <i class="fa-solid fa-comment-dots" style="font-size: 32px; opacity: 0.3; display: block; margin-bottom: 12px;"></i>
+                            <p style="font-size: 13px;">No conversations yet</p>
                         </div>
                     @endforelse
                 </div>
             </div>
 
-            <!-- Main Chat Area -->
-            <div class="chat-main">
-                @if(isset($currentChat))
-                    @php
-                        $otherUser = $currentChat->sender_id === auth()->id() ? $currentChat->receiver : $currentChat->sender;
-                        $isOnline = $otherUser->last_seen_at && $otherUser->last_seen_at->diffInMinutes(now()) < 5;
-                    @endphp
-                    <div class="chat-header">
-                        <div class="chat-user-info">
-                            <div class="user-avatar-small" style="width: 40px; height: 40px; font-size: 14px;">
-                                @if($otherUser->profile_image)
-                                    <img src="{{ asset('storage/' . $otherUser->profile_image) }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;">
-                                @else
-                                    {{ substr($otherUser->name, 0, 1) }}
-                                @endif
-                            </div>
-                            <div>
-                                <h4 style="margin: 0; font-size: 16px;">{{ $otherUser->name }}</h4>
-                                <span id="statusIndicator" style="font-size: 12px; color: {{ $isOnline ? '#10b981' : '#94a3b8' }};">
-                                    {{ $isOnline ? 'Online' : 'Last seen ' . ($otherUser->last_seen_at ? $otherUser->last_seen_at->diffForHumans() : 'Never') }}
-                                </span>
-                            </div>
+            <!-- Chat Window -->
+            @if(isset($conversation))
+            @php
+                $chatUser = $conversation->sender_id === auth()->id() ? $conversation->receiver : $conversation->sender;
+            @endphp
+            <div class="chat-window">
+                <div class="chat-header">
+                    @if($chatUser->profile_image)
+                        <img src="{{ asset('storage/' . $chatUser->profile_image) }}" class="conv-avatar" style="width: 40px; height: 40px;">
+                    @else
+                        <div class="conv-avatar-placeholder" style="width: 40px; height: 40px; font-size: 14px;">{{ strtoupper(substr($chatUser->name, 0, 1)) }}</div>
+                    @endif
+                    <div class="chat-header-info">
+                        <h4>{{ $chatUser->name }} @if($chatUser->role === 'admin')<i class="fa-solid fa-circle-check" style="color: #3b82f6; font-size: 12px;"></i>@endif</h4>
+                        <div class="online-status" id="onlineStatus">
+                            <span class="online-dot offline" id="onlineDot"></span>
+                            <span id="onlineText" style="color: #94a3b8;">Checking...</span>
                         </div>
                     </div>
+                </div>
 
-                    <div class="messages-window" id="messagesWindow">
-                        @foreach($currentChat->messages as $msg)
-                            @php $isMe = $msg->user_id == auth()->id(); @endphp
-                            <div class="message-wrapper {{ $isMe ? 'sent' : 'received' }}" data-id="{{ $msg->id }}">
-                                <div class="avatar-circle">
-                                    @if($msg->user->profile_image)
-                                        <img src="{{ asset('storage/' . $msg->user->profile_image) }}" style="width: 100%; height: 100%; object-fit: cover;">
-                                    @else
-                                        {{ substr($msg->user->name, 0, 1) }}
+                <div class="chat-messages" id="chatMessages">
+                    @foreach($messages as $msg)
+                        <div class="msg-avatar-group {{ $msg->user_id === auth()->id() ? 'sent' : '' }}">
+                            @if($msg->user_id !== auth()->id())
+                                @if($msg->user->profile_image)
+                                    <img src="{{ asset('storage/' . $msg->user->profile_image) }}" class="msg-mini-avatar">
+                                @else
+                                    <div class="msg-mini-avatar-placeholder">{{ strtoupper(substr($msg->user->name, 0, 1)) }}</div>
+                                @endif
+                            @endif
+                            <div class="msg-bubble {{ $msg->user_id === auth()->id() ? 'sent' : 'received' }}">
+                                @if($msg->type === 'image' && $msg->file_path)
+                                    <img src="{{ asset('storage/' . $msg->file_path) }}" class="msg-image" onclick="window.open(this.src)">
+                                @endif
+                                @if($msg->message)
+                                    <div>{{ $msg->message }}</div>
+                                @endif
+                                <div class="msg-time">
+                                    {{ $msg->created_at->format('h:i A') }}
+                                    @if($msg->user_id === auth()->id())
+                                        <i class="fa-solid {{ $msg->is_read ? 'fa-check-double' : 'fa-check' }}" style="font-size: 10px;"></i>
                                     @endif
                                 </div>
-                                <div class="bubble-container">
-                                    <span class="message-sender-name">{{ $msg->user->name }}</span>
-                                    <div class="message-bubble {{ $isMe ? 'message-sent' : 'message-received' }}">
-                                        @if($msg->type === 'image')
-                                            <img src="{{ asset('storage/' . $msg->file_path) }}" style="max-width: 100%; border-radius: 8px; margin-bottom: 5px;">
-                                        @endif
-                                        @if($msg->message)
-                                            <div>{{ $msg->message }}</div>
-                                        @endif
-                                        <span class="message-time" style="justify-content: flex-end;">
-                                            {{ $msg->created_at->format('H:i') }}
-                                            @if($isMe)
-                                                <i class="fa-solid fa-check-double status-tick" style="color: {{ $msg->is_read ? '#34b7f1' : 'rgba(255,255,255,0.7)' }}; transition: color 0.3s; margin-left: 4px;"></i>
-                                            @endif
-                                        </span>
-                                    </div>
-                                </div>
                             </div>
-                        @endforeach
-                    </div>
-
-                    <div class="chat-footer">
-                        <form id="chatForm" class="message-form" enctype="multipart/form-data">
-                            @csrf
-                            <input type="hidden" name="conversation_id" value="{{ $currentChat->id }}">
-                            
-                            <label for="imageUpload" style="cursor: pointer; padding: 10px; color: #64748b; display: flex; align-items: center;">
-                                <i class="fa-solid fa-paperclip" style="font-size: 20px;"></i>
-                                <input type="file" id="imageUpload" name="image" style="display: none;" accept="image/*">
-                            </label>
-
-                            <input type="text" name="message" class="message-input" placeholder="Type your message..." autocomplete="off">
-                            <button type="submit" class="send-btn">
-                                <i class="fa-solid fa-paper-plane"></i> Send
-                            </button>
-                        </form>
-                        <div id="imagePreviewContainer" style="display: none; padding: 10px; margin-top: 10px; border-top: 1px solid #f1f5f9;">
-                            <img id="imagePreview" src="" style="height: 60px; border-radius: 8px;">
-                            <button type="button" onclick="clearImage()" style="background: #ef4444; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 10px; cursor: pointer;">X</button>
                         </div>
-                    </div>
-                @else
-                    <div class="empty-chat">
-                        <i class="fa-solid fa-comments"></i>
-                        <h3>Select a conversation to start chatting</h3>
-                        <p>Your messages with our support team will appear here.</p>
-                    </div>
-                @endif
+                    @endforeach
+                </div>
+
+                <div class="image-preview-container" id="imagePreview">
+                    <img id="previewImg" src="#" alt="Preview">
+                    <button onclick="clearImagePreview()" style="border: none; background: #fee2e2; color: #dc2626; padding: 4px 8px; border-radius: 6px; cursor: pointer; margin-left: 8px; font-size: 12px;">
+                        <i class="fa-solid fa-times"></i>
+                    </button>
+                </div>
+
+                <div class="chat-input-area">
+                    <form class="chat-input-form" id="messageForm" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="conversation_id" value="{{ $conversation->id }}">
+                        <input type="hidden" name="receiver_id" value="{{ $chatUser->id }}">
+                        <input type="text" name="message" id="messageInput" placeholder="Type your message..." autocomplete="off">
+                        <input type="file" name="image" id="imageInput" accept="image/*" style="display: none;" onchange="previewImage(this)">
+                        <label for="imageInput"><i class="fa-solid fa-image" style="font-size: 18px;"></i></label>
+                        <button type="submit" class="chat-send-btn">
+                            <i class="fa-solid fa-paper-plane"></i> Send
+                        </button>
+                    </form>
+                </div>
             </div>
+            @else
+            <div class="chat-window">
+                <div class="empty-chat">
+                    <i class="fa-solid fa-comments"></i>
+                    <h3>Welcome to Messages</h3>
+                    <p>Select a conversation or start a new one with our support team</p>
+                    <button class="new-chat-btn" onclick="startNewAdminChat()" style="margin-top: 12px;">
+                        <i class="fa-solid fa-plus"></i> Start New Chat
+                    </button>
+                </div>
+            </div>
+            @endif
         </div>
     </main>
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const messagesWindow = document.getElementById('messagesWindow');
-        const imageUpload = document.getElementById('imageUpload');
-        const imagePreview = document.getElementById('imagePreview');
-        const imagePreviewContainer = document.getElementById('imagePreviewContainer');
-        
-        if(messagesWindow) {
-            messagesWindow.scrollTop = messagesWindow.scrollHeight;
-            startPolling();
-        }
-
-        if(imageUpload) {
-            imageUpload.addEventListener('change', function() {
-                const file = this.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        imagePreview.src = e.target.result;
-                        imagePreviewContainer.style.display = 'block';
-                    }
-                    reader.readAsDataURL(file);
-                }
-            });
-        }
-
-        const chatForm = document.getElementById('chatForm');
-        if(chatForm) {
-            chatForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                const formData = new FormData(this);
-                const input = this.querySelector('input[name="message"]');
-                const messageText = input.value;
-                
-                if(!messageText.trim() && !imageUpload.files[0]) return;
-
-                // Optimistic UI for text
-                if (messageText.trim() && !imageUpload.files[0]) {
-                    const tempId = 'temp-' + Date.now();
-                    appendMessage({ 
-                        id: tempId,
-                        message: messageText, 
-                        type: 'text', 
-                        user_id: {{ auth()->id() }}, 
-                        created_at: new Date().toISOString(),
-                        user: {
-                            name: "{{ auth()->user()->name }}",
-                            profile_image: "{{ auth()->user()->profile_image }}"
-                        }
-                    });
-                    input.value = '';
-                }
-
-                fetch("{{ route('user.messages.send') }}", {
-                    method: 'POST',
-                    headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if(data.status === 'success') {
-                        if (imageUpload.files[0]) {
-                            appendMessage(data.message);
-                            clearImage();
-                        }
-                        input.value = '';
-                    }
-                });
-            });
-        }
-
-        function clearImage() {
-            imageUpload.value = '';
-            imagePreview.src = '';
-            imagePreviewContainer.style.display = 'none';
-        }
-
-        function appendMessage(data) {
-            if (document.querySelector(`[data-id="${data.id}"]`)) return;
-
-            const isMe = data.user_id == {{ auth()->id() }};
-            const wrapper = document.createElement('div');
-            wrapper.className = `message-wrapper ${isMe ? 'sent' : 'received'}`;
-            wrapper.setAttribute('data-id', data.id);
-            
-            const avatarHtml = data.user.profile_image 
-                ? `<img src="/storage/${data.user.profile_image}" style="width: 100%; height: 100%; object-fit: cover;">`
-                : data.user.name.charAt(0);
-
-            let messageContent = '';
-            if (data.type === 'image') {
-                messageContent += `<img src="/storage/${data.file_path}" style="max-width: 100%; border-radius: 8px; margin-bottom: 5px;">`;
-            }
-            if (data.message) {
-                messageContent += `<div>${data.message}</div>`;
-            }
-            
-            // Local time conversion
-            const date = new Date(data.created_at);
-            const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
-            
-            const tickHtml = isMe ? `<i class="fa-solid fa-check-double status-tick" style="color: ${data.is_read ? '#34b7f1' : 'rgba(255,255,255,0.6)'}; margin-left: 4px;"></i>` : '';
-
-            wrapper.innerHTML = `
-                <div class="avatar-circle">${avatarHtml}</div>
-                <div class="bubble-container">
-                    <span class="message-sender-name">${data.user.name}</span>
-                    <div class="message-bubble ${isMe ? 'message-sent' : 'message-received'}">
-                        ${messageContent}
-                        <span class="message-time" style="justify-content: flex-end;">
-                            ${timeStr}
-                            ${tickHtml}
-                        </span>
-                    </div>
-                </div>
-            `;
-            
-            messagesWindow.appendChild(wrapper);
-            messagesWindow.scrollTop = messagesWindow.scrollHeight;
-        }
-
-        function startPolling() {
-            setInterval(() => {
-                const lastMsg = document.querySelector('.message-wrapper:last-child');
-                const lastId = lastMsg ? lastMsg.getAttribute('data-id') : 0;
-                
-                fetch("{{ route('user.messages.poll', $currentChat->id ?? 0) }}?last_id=" + lastId)
-                .then(r => r.json())
-                .then(data => {
-                    if (data.messages && data.messages.length > 0) {
-                        data.messages.forEach(msg => appendMessage(msg));
-                    }
-                    // Update status
-                    const status = document.getElementById('statusIndicator');
-                    if (status) {
-                        status.style.color = data.isOnline ? '#10b981' : '#94a3b8';
-                        status.innerText = data.isOnline ? 'Online' : 'Last seen ' + data.lastSeen;
-                    }
-                });
-            }, 3000); // Poll every 3 seconds
-        }
-
-        window.clearImage = clearImage;
-    });
-
-    function startNewChat() {
-        const adminId = {{ $admin->id ?? 1 }};
-        const msg = prompt("Enter your message to Admin:", "Hello, I need some assistance.");
-        if (msg === null || msg.trim() === "") return;
-
-        fetch("{{ route('user.messages.send') }}", {
+    // Start new admin chat
+    function startNewAdminChat() {
+        fetch('{{ route("user.messages.send") }}', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
-            body: JSON.stringify({ message: msg, receiver_id: adminId })
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                receiver_id: 1,
+                message: 'Hello! I need help.'
+            })
         })
-        .then(response => response.json())
-        .then(data => { window.location.reload(); });
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'success') {
+                window.location.reload();
+            }
+        });
     }
+
+    // Image preview
+    function previewImage(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('previewImg').src = e.target.result;
+                document.getElementById('imagePreview').style.display = 'flex';
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function clearImagePreview() {
+        document.getElementById('imageInput').value = '';
+        document.getElementById('imagePreview').style.display = 'none';
+    }
+
+    @if(isset($conversation))
+    // Scroll to bottom
+    const chatBox = document.getElementById('chatMessages');
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    let lastMsgId = {{ $messages->last() ? $messages->last()->id : 0 }};
+
+    // Poll for new messages
+    setInterval(() => {
+        fetch(`{{ route('user.messages.poll', $conversation->id) }}?last_id=${lastMsgId}`)
+        .then(r => r.json())
+        .then(data => {
+            if (data.messages && data.messages.length > 0) {
+                data.messages.forEach(msg => {
+                    const isSent = msg.user_id === {{ auth()->id() }};
+                    const initial = msg.user.name.charAt(0).toUpperCase();
+                    const avatar = msg.user.profile_image
+                        ? `<img src="/storage/${msg.user.profile_image}" class="msg-mini-avatar">`
+                        : `<div class="msg-mini-avatar-placeholder">${initial}</div>`;
+
+                    let content = '';
+                    if (msg.type === 'image' && msg.file_path) {
+                        content += `<img src="/storage/${msg.file_path}" class="msg-image" onclick="window.open(this.src)">`;
+                    }
+                    if (msg.message) {
+                        content += `<div>${msg.message}</div>`;
+                    }
+
+                    const time = new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    const readIcon = isSent ? `<i class="fa-solid ${msg.is_read ? 'fa-check-double' : 'fa-check'}" style="font-size: 10px;"></i>` : '';
+
+                    const html = `
+                        <div class="msg-avatar-group ${isSent ? 'sent' : ''}">
+                            ${!isSent ? avatar : ''}
+                            <div class="msg-bubble ${isSent ? 'sent' : 'received'}">
+                                ${content}
+                                <div class="msg-time">${time} ${readIcon}</div>
+                            </div>
+                        </div>
+                    `;
+
+                    chatBox.insertAdjacentHTML('beforeend', html);
+                    lastMsgId = msg.id;
+                });
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+
+            // Update online status
+            const dot = document.getElementById('onlineDot');
+            const text = document.getElementById('onlineText');
+            if (data.isOnline) {
+                dot.className = 'online-dot online';
+                text.textContent = 'Online';
+                text.style.color = '#22c55e';
+            } else {
+                dot.className = 'online-dot offline';
+                text.textContent = 'Offline';
+                text.style.color = '#94a3b8';
+            }
+        });
+    }, 3000);
+
+    // Send message
+    document.getElementById('messageForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        const msgInput = document.getElementById('messageInput');
+
+        if (!msgInput.value.trim() && !document.getElementById('imageInput').files.length) return;
+
+        fetch('{{ route("user.messages.send") }}', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json'
+            },
+            body: formData
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'success') {
+                msgInput.value = '';
+                clearImagePreview();
+            }
+        });
+    });
+    @endif
 </script>
 @endsection

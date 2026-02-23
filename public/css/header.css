@@ -150,6 +150,19 @@
 .sub-navbar {
     background: #fff;
     border-top: 1px solid #e3e8ee;
+    transition: transform 0.35s ease, opacity 0.35s ease;
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.sub-navbar.sub-hidden {
+    transform: translateY(-100%);
+    opacity: 0;
+    pointer-events: none;
+    height: 0;
+    overflow: hidden;
+    border: none;
+    padding: 0;
 }
 
 .sub-flex {

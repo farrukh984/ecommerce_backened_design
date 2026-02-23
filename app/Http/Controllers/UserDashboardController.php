@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use App\Models\Order;
 
 class UserDashboardController extends Controller
 {
@@ -14,6 +15,7 @@ class UserDashboardController extends Controller
         $user = Auth::user();
 
         $recentOrders = $user->orders()
+            ->with('items.product')
             ->latest()
             ->take(5)
             ->get();
@@ -45,11 +47,55 @@ class UserDashboardController extends Controller
     {
         $orders = Auth::user()
             ->orders()
+            ->with('items.product')
             ->withCount('items')
             ->latest()
             ->paginate(10);
 
         return view('user.orders', compact('orders'));
+    }
+
+    public function orderDetail(Order $order)
+    {
+        // Ensure the order belongs to the authenticated user
+        if ($order->user_id != Auth::id()) {
+            return redirect()->route('user.orders')->with('error', 'Unauthorized: This order does not belong to you.');
+        }
+
+        $order->load('items.product');
+
+        return view('user.order-detail', compact('order'));
+    }
+
+    public function deleteOrder(Order $order)
+    {
+        // Ensure the order belongs to the authenticated user
+        if ($order->user_id != Auth::id()) {
+            return back()->with('error', 'Unauthorized: This order does not belong to you.');
+        }
+
+        // Only allow deletion of pending or cancelled orders
+        if (!in_array(strtolower($order->status), ['pending', 'cancelled', 'canceled'])) {
+            return back()->with('error', 'Only pending or cancelled orders can be deleted.');
+        }
+
+        // If pending, restore stock
+        if ($order->status === 'pending') {
+            foreach ($order->items as $item) {
+                if ($item->product) {
+                    $item->product->increment('stock_quantity', $item->quantity);
+                    $item->product->decrement('sold_count', $item->quantity);
+                    if ($item->product->stock_quantity > 0) {
+                        $item->product->update(['in_stock' => true]);
+                    }
+                }
+            }
+        }
+
+        $order->items()->delete();
+        $order->delete();
+
+        return redirect()->route('user.orders')->with('success', 'Order deleted successfully.');
     }
 
     public function wishlist()

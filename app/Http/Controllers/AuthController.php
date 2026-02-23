@@ -29,6 +29,7 @@ class AuthController extends Controller
 
         // Check if user exists
         $user = User::where('email', $request->email)->first();
+        \Log::info('Login attempt for: ' . ($request->email ?? 'no email') . '. User found: ' . ($user ? 'YES (Role: ' . $user->role . ')' : 'NO'));
         if (!$user) {
             return back()->withInput($request->only('email'))
                 ->withErrors(['email' => 'You are not registered. Please register first.']);
@@ -41,6 +42,7 @@ class AuthController extends Controller
 
         // If admin, send OTP email and require OTP verification
         if ($user->role === 'admin') {
+            \Log::info('Admin login detected for: ' . $user->email);
             $otp = rand(100000, 999999);
             Cache::put('admin_otp_' . $user->id, $otp, now()->addMinutes(10));
             // store pending admin id in session
@@ -48,10 +50,12 @@ class AuthController extends Controller
 
             // send OTP email
             try {
+                \Log::info('Attempting to send OTP email to ' . $user->email . ' with OTP: ' . $otp);
                 Mail::to($user->email)->send(new AdminOtpMail($user, $otp));
+                \Log::info('OTP email sent successfully to ' . $user->email);
             } catch (\Throwable $e) {
-                // Log or ignore; for now return an error message
-                return back()->withErrors(['email' => 'Unable to send OTP email.']);
+                \Log::error('Admin OTP Email Error: ' . $e->getMessage());
+                return back()->withErrors(['email' => 'Unable to send OTP email. Please check logs.']);
             }
 
             return redirect()->route('admin.otp')->with('success', 'OTP sent to admin email.');

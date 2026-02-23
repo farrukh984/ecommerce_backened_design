@@ -10,26 +10,26 @@ class OrderController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Order::with('user')->withCount('items')->latest();
+        $query = Order::with('user')->withCount('items');
 
-        // Filter by status
-        if ($request->filled('status') && $request->status !== 'all') {
-            $query->where('status', $request->status);
-        }
-
-        // Search by order ID or customer name
-        if ($request->filled('search')) {
-            $search = $request->search;
+        // Search
+        if ($search = $request->input('search')) {
             $query->where(function ($q) use ($search) {
-                $q->where('id', $search)
+                $q->where('id', 'like', "%{$search}%")
                   ->orWhere('name', 'like', "%{$search}%")
                   ->orWhere('email', 'like', "%{$search}%");
             });
         }
 
-        $orders = $query->paginate(15);
+        // Filter by status
+        if ($status = $request->input('status')) {
+            if ($status !== 'all') {
+                $query->where('status', $status);
+            }
+        }
 
-        // Stats
+        $orders = $query->latest()->paginate(15);
+
         $stats = [
             'total' => Order::count(),
             'pending' => Order::where('status', 'pending')->count(),
@@ -45,6 +45,7 @@ class OrderController extends Controller
     public function show(Order $order)
     {
         $order->load(['user', 'items.product']);
+
         return view('admin.orders.show', compact('order'));
     }
 
@@ -54,10 +55,8 @@ class OrderController extends Controller
             'status' => 'required|in:pending,approved,processing,shipped,delivered,cancelled',
         ]);
 
-        $order->update([
-            'status' => $request->status,
-        ]);
+        $order->update(['status' => $request->status]);
 
-        return back()->with('success', 'Order status updated to ' . ucfirst($request->status));
+        return back()->with('success', 'Order status updated to ' . ucfirst($request->status) . '.');
     }
 }

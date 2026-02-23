@@ -13,14 +13,18 @@ class IsAdmin
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-public function handle($request, Closure $next)
-{
-    if (auth()->check() && auth()->user()->role === 'admin') {
-        return $next($request);
-    }
+    public function handle($request, Closure $next)
+    {
+        if (auth()->check() && auth()->user()->role === 'admin') {
+            return $next($request);
+        }
 
-    abort(403);
-}
+        if ($request->expectsJson()) {
+            return response()->json(['error' => 'Forbidden'], 403);
+        }
+
+        abort(403, 'Unauthorized access. Only admins can access this page.');
+    }
 
 
     }

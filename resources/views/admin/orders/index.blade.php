@@ -36,11 +36,11 @@
     </div>
     <div class="stat-card">
         <div class="stat-content">
-            <h3>Shipped</h3>
-            <p>{{ $stats['shipped'] }}</p>
+            <h3>Delivered</h3>
+            <p>{{ $stats['delivered'] }}</p>
         </div>
         <div class="stat-icon bg-green">
-            <i class="fa-solid fa-truck-fast"></i>
+            <i class="fa-solid fa-circle-check"></i>
         </div>
     </div>
 </div>
@@ -111,10 +111,19 @@
                         <td><strong>#{{ $order->id }}</strong></td>
                         <td>
                             <div style="display: flex; align-items: center; gap: 10px;">
-                                <div style="width: 32px; height: 32px; border-radius: 8px; background: var(--admin-primary-light); color: var(--admin-primary); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px;">
-                                    {{ strtoupper(substr($order->name, 0, 1)) }}
+                                @if($order->user && $order->user->profile_image)
+                                    <img src="{{ asset('storage/' . $order->user->profile_image) }}" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 2px solid #e2e8f0;">
+                                @else
+                                    <div style="width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--admin-primary-light, #eff6ff), #dbeafe); color: var(--admin-primary, #2563eb); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; border: 2px solid #e2e8f0;">
+                                        {{ strtoupper(substr($order->name, 0, 1)) }}
+                                    </div>
+                                @endif
+                                <div>
+                                    <span style="font-weight: 600;">{{ $order->name }}</span>
+                                    @if($order->user)
+                                        <div style="font-size: 10px; color: #94a3b8;">ID: {{ $order->user->id }}</div>
+                                    @endif
                                 </div>
-                                <span>{{ $order->name }}</span>
                             </div>
                         </td>
                         <td style="color: var(--admin-text-sub);">{{ $order->email }}</td>

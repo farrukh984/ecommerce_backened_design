@@ -138,17 +138,28 @@
             </div>
         </div>
 
-        <!-- Customer Info -->
+        <!-- Customer Info with Profile Image -->
         <div class="premium-card">
             <div style="padding: 24px;">
                 <h3 style="font-family: 'Outfit', sans-serif; font-size: 16px; margin-bottom: 16px;">Customer Info</h3>
                 <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
-                    <div style="width: 44px; height: 44px; border-radius: 12px; background: var(--admin-primary-light); color: var(--admin-primary); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px;">
-                        {{ strtoupper(substr($order->name, 0, 1)) }}
-                    </div>
+                    @if($order->user && $order->user->profile_image)
+                        <img src="{{ asset('storage/' . $order->user->profile_image) }}" style="width: 52px; height: 52px; border-radius: 50%; object-fit: cover; border: 3px solid #e2e8f0; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    @else
+                        <div style="width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, var(--admin-primary-light, #eff6ff), #dbeafe); color: var(--admin-primary, #2563eb); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 20px; border: 3px solid #e2e8f0;">
+                            {{ strtoupper(substr($order->name, 0, 1)) }}
+                        </div>
+                    @endif
                     <div>
-                        <strong style="display: block;">{{ $order->name }}</strong>
+                        <strong style="display: block; font-size: 15px;">{{ $order->name }}</strong>
                         <span style="font-size: 13px; color: var(--admin-text-sub);">{{ $order->email }}</span>
+                        @if($order->user)
+                            <div style="margin-top: 4px;">
+                                <span style="font-size: 10px; background: {{ $order->user->rank === 'Silver' ? '#f1f5f9' : ($order->user->rank === 'Bronze' ? '#fef3c7' : '#f1f5f9') }}; color: {{ $order->user->rank === 'Silver' ? '#475569' : ($order->user->rank === 'Bronze' ? '#92400e' : '#64748b') }}; padding: 2px 8px; border-radius: 20px; font-weight: 700;">
+                                    {{ $order->user->rank }} Member
+                                </span>
+                            </div>
+                        @endif
                     </div>
                 </div>
                 <div style="font-size: 14px; color: #444; line-height: 1.8;">

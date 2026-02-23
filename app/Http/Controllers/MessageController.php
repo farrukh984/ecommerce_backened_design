@@ -15,12 +15,10 @@ class MessageController extends Controller
     {
         $user = Auth::user();
         
-        // Get all conversations for this user
+        // Get all conversations for this user with messages for unread count
         $conversations = Conversation::where('sender_id', $user->id)
             ->orWhere('receiver_id', $user->id)
-            ->with(['sender', 'receiver', 'messages' => function($q) {
-                $q->latest()->limit(1);
-            }])
+            ->with(['sender', 'receiver', 'messages.user'])
             ->latest('last_message_at')
             ->get();
 
@@ -62,10 +60,15 @@ class MessageController extends Controller
             ->where('user_id', '!=', Auth::id())
             ->update(['is_read' => true]);
 
+        // Get all conversations for sidebar
         $conversations = Conversation::where('sender_id', Auth::id())
             ->orWhere('receiver_id', Auth::id())
+            ->with(['sender', 'receiver', 'messages.user'])
             ->latest('last_message_at')
             ->get();
+
+        // Messages for this conversation
+        $messages = $conversation->messages->sortBy('created_at');
 
         // Check if user has an active conversation with admin
         $admin = User::where('role', 'admin')->first();
@@ -80,7 +83,8 @@ class MessageController extends Controller
 
         return view($view, [
             'conversations' => $conversations,
-            'currentChat' => $conversation,
+            'conversation' => $conversation,
+            'messages' => $messages,
             'active' => 'messages',
             'admin' => $admin,
             'hasAdminChat' => $hasAdminChat

@@ -113,13 +113,15 @@ class ProductController extends Controller
             $product = Product::where('is_active', true)->with(['category', 'supplier', 'priceTiers', 'features', 'condition'])->findOrFail($id);
 
             // Similar products from same category
-            $similarProducts = Product::where('category_id', $product->category_id)
+            $similarProducts = Product::where('is_active', true)
+                ->where('category_id', $product->category_id)
                 ->where('id', '!=', $product->id)
                 ->take(6)
                 ->get();
 
             if ($similarProducts->count() < 6) {
-                $more = Product::where('id', '!=', $product->id)
+                $more = Product::where('is_active', true)
+                    ->where('id', '!=', $product->id)
                     ->whereNotIn('id', $similarProducts->pluck('id'))
                     ->inRandomOrder()
                     ->take(6 - $similarProducts->count())
@@ -131,7 +133,8 @@ class ProductController extends Controller
             $wishlistIds = auth()->check()
                 ? auth()->user()->wishlistItems()->pluck('product_id')->all()
                 : session()->get('wishlist', []);
-            $youMayLike = Product::whereIn('id', $wishlistIds)
+            $youMayLike = Product::where('is_active', true)
+                ->whereIn('id', $wishlistIds)
                 ->where('id', '!=', $product->id)
                 ->take(6)
                 ->get();
@@ -139,7 +142,8 @@ class ProductController extends Controller
             // If wishlist is empty or small, fill with random products
             if($youMayLike->count() < 6) {
                 $countNeeded = 6 - $youMayLike->count();
-                $randomExtra = Product::whereNotIn('id', array_merge($wishlistIds, [$product->id]))
+                $randomExtra = Product::where('is_active', true)
+                    ->whereNotIn('id', array_merge($wishlistIds, [$product->id]))
                     ->inRandomOrder()
                     ->take($countNeeded)
                     ->get();

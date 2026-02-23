@@ -3,18 +3,14 @@
 @section('content')
 
 <div class="container cart-wrapper">
-@extends('layouts.app')
-
-@section('content')
-
-<div class="container cart-wrapper">
 
     <!-- ============ CART HEADER ============ -->
     <div class="cart-header">
         <a href="{{ route('products.index') }}" class="cart-back-link">
             <i class="fa-solid fa-arrow-left"></i>
         </a>
-        <h1>My cart ({{ count($cart) }})</h1>
+        <h1 class="cart-title-desktop">My cart ({{ count($cart) }})</h1>
+        <h1 class="cart-title-mobile">Shopping cart</h1>
     </div>
 
     @if(session('success'))

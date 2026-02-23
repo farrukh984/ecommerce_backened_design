@@ -53,10 +53,78 @@
     </div>
     <div class="sidebar-content">
         @auth
-            <div class="empty-state">
-                <i class="fa-regular fa-comment-dots"></i>
-                <p>No new messages from suppliers yet.</p>
-            </div>
+            @php
+                $sidebarConversations = \App\Models\Conversation::where('sender_id', auth()->id())
+                    ->orWhere('receiver_id', auth()->id())
+                    ->with(['sender', 'receiver', 'messages' => function($q) {
+                        $q->latest()->limit(1);
+                    }])
+                    ->latest('last_message_at')
+                    ->take(10)
+                    ->get();
+                $sidebarUnreadTotal = \App\Models\Message::where('is_read', false)
+                    ->whereHas('conversation', function($q) {
+                        $q->where('sender_id', auth()->id())->orWhere('receiver_id', auth()->id());
+                    })
+                    ->where('user_id', '!=', auth()->id())
+                    ->count();
+            @endphp
+
+            @if($sidebarConversations->count())
+                @if($sidebarUnreadTotal > 0)
+                    <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 10px 14px; margin-bottom: 16px; font-size: 13px; color: #1d4ed8; font-weight: 600;">
+                        <i class="fa-solid fa-bell"></i> {{ $sidebarUnreadTotal }} unread message{{ $sidebarUnreadTotal > 1 ? 's' : '' }}
+                    </div>
+                @endif
+                <div class="mini-cart-list">
+                    @foreach($sidebarConversations as $sConv)
+                        @php
+                            $sOtherUser = $sConv->sender_id === auth()->id() ? $sConv->receiver : $sConv->sender;
+                            $sLastMsg = $sConv->messages->first();
+                            $sUnread = \App\Models\Message::where('conversation_id', $sConv->id)
+                                ->where('user_id', '!=', auth()->id())
+                                ->where('is_read', false)
+                                ->count();
+                        @endphp
+                        <a href="{{ route('user.messages.chat', $sConv->id) }}" class="mini-cart-item" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #f1f5f9;">
+                            @if($sOtherUser->profile_image)
+                                <img src="{{ asset('storage/' . $sOtherUser->profile_image) }}" alt="{{ $sOtherUser->name }}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; flex-shrink: 0; border: 2px solid #e2e8f0;">
+                            @else
+                                <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; flex-shrink: 0;">
+                                    {{ strtoupper(substr($sOtherUser->name, 0, 1)) }}
+                                </div>
+                            @endif
+                            <div class="m-item-info" style="flex: 1; min-width: 0;">
+                                <h5 style="margin: 0 0 2px; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+                                    {{ $sOtherUser->name }}
+                                    @if($sOtherUser->role === 'admin')
+                                        <i class="fa-solid fa-circle-check" style="color: #3b82f6; font-size: 11px;"></i>
+                                    @endif
+                                    @if($sUnread > 0)
+                                        <span style="margin-left: auto; width: 18px; height: 18px; border-radius: 50%; background: #3b82f6; color: white; font-size: 9px; font-weight: 700; display: flex; align-items: center; justify-content: center;">{{ $sUnread }}</span>
+                                    @endif
+                                </h5>
+                                <span style="font-size: 12px; color: #94a3b8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;">
+                                    @if($sLastMsg)
+                                        {{ $sLastMsg->user_id === auth()->id() ? 'You: ' : '' }}{{ $sLastMsg->type === 'image' ? '📷 Image' : Str::limit($sLastMsg->message, 30) }}
+                                    @else
+                                        Start a conversation
+                                    @endif
+                                </span>
+                            </div>
+                        </a>
+                    @endforeach
+                </div>
+                <div class="cart-sidebar-footer">
+                    <a href="{{ route('user.messages') }}" class="btn-pry-blue">View All Messages</a>
+                </div>
+            @else
+                <div class="empty-state">
+                    <i class="fa-regular fa-comment-dots"></i>
+                    <p>No messages yet.</p>
+                    <a href="{{ route('user.messages') }}" class="btn-pry-blue" style="display: inline-block; width: auto; padding: 10px 20px; margin-top: 10px;">Start Chat with Support</a>
+                </div>
+            @endif
         @else
             <div class="auth-required">
                 <i class="fa-solid fa-lock"></i>
@@ -76,21 +144,55 @@
     <div class="sidebar-content">
         @auth
             @php
-                $recentOrders = auth()->user()->orders()->latest()->take(5)->get();
+                $recentOrders = auth()->user()->orders()->with('items.product')->latest()->take(5)->get();
             @endphp
             @if($recentOrders->count())
                 <div class="mini-cart-list">
                     @foreach($recentOrders as $order)
-                        <div class="mini-cart-item">
-                            <div class="m-item-info">
-                                <h5>Order #{{ $order->id }}</h5>
-                                <span>{{ ucfirst($order->status) }} - ${{ number_format($order->total_amount, 2) }}</span>
+                        @php
+                            $statusColors = [
+                                'pending' => ['bg' => '#fff8eb', 'color' => '#a16207'],
+                                'approved' => ['bg' => '#e0f2fe', 'color' => '#0369a1'],
+                                'processing' => ['bg' => '#f3e8ff', 'color' => '#7e22ce'],
+                                'shipped' => ['bg' => '#e7f0ff', 'color' => '#0d6efd'],
+                                'delivered' => ['bg' => '#dcfce7', 'color' => '#166534'],
+                                'cancelled' => ['bg' => '#fee2e2', 'color' => '#991b1b'],
+                            ];
+                            $sc = $statusColors[$order->status] ?? $statusColors['pending'];
+                        @endphp
+                        <a href="{{ route('user.orders.show', $order->id) }}" class="mini-cart-item" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid #f1f5f9;">
+                            {{-- Product image stack --}}
+                            <div style="display: flex; align-items: center; flex-shrink: 0;">
+                                @foreach($order->items->take(2) as $idx => $item)
+                                    @if($item->product && $item->product->image)
+                                        <img src="{{ asset('storage/' . $item->product->image) }}" alt="" style="width: 36px; height: 36px; border-radius: 8px; object-fit: cover; border: 2px solid #fff; {{ $idx > 0 ? 'margin-left: -10px;' : '' }} box-shadow: 0 1px 3px rgba(0,0,0,0.06);">
+                                    @else
+                                        <div style="width: 36px; height: 36px; border-radius: 8px; background: #f1f5f9; border: 2px solid #fff; {{ $idx > 0 ? 'margin-left: -10px;' : '' }} display: flex; align-items: center; justify-content: center; color: #cbd5e1; font-size: 11px;">
+                                            <i class="fa-solid fa-box"></i>
+                                        </div>
+                                    @endif
+                                @endforeach
+                                @if($order->items->count() > 2)
+                                    <div style="width: 36px; height: 36px; border-radius: 8px; background: #f1f5f9; border: 2px solid #fff; margin-left: -10px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: #64748b;">
+                                        +{{ $order->items->count() - 2 }}
+                                    </div>
+                                @endif
                             </div>
-                        </div>
+                            <div class="m-item-info" style="flex: 1; min-width: 0;">
+                                <h5 style="margin: 0 0 3px; font-size: 14px; font-weight: 600; display: flex; align-items: center; justify-content: space-between;">
+                                    <span>Order #{{ $order->id }}</span>
+                                    <span style="font-weight: 800; color: #0f172a; font-size: 13px;">${{ number_format($order->total_amount, 2) }}</span>
+                                </h5>
+                                <div style="display: flex; align-items: center; justify-content: space-between;">
+                                    <span style="font-size: 11px; color: #94a3b8;">{{ $order->created_at->diffForHumans() }}</span>
+                                    <span style="padding: 2px 8px; border-radius: 12px; background: {{ $sc['bg'] }}; color: {{ $sc['color'] }}; font-weight: 600; font-size: 10px;">{{ ucfirst($order->status) }}</span>
+                                </div>
+                            </div>
+                        </a>
                     @endforeach
                 </div>
                 <div class="cart-sidebar-footer">
-                    <a href="{{ route('user.dashboard') }}" class="btn-pry-blue">View Dashboard</a>
+                    <a href="{{ route('user.orders') }}" class="btn-pry-blue">View All Orders</a>
                 </div>
             @else
                 <div class="empty-state">

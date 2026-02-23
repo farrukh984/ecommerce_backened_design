@@ -87,23 +87,23 @@
     <div class="deals-section">
 
         <div class="deals-info">
-            <h3>Deals and offers</h3>
-            <p class="deals-sub">Hygiene equipments</p>
+            <h3>{{ $activeDeal?->title ?? 'Deals and offers' }}</h3>
+            <p class="deals-sub">{{ $activeDeal?->description ?? 'Hygiene equipments' }}</p>
             <div class="countdown" id="countdown">
                 <div class="count-box">
-                    <span class="count-num" id="days">04</span>
+                    <span class="count-num" id="days">00</span>
                     <span class="count-label">Days</span>
                 </div>
                 <div class="count-box">
-                    <span class="count-num" id="hours">13</span>
+                    <span class="count-num" id="hours">00</span>
                     <span class="count-label">Hour</span>
                 </div>
                 <div class="count-box">
-                    <span class="count-num" id="minutes">34</span>
+                    <span class="count-num" id="minutes">00</span>
                     <span class="count-label">Min</span>
                 </div>
                 <div class="count-box">
-                    <span class="count-num" id="seconds">56</span>
+                    <span class="count-num" id="seconds">00</span>
                     <span class="count-label">Sec</span>
                 </div>
             </div>
@@ -418,17 +418,30 @@
 
 @section('scripts')
 <script>
-// Countdown Timer
+// Countdown Timer — Dynamic from admin deal
 function startCountdown() {
-    // Set countdown to 4 days, 13 hours, 34 min, 56 sec from now
-    const now = new Date();
-    const endDate = new Date(now.getTime() + (4 * 24 * 60 * 60 * 1000) + (13 * 60 * 60 * 1000) + (34 * 60 * 1000) + (56 * 1000));
+    @if($activeDeal && $activeDeal->end_date)
+        const endDate = new Date("{{ $activeDeal->end_date->toIso8601String() }}");
+    @else
+        // Fallback: no active deal, show zeros
+        document.getElementById('days').textContent = '00';
+        document.getElementById('hours').textContent = '00';
+        document.getElementById('minutes').textContent = '00';
+        document.getElementById('seconds').textContent = '00';
+        return;
+    @endif
 
     function updateTimer() {
         const now = new Date();
         const diff = endDate - now;
 
-        if (diff <= 0) return;
+        if (diff <= 0) {
+            document.getElementById('days').textContent = '00';
+            document.getElementById('hours').textContent = '00';
+            document.getElementById('minutes').textContent = '00';
+            document.getElementById('seconds').textContent = '00';
+            return;
+        }
 
         const days = Math.floor(diff / (1000 * 60 * 60 * 24));
         const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));

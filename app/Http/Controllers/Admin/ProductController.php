@@ -171,4 +171,50 @@ class ProductController extends Controller
         $product->delete();
         return redirect()->route('admin.products.index');
     }
+
+    /**
+     * Toggle product active/inactive status (AJAX)
+     */
+    public function toggleActive(Request $request, Product $product)
+    {
+        $product->update([
+            'is_active' => !$product->is_active,
+        ]);
+
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'is_active' => $product->is_active,
+                'message' => $product->is_active ? 'Product is now visible on website' : 'Product is now hidden from website',
+            ]);
+        }
+
+        return back()->with('success', $product->is_active ? 'Product activated' : 'Product deactivated');
+    }
+
+    /**
+     * Update product stock quantity (AJAX)
+     */
+    public function updateStock(Request $request, Product $product)
+    {
+        $request->validate([
+            'stock_quantity' => 'required|integer|min:0',
+        ]);
+
+        $product->update([
+            'stock_quantity' => $request->stock_quantity,
+            'in_stock' => $request->stock_quantity > 0,
+        ]);
+
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'stock_quantity' => $product->stock_quantity,
+                'in_stock' => $product->in_stock,
+                'message' => 'Stock updated to ' . $product->stock_quantity . ' units',
+            ]);
+        }
+
+        return back()->with('success', 'Stock updated successfully');
+    }
 }

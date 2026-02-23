@@ -6,6 +6,8 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use App\Models\User;
+use Illuminate\Mail\Mailables\Content;
+use Illuminate\Mail\Mailables\Envelope;
 
 class AdminOtpMail extends Mailable
 {
@@ -24,11 +26,22 @@ class AdminOtpMail extends Mailable
     }
 
     /**
-     * Build the message.
+     * Get the message envelope.
      */
-    public function build()
+    public function envelope(): Envelope
     {
-        return $this->subject('Your admin login OTP')
-                    ->view('emails.admin_otp');
+        return new Envelope(
+            subject: 'Your Admin Login OTP',
+        );
+    }
+
+    /**
+     * Get the message content definition.
+     */
+    public function content(): Content
+    {
+        return new Content(
+            view: 'emails.admin_otp',
+        );
     }
 }

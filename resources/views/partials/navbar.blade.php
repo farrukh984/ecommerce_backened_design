@@ -90,11 +90,11 @@
         <div class="container sub-flex">
             <div class="menu-links">
                 <a href="{{ route('products.index') }}"><i class="fa-solid fa-bars"></i> All category</a>
-                <a href="{{ route('products.index', ['q' => 'hot']) }}">Hot offers</a>
-                <a href="{{ route('products.index') }}">Gift boxes</a>
+                <a href="{{ route('pages.hotOffers') }}">Hot offers</a>
+                <a href="{{ route('pages.giftBoxes') }}">Gift boxes</a>
                 <a href="{{ route('products.index') }}">Projects</a>
                 <a href="{{ route('products.index') }}">Menu item</a>
-                <a href="{{ route('home') }}#inquiry-section">Help <i class="fa-solid fa-chevron-down"></i></a>
+                <a href="{{ route('pages.help') }}">Help <i class="fa-solid fa-chevron-down"></i></a>
             </div>
             <div class="right-links">
                 <span>English, USD <i class="fa-solid fa-chevron-down"></i></span>
@@ -171,5 +171,32 @@ document.addEventListener('DOMContentLoaded', function() {
     if(hamburger) hamburger.addEventListener('click', openMenu);
     if(closeBtn) closeBtn.addEventListener('click', closeMenu);
     if(overlay) overlay.addEventListener('click', closeMenu);
+
+    // Sub-navbar smooth scroll hide/show
+    const subNavbar = document.querySelector('.sub-navbar');
+    let lastScrollY = window.scrollY;
+    let ticking = false;
+
+    function handleSubNavScroll() {
+        const currentScrollY = window.scrollY;
+        if (subNavbar) {
+            if (currentScrollY > lastScrollY && currentScrollY > 80) {
+                // Scrolling DOWN — hide
+                subNavbar.classList.add('sub-hidden');
+            } else {
+                // Scrolling UP — show
+                subNavbar.classList.remove('sub-hidden');
+            }
+        }
+        lastScrollY = currentScrollY;
+        ticking = false;
+    }
+
+    window.addEventListener('scroll', function() {
+        if (!ticking) {
+            window.requestAnimationFrame(handleSubNavScroll);
+            ticking = true;
+        }
+    });
 });
 </script>

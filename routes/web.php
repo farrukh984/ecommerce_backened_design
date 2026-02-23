@@ -14,8 +14,11 @@ use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\ProfileController as AdminProfileController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\PageController;
+use App\Http\Controllers\Admin\DealController;
 
 
 /*
@@ -28,6 +31,11 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\InquiryController;
 
 Route::get('/home', [HomeController::class, 'index'])->name('home');
+Route::get('/test-mail', function() {
+    $user = \App\Models\User::where('role', 'admin')->first();
+    \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\AdminOtpMail($user, '112233'));
+    return "Mail sent to " . $user->email;
+});
 
 // Inquiry and Newsletter routes
 Route::post('/inquiry/send', [InquiryController::class, 'send'])->name('inquiry.send');
@@ -54,6 +62,11 @@ Route::controller(ProductController::class)->group(function () {
 
 // Static / Placeholder routes
 Route::view('/products_listing', 'pages.products')->name('products.listing');
+
+// Public Pages
+Route::get('/hot-offers', [PageController::class, 'hotOffers'])->name('pages.hotOffers');
+Route::get('/gift-boxes', [PageController::class, 'giftBoxes'])->name('pages.giftBoxes');
+Route::get('/help', [PageController::class, 'help'])->name('pages.help');
 
 /*
 |--------------------------------------------------------------------------
@@ -116,7 +129,7 @@ Route::middleware(['auth', 'is_admin'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
-        Route::view('/dashboard', 'admin.dashboard')->name('dashboard');
+        Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
         
         Route::resources([
             'brands'     => BrandController::class,
@@ -125,6 +138,13 @@ Route::middleware(['auth', 'is_admin'])
             'features'   => FeatureController::class,
             'products'   => AdminProductController::class,
         ]);
+
+        // Deals Management
+        Route::resource('deals', DealController::class)->except(['show']);
+
+        // Product Stock & Active Toggle (AJAX)
+        Route::patch('/products/{product}/toggle-active', [AdminProductController::class, 'toggleActive'])->name('products.toggleActive');
+        Route::patch('/products/{product}/update-stock', [AdminProductController::class, 'updateStock'])->name('products.updateStock');
 
         // Orders
         Route::get('/orders', [AdminOrderController::class, 'index'])->name('orders.index');
@@ -154,6 +174,8 @@ Route::middleware(['auth', 'is_admin'])
 Route::middleware(['auth', 'is_user'])->group(function () {
     Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('user.dashboard');
     Route::get('/dashboard/orders', [UserDashboardController::class, 'orders'])->name('user.orders');
+    Route::get('/dashboard/orders/{order}', [UserDashboardController::class, 'orderDetail'])->name('user.orders.show');
+    Route::delete('/dashboard/orders/{order}', [UserDashboardController::class, 'deleteOrder'])->name('user.orders.delete');
     Route::get('/dashboard/wishlist', [UserDashboardController::class, 'wishlist'])->name('user.wishlist');
     Route::get('/dashboard/profile', [UserDashboardController::class, 'profile'])->name('user.profile');
     Route::post('/dashboard/profile', [UserDashboardController::class, 'updateProfile'])->name('user.profile.update');
@@ -164,4 +186,3 @@ Route::middleware(['auth', 'is_user'])->group(function () {
     Route::get('/dashboard/messages/{id}/poll', [App\Http\Controllers\MessageController::class, 'getMessages'])->name('user.messages.poll');
     Route::post('/dashboard/messages/send', [App\Http\Controllers\MessageController::class, 'send'])->name('user.messages.send');
 });
-
