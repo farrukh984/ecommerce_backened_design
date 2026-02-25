@@ -172,22 +172,31 @@ document.addEventListener('DOMContentLoaded', function() {
     if(closeBtn) closeBtn.addEventListener('click', closeMenu);
     if(overlay) overlay.addEventListener('click', closeMenu);
 
-    // Sub-navbar smooth scroll hide/show
+    // Sub-navbar smooth scroll hide/show with Vibration Fix
     const subNavbar = document.querySelector('.sub-navbar');
     let lastScrollY = window.scrollY;
     let ticking = false;
+    const delta = 8; // Minimum scroll distance to trigger action (prevents vibration)
 
     function handleSubNavScroll() {
         const currentScrollY = window.scrollY;
+        
+        // If the distance scrolled is less than delta, don't do anything
+        if (Math.abs(currentScrollY - lastScrollY) <= delta) {
+            ticking = false;
+            return;
+        }
+
         if (subNavbar) {
-            if (currentScrollY > lastScrollY && currentScrollY > 80) {
+            if (currentScrollY > lastScrollY && currentScrollY > 100) {
                 // Scrolling DOWN — hide
                 subNavbar.classList.add('sub-hidden');
-            } else {
+            } else if (currentScrollY < lastScrollY) {
                 // Scrolling UP — show
                 subNavbar.classList.remove('sub-hidden');
             }
         }
+        
         lastScrollY = currentScrollY;
         ticking = false;
     }

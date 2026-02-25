@@ -172,14 +172,14 @@
 
 <!-- ================= INQUIRY SECTION ================= -->
 
-<div class="inquiry-section" id="inquiry-section" style="background-image: linear-gradient(rgba(0, 32, 70, 0.7), rgba(0, 32, 70, 0.7)), url('{{ asset('images/figma_home_contact_section.png') }}'); background-size: cover; background-position: center; border-radius: 8px; margin-top: 30px; padding: 40px 0;">
+<div class="inquiry-section" id="inquiry-section" style="background-image: linear-gradient(rgba(0, 32, 70, 0.7), rgba(0, 32, 70, 0.7)), url('{{ asset('images/figma_home_contact_section.png') }}'); background-size: cover; background-position: center; margin-top: 30px; padding: 40px 0; overflow: hidden; width: 100%; box-sizing: border-box;">
     <div class="container inquiry-flex">
         <div class="inquiry-left">
             <h2 style="color: #fff; font-size: 32px; font-weight: 700;">An easy way to send <br>requests to all suppliers</h2>
             <p style="color: rgba(255,255,255,0.8); margin-top: 15px; font-size: 16px;">One request, multiple quotes. Compare prices, delivery times, and supplier qualifications easily in one place.</p>
         </div>
 
-        <div class="inquiry-form" style="background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+        <div class="inquiry-form" style="background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); width: 100%; max-width: 400px; box-sizing: border-box;">
             <h4 style="margin-bottom: 20px; font-weight: 700;">Send quote to suppliers</h4>
             <form method="POST" action="{{ route('inquiry.send') }}">
                 @csrf
@@ -241,10 +241,10 @@
 
     <!-- ================= EXTRA SERVICES ================= -->
 
-    <div class="extra-services" style="margin-top: 40px; padding-bottom: 20px;">
+    <div class="extra-services" style="margin-top: 40px; padding-bottom: 20px; overflow: hidden;">
         <h3 style="font-size: 24px; font-weight: 700; margin-bottom: 24px;">Our extra services</h3>
 
-        <div class="services-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px;">
+        <div class="services-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; width: 100%;">
 
             <a href="{{ route('products.index') }}" style="text-decoration: none; color: inherit;">
                 <div class="service-item" style="background: #fff; border: 1px solid #e3e8ee; border-radius: 8px; overflow: hidden; transition: transform 0.3s ease; cursor: pointer;">

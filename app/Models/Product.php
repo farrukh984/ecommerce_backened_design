@@ -55,6 +55,16 @@ class Product extends Model
         return $this->hasMany(WishlistItem::class);
     }
 
+    public function reviews()
+    {
+        return $this->hasMany(ProductReview::class)->latest();
+    }
+
+    public function approvedReviews()
+    {
+        return $this->hasMany(ProductReview::class)->where('is_approved', true)->latest();
+    }
+
 
 public function getDiscountAttribute()
 {

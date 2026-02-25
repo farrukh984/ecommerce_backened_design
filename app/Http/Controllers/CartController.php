@@ -7,6 +7,9 @@ use App\Models\OrderItem;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use App\Models\User;
+use App\Mail\Admin\NewOrderAlert;
 
 class CartController extends Controller
 {
@@ -226,7 +229,8 @@ class CartController extends Controller
         $user = auth()->user();
         $totals = $this->getCartTotals($cart);
 
-        DB::transaction(function () use ($cart, $user, $validated, $totals) {
+        $order = null;
+        DB::transaction(function () use ($cart, $user, $validated, $totals, &$order) {
             $order = Order::create([
                 'user_id' => $user->id,
                 'status' => 'pending',
@@ -267,6 +271,15 @@ class CartController extends Controller
                 }
             }
         });
+
+        // Notify Admin of New Order
+        $admin = User::where('role', 'admin')->first();
+        if ($admin && $order) {
+            try {
+                $order->load('items.product');
+                Mail::to($admin->email)->send(new NewOrderAlert($order));
+            } catch (\Exception $e) { \Log::error("Admin Order Mail Error: " . $e->getMessage()); }
+        }
 
         session()->forget('cart');
 

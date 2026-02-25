@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\AdminOtpMail;
+use App\Mail\Admin\NewUserAlert;
 
 class AuthController extends Controller
 {
@@ -132,7 +133,15 @@ class AuthController extends Controller
         $data['password'] = Hash::make($data['password']);
         $data['role'] = 'user';
 
-        User::create($data);
+        $user = User::create($data);
+
+        // Notify Admin of New Registration
+        $admin = User::where('role', 'admin')->first();
+        if ($admin) {
+            try {
+                Mail::to($admin->email)->send(new NewUserAlert($user));
+            } catch (\Exception $e) { \Log::error("Admin Registration Mail Error: " . $e->getMessage()); }
+        }
 
         return redirect()->route('login')->with('success', 'Registration successful! Please login.');
     }

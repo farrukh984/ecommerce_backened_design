@@ -84,19 +84,25 @@
         <div class="form-row">
             <div class="form-group">
                 <label>Options & Stock</label>
-                <div style="display: flex; gap: 20px; align-items: center; padding: 10px; background: #f9f9f9; border-radius: 6px;">
-                    <label style="cursor: pointer; margin-bottom: 0;"><input type="hidden" name="in_stock" value="0"><input type="checkbox" name="in_stock" value="1" checked> In Stock</label>
-                    <label style="cursor: pointer; margin-bottom: 0;"><input type="hidden" name="is_negotiable" value="0"><input type="checkbox" name="is_negotiable" value="1"> Price Negotiable</label>
-                    <label style="cursor: pointer; margin-bottom: 0;"><input type="hidden" name="is_active" value="0"><input type="checkbox" name="is_active" value="1" checked> Enabled / Active</label>
-                    <div style="margin-left: auto; display: flex; align-items: center; gap: 10px;">
-                        <span style="font-size: 13px; font-weight: 600;">Stock Qty:</span>
-                        <input type="number" name="stock_quantity" class="form-control" value="100" style="width: 80px; height: 30px; padding: 2px 8px;">
+                <div class="options-container" style="display: flex; flex-wrap: wrap; gap: 15px; align-items: center; padding: 15px; background: #f9f9f9; border-radius: 12px; border: 1px solid var(--admin-border);">
+                    <label style="cursor: pointer; margin-bottom: 0; display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 500;">
+                        <input type="hidden" name="in_stock" value="0"><input type="checkbox" name="in_stock" value="1" checked> In Stock
+                    </label>
+                    <label style="cursor: pointer; margin-bottom: 0; display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 500;">
+                        <input type="hidden" name="is_negotiable" value="0"><input type="checkbox" name="is_negotiable" value="1"> Price Negotiable
+                    </label>
+                    <label style="cursor: pointer; margin-bottom: 0; display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 500;">
+                        <input type="hidden" name="is_active" value="0"><input type="checkbox" name="is_active" value="1" checked> Enabled / Active
+                    </label>
+                    <div style="flex: 1; min-width: 140px; display: flex; align-items: center; gap: 10px; justify-content: flex-end;">
+                        <span style="font-size: 13px; font-weight: 600; white-space: nowrap;">Stock Qty:</span>
+                        <input type="number" name="stock_quantity" class="form-control" value="100" style="width: 80px; height: 35px; padding: 5px 10px; background: white;">
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="specs-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 20px;">
+        <div class="specs-grid">
             <div class="form-group"><label>Type</label><input type="text" name="type" class="form-control" placeholder="e.g. Smart Watch"></div>
             <div class="form-group"><label>Material</label><input type="text" name="material" class="form-control" placeholder="e.g. Leather"></div>
             <div class="form-group"><label>Design Style</label><input type="text" name="design_style" class="form-control" placeholder="e.g. Modern"></div>
@@ -113,9 +119,9 @@
 
         <div class="form-group" style="margin-top: 20px;">
             <label>Features</label>
-            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; background: #fcfcfc; padding: 15px; border-radius: 8px; border: 1px solid var(--admin-border);">
+            <div class="features-grid">
                 @foreach($features as $feat)
-                <label style="font-size: 13px; display: flex; align-items: center; gap: 8px; font-weight: 500;">
+                <label class="feature-label">
                     <input type="checkbox" name="features[]" value="{{ $feat->id }}"> {{ $feat->name }}
                 </label>
                 @endforeach
@@ -153,6 +159,53 @@
     </form>
 </div>
 
+@endsection
+
+@section('styles')
+<style>
+    .specs-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        margin-top: 20px;
+    }
+    
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 10px;
+        background: #fcfcfc;
+        padding: 15px;
+        border-radius: 8px;
+        border: 1px solid var(--admin-border);
+    }
+
+    .feature-label {
+        font-size: 13px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 500;
+        cursor: pointer;
+    }
+
+    @media (max-width: 768px) {
+        .specs-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .options-container {
+            flex-direction: column;
+            align-items: flex-start !important;
+        }
+        
+        .options-container div {
+            width: 100%;
+            justify-content: flex-start !important;
+            margin-top: 10px;
+        }
+    }
+</style>
 @endsection
 
 @section('scripts')

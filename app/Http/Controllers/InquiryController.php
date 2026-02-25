@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Log;
 use App\Models\User;
 use App\Models\Conversation;
 use App\Models\Message;
+use App\Mail\Admin\NewInquiryAlert;
 
 class InquiryController extends Controller
 {
@@ -54,13 +55,19 @@ class InquiryController extends Controller
 
                 $inquiryMsg = "New Inquiry:\nItem: {$validated['item']}\nQty: {$validated['quantity']} {$validated['unit']}\nDetails: " . ($validated['details'] ?? 'No extra details');
 
-                Message::create([
+                $message = Message::create([
                     'conversation_id' => $conversation->id,
                     'user_id' => $user->id,
                     'message' => $inquiryMsg,
                     'is_read' => false,
                     'type' => 'text'
                 ]);
+
+                // Notify Admin of New Inquiry via Email
+                try {
+                    $message->load('sender');
+                    Mail::to($admin->email)->send(new NewInquiryAlert($message));
+                } catch (\Exception $e) { \Log::error("Admin Inquiry Mail Error: " . $e->getMessage()); }
 
                 $conversation->update(['last_message_at' => now()]);
             }

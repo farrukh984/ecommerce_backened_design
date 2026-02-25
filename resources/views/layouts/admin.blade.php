@@ -9,6 +9,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('css/admin_premium.css') }}">
     
+    <!-- GSAP for Smooth Animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    
     @yield('styles')
 </head>
 <body>
@@ -22,8 +25,11 @@
                     <i class="fa-solid fa-shield-halved"></i>
                 </div>
                 <span>ADMIN PANEL</span>
+                <button class="sidebar-close md-only" onclick="toggleSidebar()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
             </div>
-
+            
             <div class="sidebar-menu">
                 <div class="menu-label">Analytics</div>
                 <a href="{{ route('admin.dashboard') }}" class="menu-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
@@ -47,16 +53,33 @@
                 <div class="menu-label">Customer Operations</div>
                 <a href="{{ route('admin.orders.index') }}" class="menu-item {{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
                     <i class="fa-solid fa-receipt"></i> Orders
+                    @php
+                        $unviewedOrdersCount = \App\Models\Order::where('is_viewed', false)->count();
+                    @endphp
+                    @if($unviewedOrdersCount > 0)
+                        <span style="background: white; color: var(--admin-primary); border-radius: 6px; padding: 2px 8px; font-size: 10px; font-weight: 800; margin-left: auto; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">{{ $unviewedOrdersCount }}</span>
+                    @endif
                 </a>
                 <a href="{{ route('admin.users.index') }}" class="menu-item {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
                     <i class="fa-solid fa-user-group"></i> User Base
+                </a>
+                <a href="{{ route('admin.reviews.index') }}" class="menu-item {{ request()->routeIs('admin.reviews.*') ? 'active' : '' }}">
+                    <i class="fa-solid fa-star"></i> Product Reviews
+                    @php
+                        $unviewedReviewsCount = \App\Models\ProductReview::where('is_viewed', false)->count();
+                    @endphp
+                    @if($unviewedReviewsCount > 0)
+                        <span style="background: white; color: var(--admin-primary); border-radius: 6px; padding: 2px 8px; font-size: 10px; font-weight: 800; margin-left: auto; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">{{ $unviewedReviewsCount }}</span>
+                    @endif
                 </a>
                 <a href="{{ route('admin.messages.index') }}" class="menu-item {{ request()->routeIs('admin.messages.*') ? 'active' : '' }}">
                     <i class="fa-solid fa-comments"></i> Inquiries
                     @php
                         $unreadAdminCount = \App\Models\Message::where('is_read', false)
+                            ->where('user_id', '!=', auth()->id())
                             ->whereHas('conversation', function($q) {
-                                $q->where('receiver_id', auth()->id());
+                                $q->where('sender_id', auth()->id())
+                                  ->orWhere('receiver_id', auth()->id());
                             })->count();
                     @endphp
                     @if($unreadAdminCount > 0)
@@ -99,12 +122,18 @@
             </div>
         </aside>
 
+        <!-- Mobile Overlay -->
+        <div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+
         <!-- Main Content -->
         <main class="admin-main">
             
             <!-- Topbar -->
             <div class="admin-topbar">
                 <div class="topbar-left">
+                    <button class="mobile-toggle md-only" onclick="toggleSidebar()">
+                        <i class="fa-solid fa-bars-staggered"></i>
+                    </button>
                     <h1>@yield('header_title', 'Dashboard')</h1>
                 </div>
                 <div class="topbar-right">
@@ -132,10 +161,46 @@
     @yield('scripts')
     
     <script>
-        // Sidebar toggle for mobile if needed
+        // Sidebar toggle logic - Using CSS for position for maximum stability
         function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('active');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            const isMobile = window.innerWidth <= 991;
+            
+            if (sidebar.classList.contains('active')) {
+                // Close
+                sidebar.classList.remove('active');
+                if (isMobile) {
+                    gsap.to(overlay, { opacity: 0, display: 'none', duration: 0.3 });
+                }
+            } else {
+                // Open
+                sidebar.classList.add('active');
+                if (isMobile) {
+                    gsap.set(overlay, { display: 'block', opacity: 0 });
+                    gsap.to(overlay, { opacity: 1, duration: 0.3 });
+                }
+            }
         }
+
+        // Entrance animations for content
+        document.addEventListener('DOMContentLoaded', () => {
+            const isMobile = window.innerWidth <= 991;
+
+            // Note: Removed sidebar entrance animation to ensure stability
+            
+            // Subtle menu hover effect
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.addEventListener('mouseenter', () => {
+                    const icon = item.querySelector('i');
+                    if(icon) gsap.to(icon, { x: 5, duration: 0.3, ease: "power2.out" });
+                });
+                item.addEventListener('mouseleave', () => {
+                    const icon = item.querySelector('i');
+                    if(icon) gsap.to(icon, { x: 0, duration: 0.3, ease: "power2.out" });
+                });
+            });
+        });
     </script>
 </body>
 </html>

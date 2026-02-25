@@ -88,7 +88,7 @@
                         @endif
                     @endfor
                 </span>
-                <span class="m-reviews"><i class="fa-regular fa-comment-dots"></i> 32 reviews</span>
+                <span class="m-reviews"><i class="fa-regular fa-comment-dots"></i> {{ $product->approvedReviews->count() }} reviews</span>
                 <span class="m-sold"><i class="fa-solid fa-basket-shopping"></i> {{ $product->sold_count ?? 154 }} sold</span>
             </div>
 
@@ -152,6 +152,21 @@
                     <p>{{ $product->description }}</p>
                 </div>
                 <a href="javascript:void(0)" class="m-read-more-btn" id="mobileDescBtn" style="display: none;" onclick="toggleReadMore('mobileDescBox', this)">Read more</a>
+            </div>
+
+            <!-- Shipping & Delivery (Mobile) -->
+            <div class="m-shipping-info" style="margin-top: 25px; border-top: 1px solid #eee; padding-top: 20px;">
+                <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 12px;">Shipping & Delivery</h3>
+                <div style="display: flex; gap: 12px; margin-bottom: 15px;">
+                    <i class="fa-solid fa-truck-fast" style="color: #0d6efd; font-size: 18px;"></i>
+                    <div style="font-size: 13px; color: #505050; line-height: 1.4;">
+                        Fast international shipping from <strong>{{ $product->supplier->location ?? 'Global Warehouse' }}</strong>. 
+                        Estimated delivery: 7-15 business days.
+                    </div>
+                </div>
+                <div style="background: #f8fafc; padding: 12px; border-radius: 8px; font-size: 12px; color: #64748b;">
+                    <i class="fa-solid fa-shield-check" style="color: #16a34a; margin-right: 5px;"></i> All shipments are fully insured and trackable.
+                </div>
             </div>
         </div>
 
@@ -241,7 +256,7 @@
                 </span>
                 <span class="rating-num">{{ number_format($rating, 1) }}</span>
                 <span class="dot-sep">•</span>
-                <span class="detail-reviews"><i class="fa-regular fa-comment-dots"></i> 32 reviews</span>
+                <span class="detail-reviews"><i class="fa-regular fa-comment-dots"></i> {{ $product->approvedReviews->count() }} reviews</span>
                 <span class="dot-sep">•</span>
                 <span class="detail-sold"><i class="fa-solid fa-basket-shopping"></i> {{ $product->sold_count ?? 154 }} sold</span>
             </div>
@@ -398,59 +413,181 @@
             </div>
 
             <div class="tab-content" id="reviews-tab" style="display: none;">
-                <h4>Customer Reviews</h4>
-                <div class="reviews-list" style="margin-top: 20px;">
-                    @forelse($product->reviews ?? [] as $review)
+                <div class="reviews-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                    <h4 style="margin: 0; font-size: 20px; font-weight: 700;">Customer Feedback</h4>
+                    <div class="rating-summary" style="text-align: right;">
+                        <span style="font-size: 24px; font-weight: 800; color: #1c1c1c;">{{ number_format($product->approvedReviews->avg('rating') ?: $product->rating, 1) }}</span>
+                        <div style="color: #ff9017; font-size: 14px;">
+                            @for($i=1; $i<=5; $i++)
+                                <i class="fa-{{ $i <= round($product->approvedReviews->avg('rating') ?: $product->rating) ? 'solid' : 'regular' }} fa-star"></i>
+                            @endfor
+                        </div>
+                        <span style="font-size: 12px; color: #8b96a5;">{{ $product->approvedReviews->count() }} reviews</span>
+                    </div>
+                </div>
+
+                @auth
+                    @php
+                        $hasBought = \App\Models\Order::where('user_id', auth()->id())
+                            ->whereHas('items', function($q) use ($product) {
+                                $q->where('product_id', $product->id);
+                            })->where('status', 'delivered')->exists();
+                        
+                        $alreadyReviewed = $product->reviews->where('user_id', auth()->id())->first();
+                    @endphp
+
+                    @if($hasBought && !$alreadyReviewed)
+                        <div class="add-review-card" style="background: #f8fafc; border-radius: 12px; padding: 20px; margin-bottom: 30px; border: 1px solid #e2e8f0;">
+                            <h5 style="margin-top: 0; margin-bottom: 15px;">Write a Review</h5>
+                            <form action="{{ route('reviews.store') }}" method="POST">
+                                @csrf
+                                <input type="hidden" name="product_id" value="{{ $product->id }}">
+                                <div class="rating-input" style="margin-bottom: 15px;">
+                                    <label style="display: block; margin-bottom: 5px; font-size: 14px;">Your Rating:</label>
+                                    <div class="star-rating" style="display: flex; gap: 5px; cursor: pointer; font-size: 20px; color: #dee2e7;">
+                                        @for($i=1; $i<=5; $i++)
+                                            <i class="fa-regular fa-star star-btn" data-value="{{ $i }}"></i>
+                                        @endfor
+                                    </div>
+                                    <input type="hidden" name="rating" id="review_rating_val" value="5" required>
+                                </div>
+                                <div class="form-group" style="margin-bottom: 15px;">
+                                    <textarea name="comment" rows="3" class="form-control" placeholder="Tell others about your experience..." style="width: 100%; padding: 12px; border: 1px solid #dee2e7; border-radius: 8px; resize: none;" required></textarea>
+                                </div>
+                                <button type="submit" class="btn-pry-blue" style="border: none; padding: 10px 25px;">Submit Review</button>
+                            </form>
+                        </div>
+                    @elseif($alreadyReviewed && !$alreadyReviewed->is_approved)
+                        <div style="background: #e0f2fe; border: 1px solid #bae6fd; border-radius: 10px; padding: 15px; margin-bottom: 25px; display: flex; align-items: center; gap: 10px;">
+                            <i class="fa-solid fa-clock" style="color: #0ea5e9;"></i>
+                            <span style="font-size: 13px; color: #0369a1;">Your review is pending admin approval. It will be visible soon!</span>
+                        </div>
+                    @elseif(!$hasBought)
+                         <div style="background: #fff9f0; border: 1px solid #ffeeba; border-radius: 10px; padding: 15px; margin-bottom: 25px; display: flex; align-items: center; gap: 10px;">
+                            <i class="fa-solid fa-circle-info" style="color: #ff9017;"></i>
+                            <span style="font-size: 13px; color: #856404;">Only verified buyers can leave a review.</span>
+                         </div>
+                    @endif
+                @endauth
+
+                <div class="reviews-list">
+                    @forelse($product->approvedReviews as $review)
                         <div class="review-item" style="margin-bottom: 20px; border-bottom: 1px solid #eff2f4; padding-bottom: 15px;">
-                            <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 5px;">
-                                <strong style="font-size: 15px;">{{ $review->user->name ?? 'Anonymous' }}</strong>
-                                <span style="color: #ff9017; font-size: 12px;">
-                                    @for($i=1; $i<=5; $i++)
-                                        <i class="fa-{{ $i <= ($review->rating ?? 5) ? 'solid' : 'regular' }} fa-star"></i>
-                                    @endfor
-                                </span>
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+                                <div style="display: flex; gap: 12px; align-items: center;">
+                                    <div style="width: 40px; height: 40px; border-radius: 50%; background: #e0f2fe; color: #0369a1; display: flex; align-items: center; justify-content: center; font-weight: 700;">
+                                        {{ substr($review->user->name, 0, 1) }}
+                                    </div>
+                                    <div>
+                                        <div style="display: flex; align-items: center; gap: 8px;">
+                                            <strong style="font-size: 15px;">{{ $review->user->name }}</strong>
+                                            <span style="background: #dcfce7; color: #166534; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 600;">Verified Buyer</span>
+                                        </div>
+                                        <div style="color: #ff9017; font-size: 11px;">
+                                            @for($i=1; $i<=5; $i++)
+                                                <i class="fa-{{ $i <= $review->rating ? 'solid' : 'regular' }} fa-star"></i>
+                                            @endfor
+                                        </div>
+                                    </div>
+                                </div>
+                                <span style="font-size: 11px; color: #8b96a5;">{{ $review->created_at->diffForHumans() }}</span>
                             </div>
-                            <p style="color: #505050; font-size: 14px;">{{ $review->comment ?? 'Great product, matches the description perfectly.' }}</p>
+                            <p style="color: #4b5563; font-size: 14px; margin: 0; line-height: 1.6; padding-left: 52px;">{{ $review->comment }}</p>
                         </div>
                     @empty
                         <div style="text-align: center; padding: 40px 0;">
-                            <i class="fa-regular fa-comment-dots" style="font-size: 40px; color: #dee2e7; margin-bottom: 15px; display: block;"></i>
-                            <p style="color: #8b96a5;">No reviews for this product yet.</p>
+                            <i class="fa-regular fa-comments" style="font-size: 40px; color: #dee2e7; margin-bottom: 15px; display: block;"></i>
+                            <p style="color: #8b96a5;">No reviews for this product yet. Be the first to share your thoughts!</p>
                         </div>
                     @endforelse
                 </div>
             </div>
 
             <div class="tab-content" id="shipping-tab" style="display: none;">
-                <h4>Shipping Information</h4>
-                <div style="margin-top: 20px; color: #505050; font-size: 14px; line-height: 1.8;">
-                    <p><i class="fa-solid fa-truck" style="color: #0d6efd; margin-right: 10px;"></i> <strong>Shipping From:</strong> {{ $product->supplier->location ?? 'Global Warehouse' }}</p>
-                    <p><i class="fa-solid fa-calendar-check" style="color: #0d6efd; margin-right: 10px;"></i> <strong>Estimated Delivery:</strong> 7 - 15 Business Days</p>
-                    <p><i class="fa-solid fa-shield-heart" style="color: #0d6efd; margin-right: 10px;"></i> <strong>Shipping Protection:</strong> {{ $product->protection ?? 'Refund Policy covers your purchase.' }}</p>
-                    <hr style="border: none; border-top: 1px solid #eff2f4; margin: 20px 0;">
-                    <p>{{ $product->name }} will be packed using standard export packaging to ensure safety during transit from {{ $product->supplier->name ?? 'the supplier' }}.</p>
+                <div class="shipping-info-wrapper">
+                    <h4 style="font-size: 20px; font-weight: 700; margin-bottom: 25px;">Logistics & Delivery</h4>
+                    <div class="shipping-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div class="shipping-card" style="padding: 20px; border: 1px solid #f1f5f9; border-radius: 12px; background: #fff;">
+                            <div style="width: 45px; height: 45px; border-radius: 10px; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 15px;">
+                                <i class="fa-solid fa-plane-up"></i>
+                            </div>
+                            <h5 style="margin: 0 0 8px; font-size: 16px;">Fast International Shipping</h5>
+                            <p style="font-size: 13px; color: #64748b; line-height: 1.5;">Shipped from {{ $product->supplier->location ?? 'Global Hub' }}. Track your order every step of the way with our real-time portal.</p>
+                        </div>
+                        <div class="shipping-card" style="padding: 20px; border: 1px solid #f1f5f9; border-radius: 12px; background: #fff;">
+                            <div style="width: 45px; height: 45px; border-radius: 10px; background: #f0fdf4; color: #16a34a; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 15px;">
+                                <i class="fa-solid fa-box-open"></i>
+                            </div>
+                            <h5 style="margin: 0 0 8px; font-size: 16px;">Premium Packaging</h5>
+                            <p style="font-size: 13px; color: #64748b; line-height: 1.5;">Every {{ $product->name }} is packed with industry-standard export materials to ensure Zero-Damage arrival.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="premium-delivery-timeline" style="margin-top: 30px; background: #f8fafc; padding: 25px; border-radius: 15px;">
+                        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+                            <i class="fa-solid fa-clock-rotate-left" style="color: #3b82f6; font-size: 20px;"></i>
+                            <h5 style="margin: 0; font-size: 16px;">Estimated Timeline</h5>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; position: relative;">
+                            <div style="position: absolute; top: 10px; left: 0; right: 0; height: 4px; background: #e2e8f0; z-index: 1;"></div>
+                            <div class="timeline-point" style="z-index: 2; text-align: center; width: 33%;">
+                                <div style="width: 24px; height: 24px; border-radius: 50%; background: #3b82f6; border: 4px solid #fff; margin: 0 auto 10px; box-shadow: 0 0 10px rgba(59,130,246,0.2);"></div>
+                                <span style="display: block; font-size: 12px; font-weight: 700; color: #1e293b;">Order Confirmed</span>
+                                <span style="display: block; font-size: 11px; color: #94a3b8;">Instant</span>
+                            </div>
+                            <div class="timeline-point" style="z-index: 2; text-align: center; width: 33%;">
+                                <div style="width: 24px; height: 24px; border-radius: 50%; background: #e2e8f0; border: 4px solid #fff; margin: 0 auto 10px;"></div>
+                                <span style="display: block; font-size: 12px; font-weight: 600; color: #64748b;">Quality Check</span>
+                                <span style="display: block; font-size: 11px; color: #94a3b8;">1-2 Days</span>
+                            </div>
+                            <div class="timeline-point" style="z-index: 2; text-align: center; width: 33%;">
+                                <div style="width: 24px; height: 24px; border-radius: 50%; background: #e2e8f0; border: 4px solid #fff; margin: 0 auto 10px;"></div>
+                                <span style="display: block; font-size: 12px; font-weight: 600; color: #64748b;">Arrives to You</span>
+                                <span style="display: block; font-size: 11px; color: #94a3b8;">7-15 Days</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <div class="tab-content" id="about-tab" style="display: none;">
-                <h4>About Seller</h4>
-                <div style="margin-top: 20px; display: flex; gap: 20px; align-items: flex-start;">
-                    <div style="width: 80px; height: 80px; background: #f0f8ff; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 30px; color: #0d6efd; font-weight: bold; flex-shrink: 0;">
-                        {{ substr($product->supplier->name ?? 'S', 0, 1) }}
-                    </div>
-                    <div>
-                        <h5 style="font-size: 18px; margin-bottom: 5px; color: #1c1c1c;">{{ $product->supplier->name ?? 'Brand Supplier' }}</h5>
-                        <p style="color: #8b96a5; font-size: 14px; margin-bottom: 10px;"><i class="fa-solid fa-location-dot"></i> {{ $product->supplier->location ?? 'Global Location' }}</p>
-                        <div style="display: flex; gap: 10px;">
-                            @if($product->supplier && $product->supplier->is_verified)
-                                <span style="background: #e5f8ed; color: #00b517; padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: 500;"><i class="fa-solid fa-circle-check"></i> Verified</span>
-                            @endif
-                            <span style="background: #f0f8ff; color: #0d6efd; padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: 500;"><i class="fa-solid fa-globe"></i> Global Export</span>
+                <div class="seller-profile-wrapper" style="opacity: 0;">
+                    <div style="display: flex; gap: 30px; align-items: center; margin-bottom: 35px; background: linear-gradient(135deg, #0d6efd08, #ffffff); padding: 30px; border-radius: 20px; border: 1px solid #0d6efd15;">
+                        <div class="seller-big-avatar" style="width: 100px; height: 100px; border-radius: 25px; background: #0d6efd; color: white; display: flex; align-items: center; justify-content: center; font-size: 40px; font-weight: 800; transform: rotate(-5deg); box-shadow: 10px 10px 30px rgba(13,110,253,0.15);">
+                             {{ substr($product->supplier->name ?? 'S', 0, 1) }}
+                        </div>
+                        <div>
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                <h3 style="margin: 0; font-size: 24px; font-weight: 800; color: #1e293b;">{{ $product->supplier->name ?? 'Global Brand' }}</h3>
+                                @if($product->supplier && $product->supplier->is_verified)
+                                    <div title="Verified Supplier" style="width: 22px; height: 22px; background: #00b517; border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-size: 12px;">
+                                        <i class="fa-solid fa-check"></i>
+                                    </div>
+                                @endif
+                            </div>
+                            <p style="margin: 0 0 15px; color: #64748b; font-size: 15px;"><i class="fa-solid fa-location-dot" style="margin-right: 5px; color: #ef4444;"></i> {{ $product->supplier->location ?? 'Headquarters' }}</p>
+                            <div style="display: flex; gap: 15px;">
+                                <div style="background: #f1f5f9; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; color: #475569;">
+                                    <i class="fa-solid fa-award" style="color: #eab308; margin-right: 5px;"></i> Top Rated Seller
+                                </div>
+                                <div style="background: #f1f5f9; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; color: #475569;">
+                                     <i class="fa-solid fa-globe" style="color: #3b82f6; margin-right: 5px;"></i> Official Supplier
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div style="margin-top: 20px; color: #505050; font-size: 14px; line-height: 1.6;">
-                    <p>Established supplier specialized in {{ $product->category->name ?? 'General Goods' }} and related categories. Known for high-quality {{ $product->material ?? 'products' }} and reliable service.</p>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+                        <div>
+                            <h5 style="font-size: 18px; margin-bottom: 15px;">Seller Story</h5>
+                            <p style="line-height: 1.8; color: #4b5563; font-size: 14px;">Our partner, <strong>{{ $product->supplier->name ?? 'this supplier' }}</strong>, has been a leading force in the electronics and consumer goods market for over a decade. Committed to excellence and quality assurance, they have served over thousands of satisfied customers globally.</p>
+                        </div>
+                        <div style="background: #1e293b; color: #fff; padding: 25px; border-radius: 18px; position: relative; overflow: hidden;">
+                             <i class="fa-solid fa-quote-right" style="position: absolute; right: -10px; bottom: -10px; font-size: 100px; color: #ffffff08;"></i>
+                             <h5 style="margin: 0 0 10px; color: #94a3b8; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Quality Commitment</h5>
+                             <p style="margin: 0; font-size: 16px; font-style: italic; line-height: 1.6; color: #cbd5e1;">"We ensure every single product meets international standards before shipping to our valued customers."</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -535,7 +672,52 @@
             const targetContent = document.getElementById(tabName + '-tab');
             if (targetContent) {
                 targetContent.style.display = 'block';
-                targetContent.classList.add('active');
+                setTimeout(() => targetContent.classList.add('active'), 10);
+                
+                // GSAP Animations when switching tabs
+                if (tabName === 'reviews') {
+                    gsap.from("#reviews-tab .review-item", {
+                        y: 30,
+                        opacity: 0,
+                        stagger: 0.1,
+                        duration: 0.6,
+                        ease: "power2.out"
+                    });
+                }
+                
+                if (tabName === 'shipping') {
+                    gsap.from(".shipping-info-wrapper", {
+                        y: 20,
+                        opacity: 0,
+                        duration: 0.8,
+                        ease: "power3.out"
+                    });
+                    gsap.from(".shipping-card", {
+                        scale: 0.95,
+                        opacity: 0,
+                        stagger: 0.2,
+                        delay: 0.2,
+                        duration: 0.6,
+                        ease: "back.out(1.7)"
+                    });
+                }
+                
+                if (tabName === 'about') {
+                     gsap.set(".seller-profile-wrapper", { opacity: 1 });
+                     gsap.from(".seller-big-avatar", {
+                        rotate: -45,
+                        scale: 0,
+                        duration: 0.8,
+                        ease: "back.out(2)"
+                     });
+                     gsap.from(".seller-profile-wrapper h3, .seller-profile-wrapper p", {
+                        x: 20,
+                        opacity: 0,
+                        stagger: 0.1,
+                        delay: 0.3,
+                        duration: 0.5
+                     });
+                }
                 
                 // Trigger overflow check if switching back to description
                 if (tabName === 'description') {
@@ -544,6 +726,38 @@
             }
         });
     });
+
+    // Star Rating Logic
+    document.querySelectorAll('.star-btn').forEach(star => {
+        star.addEventListener('mouseover', function() {
+            const val = this.getAttribute('data-value');
+            highlightStars(val);
+        });
+        
+        star.addEventListener('mouseleave', function() {
+            const currentVal = document.getElementById('review_rating_val').value;
+            highlightStars(currentVal);
+        });
+        
+        star.addEventListener('click', function() {
+            const val = this.getAttribute('data-value');
+            document.getElementById('review_rating_val').value = val;
+            highlightStars(val);
+        });
+    });
+
+    function highlightStars(val) {
+        document.querySelectorAll('.star-btn').forEach(btn => {
+            const btnVal = btn.getAttribute('data-value');
+            if (btnVal <= val) {
+                btn.classList.replace('fa-regular', 'fa-solid');
+                btn.style.color = '#ff9017';
+            } else {
+                btn.classList.replace('fa-solid', 'fa-regular');
+                btn.style.color = '#dee2e7';
+            }
+        });
+    }
 
     // Mobile Slider dot tracking
     document.addEventListener('DOMContentLoaded', function() {

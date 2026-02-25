@@ -2,14 +2,43 @@
     $active = $active ?? '';
     $user = auth()->user();
     $unreadMessages = \App\Models\Message::where('is_read', false)
+        ->where('user_id', '!=', auth()->id())
         ->whereHas('conversation', function($q) {
-            $q->where('receiver_id', auth()->id());
+            $q->where('sender_id', auth()->id())
+              ->orWhere('receiver_id', auth()->id());
         })->count();
 
-    $pendingOrdersCount = $user->orders()->whereIn('status', ['pending', 'processing', 'shipped'])->count();
+    $unviewedOrdersCount = $user->orders()->where('is_viewed_by_user', false)->count();
 @endphp
 
-<aside class="dashboard-sidebar">
+<!-- Mobile Header Toggle (Visible only on mobile) -->
+<div class="user-mobile-header">
+    <button class="user-sidebar-toggle" onclick="toggleUserSidebar()">
+        <i class="fa-solid fa-bars-staggered"></i>
+    </button>
+    <div class="user-mobile-logo">
+        <i class="fa-solid fa-gauge-high"></i> Dashboard
+    </div>
+    <div class="user-mobile-avatar">
+        @if($user->profile_image)
+            <img src="{{ asset('storage/' . $user->profile_image) }}" alt="P">
+        @else
+            <div class="m-avatar-init">{{ strtoupper(substr($user->name, 0, 1)) }}</div>
+        @endif
+    </div>
+</div>
+
+<!-- Backdrop Overlay -->
+<div class="user-sidebar-overlay" id="userSidebarOverlay" onclick="toggleUserSidebar()"></div>
+
+<aside class="dashboard-sidebar" id="userDashboardSidebar">
+    <div class="sidebar-header-mobile">
+        <span class="m-sidebar-title">NAVIGATION</span>
+        <button class="m-sidebar-close" onclick="toggleUserSidebar()">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
+
     <div class="sidebar-home-link">
         <a href="{{ route('home') }}" class="home-btn-premium">
             <i class="fa-solid fa-arrow-left"></i> Back to Home
@@ -45,8 +74,8 @@
         </a>
         <a href="{{ route('user.orders') }}" class="sidebar-link {{ $active === 'orders' ? 'active' : '' }}">
             <i class="fa-solid fa-bag-shopping"></i> My Orders
-            @if($pendingOrdersCount > 0)
-                <span style="margin-left: auto; background: rgba(255,255,255,0.2); color: white; border-radius: 6px; padding: 2px 8px; font-size: 10px; font-weight: 700;">{{ $pendingOrdersCount }}</span>
+            @if($unviewedOrdersCount > 0)
+                <span style="margin-left: auto; background: rgba(255,255,255,0.2); color: white; border-radius: 6px; padding: 2px 8px; font-size: 10px; font-weight: 700;">{{ $unviewedOrdersCount }}</span>
             @endif
         </a>
         <a href="{{ route('user.wishlist') }}" class="sidebar-link {{ $active === 'wishlist' ? 'active' : '' }}">
@@ -72,3 +101,20 @@
         </form>
     </div>
 </aside>
+
+<script>
+    function toggleUserSidebar() {
+        const sidebar = document.getElementById('userDashboardSidebar');
+        const overlay = document.getElementById('userSidebarOverlay');
+        
+        sidebar.classList.toggle('active');
+        overlay.classList.toggle('active');
+        
+        // Prevent body scroll when sidebar is open
+        if (sidebar.classList.contains('active')) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+    }
+</script>

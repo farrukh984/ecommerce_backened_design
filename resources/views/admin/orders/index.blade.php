@@ -171,3 +171,71 @@
 </div>
 
 @endsection
+@section('styles')
+<style>
+    /* Force table to scroll instead of squishing columns */
+    .premium-table td {
+        white-space: nowrap;
+    }
+
+    /* Custom Premium Scrollbar for Table */
+    .table-responsive::-webkit-scrollbar {
+        height: 6px;
+    }
+
+    .table-responsive::-webkit-scrollbar-track {
+        background: #f1f5f9;
+        border-radius: 10px;
+    }
+
+    .table-responsive::-webkit-scrollbar-thumb {
+        background: #cbd5e0;
+        border-radius: 10px;
+    }
+
+    .table-responsive::-webkit-scrollbar-thumb:hover {
+        background: var(--admin-primary);
+    }
+
+    @media (max-width: 768px) {
+        .stats-grid {
+            margin-bottom: 20px !important;
+        }
+
+        .action-header {
+            flex-direction: column;
+            align-items: stretch !important;
+            gap: 15px;
+            padding: 20px 16px !important;
+        }
+
+        .action-header form {
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .action-header form input,
+        .action-header form select {
+            max-width: 100% !important;
+            width: 100% !important;
+        }
+
+        .action-header form button {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .premium-table th, .premium-table td {
+            padding: 12px 16px !important;
+            font-size: 13px !important;
+        }
+
+        .premium-table strong {
+            white-space: nowrap;
+        }
+    }
+</style>
+@endsection
+
+@section('scripts')
+@endsection

@@ -93,9 +93,9 @@
                     <a href="{{ route('google.redirect') }}" class="btn-social google">
                         <i class="fa-brands fa-google"></i> Google
                     </a>
-                    <button type="button" class="btn-social facebook">
+                    <a href="{{ route('facebook.redirect') }}" class="btn-social facebook">
                         <i class="fa-brands fa-facebook-f"></i> Facebook
-                    </button>
+                    </a>
                 </div>
             </form>
 

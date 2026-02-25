@@ -15,6 +15,103 @@
         border: 1px solid var(--admin-border);
     }
 
+    @media (max-width: 900px) {
+        .chat-container {
+            grid-template-columns: 1fr;
+            height: calc(100vh - 120px);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .conv-sidebar {
+            display: flex !important;
+            height: {{ isset($conversation) ? '85px' : '100%' }} !important;
+            width: 100% !important;
+            border-right: none;
+            overflow-x: auto !important;
+            background: #fff;
+            flex-shrink: 0;
+        }
+
+        .conv-list {
+            display: flex !important;
+            flex-direction: {{ isset($conversation) ? 'row' : 'column' }} !important;
+            overflow-x: auto !important;
+            width: 100%;
+        }
+
+        .conv-item {
+            min-width: {{ isset($conversation) ? '180px' : '100%' }} !important;
+            padding: 10px 15px !important;
+            border-bottom: {{ isset($conversation) ? 'none' : '1px solid #f1f5f9' }};
+            border-right: {{ isset($conversation) ? '1px solid #f1f5f9' : 'none' }};
+        }
+
+        .conv-avatar {
+            width: 38px !important;
+            height: 38px !important;
+        }
+
+        .chat-window {
+            display: flex !important;
+            height: {{ isset($conversation) ? 'calc(100% - 85px)' : '100%' }} !important;
+            width: 100% !important;
+        }
+
+        .chat-input-area {
+            padding: 8px 10px;
+        }
+
+        .chat-send-btn {
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            min-width: 40px;
+        }
+
+        .chat-send-btn span {
+            display: none !important;
+        }
+
+        .chat-send-btn i {
+            margin-right: -2px; /* Visual center adjustment */
+            font-size: 16px;
+        }
+
+        .mobile-back-btn {
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            background: #f1f5f9;
+            border-radius: 10px;
+            color: #475569;
+            text-decoration: none;
+            margin-right: 5px;
+        }
+
+        .chat-header-info h4 {
+            font-size: 14px !important;
+            max-width: 130px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .md-only-hidden {
+            display: none !important;
+        }
+    }
+
+    .mobile-back-btn { display: none; }
+
     /* Conversations Sidebar */
     .conv-sidebar {
         border-right: 1px solid var(--admin-border);
@@ -302,16 +399,24 @@
 
     .empty-chat {
         flex: 1;
-        display: flex;
+        display: flex !important; /* Forced flex for mobile visibility */
         flex-direction: column;
         align-items: center;
         justify-content: center;
         color: #94a3b8;
-        gap: 12px;
+        gap: 15px;
+        padding: 40px;
+        width: 100%;
+        text-align: center;
     }
-    .empty-chat i { font-size: 60px; opacity: 0.2; }
-    .empty-chat h3 { color: #64748b; margin: 0; }
-    .empty-chat p { color: #94a3b8; font-size: 14px; margin: 0; }
+    .empty-chat i { 
+        font-size: 60px !important; 
+        opacity: 0.5 !important; 
+        color: var(--admin-primary) !important;
+        display: block !important;
+    }
+    .empty-chat h3 { color: #0f172a; margin: 0; font-family: 'Outfit', sans-serif; font-size: 20px; font-weight: 800; }
+    .empty-chat p { color: #64748b; font-size: 13px; margin: 0; max-width: 250px; }
 
     .image-preview-container {
         display: none;
@@ -376,9 +481,10 @@
                     </div>
                 </a>
             @empty
-                <div style="padding: 40px; text-align: center; color: #94a3b8;">
-                    <i class="fa-solid fa-inbox" style="font-size: 32px; opacity: 0.3; display: block; margin-bottom: 12px;"></i>
-                    <p style="font-size: 13px;">No conversations yet</p>
+                <div class="empty-chat">
+                    <i class="fa-solid fa-headset"></i>
+                    <h3>Inbox Empty</h3>
+                    <p>No conversations yet. Your customer messages will appear here.</p>
                 </div>
             @endforelse
         </div>
@@ -391,6 +497,9 @@
     @endphp
     <div class="chat-window">
         <div class="chat-header">
+            <a href="{{ route('admin.messages.index') }}" class="mobile-back-btn">
+                <i class="fa-solid fa-chevron-left"></i>
+            </a>
             @if($chatUser->profile_image)
                 <img src="{{ asset('storage/' . $chatUser->profile_image) }}" class="conv-avatar" style="width: 40px; height: 40px;">
             @else
@@ -405,7 +514,7 @@
             </div>
             <div style="margin-left: auto; display: flex; align-items: center; gap: 8px;">
                 @if($chatUser->email)
-                    <span style="font-size: 12px; color: var(--admin-text-sub); background: #f1f5f9; padding: 4px 10px; border-radius: 20px;">{{ $chatUser->email }}</span>
+                    <span class="md-only-hidden" style="font-size: 12px; color: var(--admin-text-sub); background: #f1f5f9; padding: 4px 10px; border-radius: 20px;">{{ $chatUser->email }}</span>
                 @endif
             </div>
         </div>
@@ -454,7 +563,7 @@
                 <input type="file" name="image" id="imageInput" accept="image/*" style="display: none;" onchange="previewImage(this)">
                 <label for="imageInput"><i class="fa-solid fa-image" style="font-size: 18px;"></i></label>
                 <button type="submit" class="chat-send-btn">
-                    <i class="fa-solid fa-paper-plane"></i> Reply
+                    <i class="fa-solid fa-paper-plane"></i> <span>Reply</span>
                 </button>
             </form>
         </div>
@@ -556,13 +665,24 @@
         e.preventDefault();
         const formData = new FormData(this);
         const msgInput = document.getElementById('messageInput');
+        const sendBtn = this.querySelector('.chat-send-btn');
 
         if (!msgInput.value.trim() && !document.getElementById('imageInput').files.length) return;
+
+        // Clear input immediately for better UX
+        const originalMsg = msgInput.value;
+        msgInput.value = '';
+        document.getElementById('imageInput').value = '';
+        clearImagePreview();
+
+        sendBtn.disabled = true;
+        sendBtn.style.opacity = '0.6';
 
         fetch('{{ route("admin.messages.send") }}', {
             method: 'POST',
             headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'X-Requested-With': 'XMLHttpRequest', // Crucial for $request->ajax()
                 'Accept': 'application/json'
             },
             body: formData
@@ -570,9 +690,21 @@
         .then(r => r.json())
         .then(data => {
             if (data.status === 'success') {
-                msgInput.value = '';
-                clearImagePreview();
+                // Already cleared optimistically, but let's ensure focus
+                msgInput.focus();
+            } else {
+                // If failed, restore the message
+                msgInput.value = originalMsg;
+                alert('Error: ' + (data.message || 'Could not send message'));
             }
+        })
+        .catch(err => {
+            console.error(err);
+            msgInput.value = originalMsg;
+        })
+        .finally(() => {
+            sendBtn.disabled = false;
+            sendBtn.style.opacity = '1';
         });
     });
     @endif

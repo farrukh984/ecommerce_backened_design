@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Auth\GoogleController;
+use App\Http\Controllers\Auth\FacebookController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UserDashboardController;
@@ -92,6 +93,10 @@ Route::get('/auth/callback/google', [GoogleController::class, 'handleGoogleCallb
 Route::get('/auth/google/redirect', [GoogleController::class, 'redirectToGoogle']);
 Route::get('/auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
 
+// Facebook OAuth
+Route::get('/auth/facebook/redirect', [FacebookController::class, 'redirectToFacebook'])->name('facebook.redirect');
+Route::get('/auth/facebook/callback', [FacebookController::class, 'handleFacebookCallback'])->name('facebook.callback');
+
 
 /*
 |--------------------------------------------------------------------------
@@ -163,6 +168,10 @@ Route::middleware(['auth', 'is_admin'])
         Route::get('/messages/{id}', [App\Http\Controllers\MessageController::class, 'chat'])->name('messages.chat');
         Route::get('/messages/{id}/poll', [App\Http\Controllers\MessageController::class, 'getMessages'])->name('messages.poll');
         Route::post('/messages/send', [App\Http\Controllers\MessageController::class, 'send'])->name('messages.send');
+        // Reviews Management
+        Route::get('/reviews', [App\Http\Controllers\Admin\ProductReviewController::class, 'index'])->name('reviews.index');
+        Route::patch('/reviews/{review}/approve', [App\Http\Controllers\Admin\ProductReviewController::class, 'approve'])->name('reviews.approve');
+        Route::delete('/reviews/{review}', [App\Http\Controllers\Admin\ProductReviewController::class, 'destroy'])->name('reviews.destroy');
     });
 
 /*
@@ -185,4 +194,7 @@ Route::middleware(['auth', 'is_user'])->group(function () {
     Route::get('/dashboard/messages/{id}', [App\Http\Controllers\MessageController::class, 'chat'])->name('user.messages.chat');
     Route::get('/dashboard/messages/{id}/poll', [App\Http\Controllers\MessageController::class, 'getMessages'])->name('user.messages.poll');
     Route::post('/dashboard/messages/send', [App\Http\Controllers\MessageController::class, 'send'])->name('user.messages.send');
+
+    // Review Routes
+    Route::post('/reviews', [App\Http\Controllers\ReviewController::class, 'store'])->name('reviews.store');
 });

@@ -8,54 +8,54 @@
 <!-- Main Stats -->
 <div class="stats-grid">
     <div class="stat-card">
+        <div class="stat-icon bg-green">
+            <i class="fa-solid fa-chart-line"></i>
+        </div>
         <div class="stat-content">
             <h3>Total Sales</h3>
             <p>${{ number_format($stats['total_revenue'], 2) }}</p>
         </div>
-        <div class="stat-icon bg-green">
-            <i class="fa-solid fa-chart-line"></i>
-        </div>
     </div>
     <div class="stat-card">
+        <div class="stat-icon bg-blue">
+            <i class="fa-solid fa-bag-shopping"></i>
+        </div>
         <div class="stat-content">
             <h3>Total Orders</h3>
             <p>{{ number_format($stats['total_orders']) }}</p>
         </div>
-        <div class="stat-icon bg-blue">
-            <i class="fa-solid fa-bag-shopping"></i>
-        </div>
     </div>
     <div class="stat-card">
+        <div class="stat-icon bg-purple">
+            <i class="fa-solid fa-box"></i>
+        </div>
         <div class="stat-content">
             <h3>Total Products</h3>
             <p>{{ number_format($stats['total_products']) }}</p>
         </div>
-        <div class="stat-icon bg-purple">
-            <i class="fa-solid fa-box"></i>
-        </div>
     </div>
     <div class="stat-card">
+        <div class="stat-icon bg-orange">
+            <i class="fa-solid fa-users"></i>
+        </div>
         <div class="stat-content">
             <h3>Active Users</h3>
             <p>{{ number_format($stats['total_users']) }}</p>
         </div>
-        <div class="stat-icon bg-orange">
-            <i class="fa-solid fa-users"></i>
-        </div>
     </div>
 </div>
 
-<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 32px; margin-bottom: 32px;">
+<div class="dashboard-main-grid">
     <!-- Left Column: Recent Orders & Stock Alerts -->
-    <div style="display: flex; flex-direction: column; gap: 32px;">
+    <div class="dashboard-left">
         
         <!-- Stock Alerts if any -->
         @if($outOfStockProducts->count() > 0 || $lowStockProducts->count() > 0)
         <div class="premium-card" style="border-left: 5px solid #ef4444;">
-            <div class="action-header">
+            <div class="action-header alert-header">
                 <div class="header-title">
-                    <h2 style="color: #ef4444;"><i class="fa-solid fa-triangle-exclamation"></i> Critical Inventory Alerts</h2>
-                    <p>Immediate action required for these items</p>
+                    <h2 style="color: #ef4444;"><i class="fa-solid fa-triangle-exclamation"></i> Critical Inventory</h2>
+                    <p>Action required for these items</p>
                 </div>
             </div>
             <div style="padding: 24px;">
@@ -164,7 +164,7 @@
     </div>
 
     <!-- Right Column: Quick Stats & Actions -->
-    <div style="display: flex; flex-direction: column; gap: 32px;">
+    <div class="dashboard-right">
         
         <!-- Quick Actions -->
         <div class="premium-card">
@@ -246,9 +246,70 @@
 
 @section('styles')
 <style>
+    .dashboard-main-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 24px;
+        margin-bottom: 32px;
+    }
+    
+    .dashboard-left, .dashboard-right {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+        min-width: 0;
+    }
+
+    /* Premium Horizontal Scroll for content boxes */
+    .table-responsive, .premium-card {
+        overflow-x: auto;
+        scrollbar-width: thin;
+        scrollbar-color: var(--admin-border) transparent;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .table-responsive::-webkit-scrollbar,
+    .premium-card::-webkit-scrollbar {
+        height: 4px;
+    }
+
+    .table-responsive::-webkit-scrollbar-thumb,
+    .premium-card::-webkit-scrollbar-thumb {
+        background: var(--admin-border);
+        border-radius: 10px;
+    }
+
+    .stat-card {
+        flex-direction: row-reverse; /* Icon on the left-ish for better mobile flow */
+        justify-content: flex-end;
+        gap: 20px;
+    }
+
     @media (max-width: 1100px) {
-        div[style*="grid-template-columns: 2fr 1fr"] {
-            grid-template-columns: 1fr !important;
+        .dashboard-main-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .dashboard-main-grid {
+            gap: 20px;
+            overflow: visible;
+        }
+        .header-title h2 {
+            font-size: 16px !important;
+        }
+        .stat-card {
+            padding: 20px;
+        }
+        .stat-content p {
+            font-size: 22px;
+        }
+        .action-header {
+            flex-direction: column;
+            align-items: flex-start !important;
+            gap: 12px;
+            padding: 20px !important;
         }
     }
 </style>

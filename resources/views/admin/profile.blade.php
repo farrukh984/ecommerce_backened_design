@@ -4,47 +4,46 @@
 @section('header_title', 'Account Settings')
 
 @section('admin_content')
-
-<div style="max-width: 1100px; margin: 0 auto;">
-    <section class="premium-card" style="padding: 0; overflow: visible;">
+<div class="profile-page-wrapper">
+    <section class="premium-card profile-main-card">
         <!-- Premium Header with Cover Image -->
-        <div style="height: 220px; background: #f1f5f9; border-radius: var(--admin-radius-lg) var(--admin-radius-lg) 0 0; position: relative; overflow: visible;">
-            <div id="coverContainer" style="width: 100%; height: 100%; overflow: hidden; border-radius: inherit;">
+        <div class="profile-header-cover">
+            <div id="coverContainer" class="cover-image-container">
                 @if(auth()->user()->cover_image)
-                    <img src="{{ asset('storage/' . auth()->user()->cover_image) }}" id="coverPreviewImg" style="width: 100%; height: 100%; object-fit: cover;">
+                    <img src="{{ asset('storage/' . auth()->user()->cover_image) }}" id="coverPreviewImg">
                 @else
-                    <div id="coverPreviewImg" style="width: 100%; height: 100%; background: linear-gradient(135deg, var(--admin-primary), var(--admin-secondary)); opacity: 0.9;"></div>
+                    <div id="coverPreviewImg" class="cover-placeholder"></div>
                 @endif
             </div>
 
             <!-- Change Cover Button -->
-            <label for="adminCoverImage" style="position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); padding: 10px 20px; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 8px; box-shadow: var(--admin-shadow-md); border: 1px solid white; color: var(--admin-text);">
-                <i class="fa-solid fa-camera"></i> Change Cover
+            <label for="adminCoverImage" class="change-cover-btn">
+                <i class="fa-solid fa-camera"></i> <span>Change Cover</span>
             </label>
             <input type="file" name="cover_image" id="adminCoverImage" accept="image/*" style="display: none;" onchange="previewCoverImage(this)" form="adminProfileForm">
 
             <!-- Avatar & Info Floating -->
-            <div style="position: absolute; bottom: -60px; left: 40px; display: flex; align-items: flex-end; gap: 28px;">
-                <div style="width: 150px; height: 150px; border-radius: 40px; border: 7px solid white; box-shadow: var(--admin-shadow-lg); background: #f8fafc; overflow: hidden; position: relative;">
+            <div class="profile-identity-section">
+                <div class="avatar-wrapper">
                     @if(auth()->user()->profile_image)
-                        <img src="{{ asset('storage/' . auth()->user()->profile_image) }}" id="adminPreviewImg" style="width: 100%; height: 100%; object-fit: cover;">
+                        <img src="{{ asset('storage/' . auth()->user()->profile_image) }}" id="adminPreviewImg">
                     @else
-                        <div id="adminPreviewImg" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #eef2ff; color: var(--admin-primary); font-size: 48px; font-weight: 800;">
+                        <div id="adminPreviewImg" class="avatar-placeholder">
                             {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                         </div>
                     @endif
-                    <label for="adminProfileImage" style="position: absolute; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; color: white; opacity: 0; transition: 0.3s; cursor: pointer;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0'">
-                        <i class="fa-solid fa-pen-to-square" style="font-size: 24px;"></i>
+                    <label for="adminProfileImage" class="avatar-edit-overlay">
+                        <i class="fa-solid fa-pen-to-square"></i>
                     </label>
                     <input type="file" name="profile_image" id="adminProfileImage" accept="image/*" style="display: none;" onchange="previewAdminImage(this)" form="adminProfileForm">
                 </div>
-                <div style="margin-bottom: 25px;">
-                    <h2 style="font-family: 'Outfit', sans-serif; font-size: 32px; font-weight: 800; color: #fff; text-shadow: 0 4px 12px rgba(0,0,0,0.15); margin-bottom: 5px;">{{ auth()->user()->name }}</h2>
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <span style="background: rgba(255,255,255,0.25); backdrop-filter: blur(8px); color: white; padding: 5px 15px; border-radius: 50px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; border: 1px solid rgba(255,255,255,0.3);">
-                            <i class="fa-solid fa-shield-check"></i> Super Administrator
+                <div class="identity-info">
+                    <h2>{{ auth()->user()->name }}</h2>
+                    <div class="status-pills">
+                        <span class="pill super-admin">
+                            <i class="fa-solid fa-shield-check"></i> Admin
                         </span>
-                        <span style="background: rgba(16, 185, 129, 0.2); backdrop-filter: blur(8px); color: #10b981; padding: 5px 15px; border-radius: 50px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; border: 1px solid rgba(16, 185, 129, 0.3);">
+                        <span class="pill status-online">
                             <i class="fa-solid fa-circle"></i> Online
                         </span>
                     </div>
@@ -52,28 +51,28 @@
             </div>
         </div>
 
-        <div style="padding: 100px 48px 48px;">
+        <div class="profile-content-body">
             @if(session('success'))
-                <div style="background: #dcfce7; color: #166534; padding: 18px 24px; border-radius: 16px; margin-bottom: 32px; font-weight: 700; display: flex; align-items: center; gap: 12px; border: 1px solid #bbf7d0; animation: slideDown 0.4s ease;">
-                    <i class="fa-solid fa-circle-check" style="font-size: 20px;"></i> {{ session('success') }}
+                <div class="alert alert-success">
+                    <i class="fa-solid fa-circle-check"></i> {{ session('success') }}
                 </div>
             @endif
 
             @if($errors->any())
-                <div style="background: #fee2e2; color: #991b1b; padding: 18px 24px; border-radius: 16px; margin-bottom: 32px; font-weight: 700; display: flex; align-items: center; gap: 12px; border: 1px solid #fecaca; animation: slideDown 0.4s ease;">
-                    <i class="fa-solid fa-circle-exclamation" style="font-size: 20px;"></i> {{ $errors->first() }}
+                <div class="alert alert-danger">
+                    <i class="fa-solid fa-circle-exclamation"></i> {{ $errors->first() }}
                 </div>
             @endif
 
             <form method="POST" action="{{ route('admin.profile.update') }}" class="profile-form" enctype="multipart/form-data" id="adminProfileForm">
                 @csrf
                 
-                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 48px;">
+                <div class="profile-grid">
                     <!-- Personal Info -->
-                    <div style="display: flex; flex-direction: column; gap: 40px;">
-                        <div>
-                            <h3 style="font-family: 'Outfit', sans-serif; font-size: 20px; font-weight: 800; margin-bottom: 24px; display: flex; align-items: center; gap: 12px;">
-                                <div style="width: 32px; height: 32px; background: var(--admin-primary-glow); color: var(--admin-primary); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                    <div class="form-sections-stack">
+                        <div class="settings-section">
+                            <h3 class="section-title">
+                                <div class="title-icon basic-info-icon">
                                     <i class="fa-solid fa-user-gear"></i>
                                 </div>
                                 Basic Information
@@ -81,17 +80,17 @@
                             <div class="form-row">
                                 <div class="form-group">
                                     <label>Full Name</label>
-                                    <input type="text" name="name" class="form-control" value="{{ old('name', auth()->user()->name) }}" required placeholder="Enter your full name">
+                                    <input type="text" name="name" class="form-control" value="{{ old('name', auth()->user()->name) }}" required>
                                 </div>
                                 <div class="form-group">
                                     <label>Email Address</label>
-                                    <input type="email" name="email" class="form-control" value="{{ old('email', auth()->user()->email) }}" required placeholder="admin@example.com">
+                                    <input type="email" name="email" class="form-control" value="{{ old('email', auth()->user()->email) }}" required>
                                 </div>
                             </div>
                             <div class="form-row">
                                 <div class="form-group">
                                     <label>Phone Number</label>
-                                    <input type="text" name="phone" class="form-control" value="{{ old('phone', auth()->user()->phone) }}" placeholder="+92 300 1234567">
+                                    <input type="text" name="phone" class="form-control" value="{{ old('phone', auth()->user()->phone) }}">
                                 </div>
                                 <div class="form-group">
                                     <label>Country</label>
@@ -100,24 +99,24 @@
                             </div>
                         </div>
 
-                        <div>
-                            <h3 style="font-family: 'Outfit', sans-serif; font-size: 20px; font-weight: 800; margin-bottom: 24px; display: flex; align-items: center; gap: 12px;">
-                                <div style="width: 32px; height: 32px; background: rgba(14, 165, 233, 0.1); color: #0ea5e9; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                        <div class="settings-section">
+                            <h3 class="section-title">
+                                <div class="title-icon address-icon">
                                     <i class="fa-solid fa-location-dot"></i>
                                 </div>
                                 Address Details
                             </h3>
                             <div class="form-group">
                                 <label>Street Address</label>
-                                <input type="text" name="address" class="form-control" value="{{ old('address', auth()->user()->address) }}" placeholder="Full street address">
+                                <input type="text" name="address" class="form-control" value="{{ old('address', auth()->user()->address) }}">
                             </div>
-                            <div class="form-row" style="grid-template-columns: 1fr 1fr 1fr;">
+                            <div class="form-row address-row">
                                 <div class="form-group">
                                     <label>City</label>
                                     <input type="text" name="city" class="form-control" value="{{ old('city', auth()->user()->city) }}">
                                 </div>
                                 <div class="form-group">
-                                    <label>State / Province</label>
+                                    <label>Province</label>
                                     <input type="text" name="state" class="form-control" value="{{ old('state', auth()->user()->state) }}">
                                 </div>
                                 <div class="form-group">
@@ -127,23 +126,20 @@
                             </div>
                         </div>
 
-                        <div>
-                            <h3 style="font-family: 'Outfit', sans-serif; font-size: 20px; font-weight: 800; margin-bottom: 24px; display: flex; align-items: center; gap: 12px;">
-                                <div style="width: 32px; height: 32px; background: rgba(239, 68, 68, 0.1); color: #ef4444; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                        <div class="settings-section">
+                            <h3 class="section-title">
+                                <div class="title-icon security-icon">
                                     <i class="fa-solid fa-lock"></i>
                                 </div>
-                                Change Password
+                                Security
                             </h3>
-                            <div class="form-group" style="background: #fffbeb; border: 1px solid #fde68a; padding: 16px; border-radius: 12px; margin-bottom: 24px;">
-                                <div style="display: flex; gap: 10px; align-items: center; color: #92400e; font-size: 13px; font-weight: 600;">
-                                    <i class="fa-solid fa-circle-info"></i>
-                                    Leave password fields empty if you don't want to change it.
-                                </div>
+                            <div class="password-notice">
+                                <i class="fa-solid fa-circle-info"></i>
+                                Leave empty to keep your current password.
                             </div>
                             <div class="form-group">
                                 <label>Current Password</label>
                                 <input type="password" name="current_password" class="form-control" placeholder="••••••••">
-                                <small style="display: block; margin-top: 5px; color: var(--admin-text-sub); font-size: 11px;">Required only if changing password</small>
                             </div>
                             <div class="form-row">
                                 <div class="form-group">
@@ -151,56 +147,50 @@
                                     <input type="password" name="new_password" class="form-control" placeholder="••••••••">
                                 </div>
                                 <div class="form-group">
-                                    <label>Confirm New Password</label>
+                                    <label>Confirm Password</label>
                                     <input type="password" name="new_password_confirmation" class="form-control" placeholder="••••••••">
                                 </div>
                             </div>
                         </div>
 
-                        <div style="display: flex; justify-content: flex-end;">
-                            <button type="submit" class="btn-primary" style="padding: 16px 48px; font-size: 15px;">
-                                <i class="fa-solid fa-floppy-disk"></i> Save Changes
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary main-save-btn">
+                                <i class="fa-solid fa-floppy-disk"></i> Save All Changes
                             </button>
                         </div>
                     </div>
 
-                    <!-- Side Status -->
-                    <div style="display: flex; flex-direction: column; gap: 24px;">
-                        <div style="background: #f8fafc; border: 1px solid var(--admin-border); border-radius: 24px; padding: 32px; position: sticky; top: 32px;">
-                            <h4 style="font-size: 12px; font-weight: 800; color: var(--admin-text-sub); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 24px; display: flex; align-items: center; gap: 8px;">
-                                <i class="fa-solid fa-signal" style="font-size: 10px;"></i> Account Metrics
+                    <!-- Side Stats -->
+                    <div class="metrics-column">
+                        <div class="metrics-sidebar">
+                            <h4 class="metrics-title">
+                                <i class="fa-solid fa-signal"></i> Account Metrics
                             </h4>
                             
-                            <div style="margin-bottom: 32px; background: white; padding: 20px; border-radius: 16px; border: 1px solid var(--admin-border);">
-                                <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 800; margin-bottom: 12px;">
-                                    <span style="color: var(--admin-text);">Profile Strength</span>
-                                    <span style="color: var(--admin-primary);">{{ auth()->user()->profile_completion }}%</span>
+                            <div class="strength-card">
+                                <div class="strength-info">
+                                    <span>Profile Strength</span>
+                                    <span class="value">{{ auth()->user()->profile_completion }}%</span>
                                 </div>
-                                <div style="width: 100%; height: 10px; background: #e2e8f0; border-radius: 5px; overflow: hidden;">
-                                    <div style="width: {{ auth()->user()->profile_completion }}%; height: 100%; background: linear-gradient(90deg, var(--admin-primary), var(--admin-secondary)); border-radius: 5px;"></div>
-                                </div>
-                            </div>
-
-                            <div style="display: flex; flex-direction: column; gap: 16px;">
-                                <div style="display: flex; align-items: center; gap: 14px; background: white; padding: 14px; border-radius: 14px; border: 1px solid var(--admin-border);">
-                                    <div style="width: 32px; height: 32px; border-radius: 8px; background: #ecfdf5; color: #10b981; display: flex; align-items: center; justify-content: center; font-size: 14px;">
-                                        <i class="fa-solid fa-envelope-circle-check"></i>
-                                    </div>
-                                    <div style="font-size: 13px; font-weight: 700;">Email Verified</div>
-                                </div>
-                                <div style="display: flex; align-items: center; gap: 14px; background: white; padding: 14px; border-radius: 14px; border: 1px solid var(--admin-border);">
-                                    <div style="width: 32px; height: 32px; border-radius: 8px; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center; font-size: 14px;">
-                                        <i class="fa-solid fa-key"></i>
-                                    </div>
-                                    <div style="font-size: 13px; font-weight: 700;">2FA Status: Restricted</div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: {{ auth()->user()->profile_completion }}%"></div>
                                 </div>
                             </div>
 
-                            <div style="margin-top: 32px; padding: 20px; background: #f1f5f9; border-radius: 16px;">
-                                <div style="font-size: 11px; color: var(--admin-text-sub); font-weight: 700; text-transform: uppercase; margin-bottom: 10px;">Security Policy</div>
-                                <p style="font-size: 12px; color: var(--admin-text); line-height: 1.6; margin: 0;">
-                                    Any changes to administrator credentials are logged for security auditing purposes.
-                                </p>
+                            <div class="status-list">
+                                <div class="status-item verified">
+                                    <i class="fa-solid fa-envelope-circle-check"></i>
+                                    <span>Verified</span>
+                                </div>
+                                <div class="status-item restricted">
+                                    <i class="fa-solid fa-key"></i>
+                                    <span>2FA: Restricted</span>
+                                </div>
+                            </div>
+
+                            <div class="security-info-box">
+                                <div class="info-label">Security Notice</div>
+                                <p>All account changes are logged for auditing purposes.</p>
                             </div>
                         </div>
                     </div>
@@ -210,6 +200,140 @@
     </section>
 </div>
 
+@endsection
+
+@section('styles')
+<style>
+    .profile-page-wrapper { max-width: 1100px; margin: 0 auto; }
+    .profile-main-card { padding: 0 !important; overflow: visible !important; }
+    
+    .profile-header-cover {
+        height: 220px;
+        position: relative;
+        border-radius: 20px 20px 0 0;
+    }
+    
+    .cover-image-container { width: 100%; height: 100%; border-radius: inherit; overflow: hidden; background: #e2e8f0; }
+    .cover-image-container img { width: 100%; height: 100%; object-fit: cover; }
+    .cover-placeholder { width: 100%; height: 100%; background: linear-gradient(135deg, var(--admin-primary), var(--admin-secondary)); }
+    
+    .change-cover-btn {
+        position: absolute; top: 20px; right: 20px;
+        background: rgba(255,255,255,0.9);
+        backdrop-filter: blur(10px);
+        padding: 8px 16px;
+        border-radius: 12px;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 700;
+        display: flex; align-items: center; gap: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        z-index: 10;
+    }
+
+    .profile-identity-section {
+        position: absolute; bottom: -60px; left: 40px;
+        display: flex; align-items: flex-end; gap: 24px;
+        z-index: 20;
+    }
+
+    .avatar-wrapper {
+        width: 140px; height: 140px;
+        border-radius: 35px; border: 6px solid white;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        background: #fff; overflow: hidden; position: relative;
+    }
+    .avatar-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+    .avatar-placeholder { 
+        width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+        background: #f1f5f9; color: var(--admin-primary); font-size: 40px; font-weight: 800;
+    }
+    
+    .avatar-edit-overlay {
+        position: absolute; inset: 0; background: rgba(0,0,0,0.4);
+        display: flex; align-items: center; justify-content: center;
+        color: white; opacity: 0; transition: 0.3s; cursor: pointer;
+    }
+    .avatar-wrapper:hover .avatar-edit-overlay { opacity: 1; }
+
+    .identity-info h2 {
+        font-size: 28px; font-weight: 800; color: white;
+        text-shadow: 0 2px 10px rgba(0,0,0,0.3); margin-bottom: 8px;
+    }
+    .status-pills { display: flex; gap: 8px; }
+    .pill {
+        padding: 4px 12px; border-radius: 50px; font-size: 10px; font-weight: 700;
+        text-transform: uppercase; border: 1px solid rgba(255,255,255,0.3);
+        backdrop-filter: blur(5px);
+    }
+    .super-admin { background: rgba(255,255,255,0.2); color: white; }
+    .status-online { background: rgba(16, 185, 129, 0.2); color: #10b981; border-color: rgba(16, 185, 129, 0.4); }
+
+    .profile-content-body { padding: 90px 40px 40px; }
+    .profile-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 40px; }
+    
+    .settings-section { margin-bottom: 40px; }
+    .section-title { 
+        font-size: 18px; font-weight: 800; margin-bottom: 24px; 
+        display: flex; align-items: center; gap: 12px; color: #1e293b;
+    }
+    .title-icon {
+        width: 32px; height: 32px; border-radius: 8px; display: flex;
+        align-items: center; justify-content: center; font-size: 14px;
+    }
+    .basic-info-icon { background: #eff6ff; color: var(--admin-primary); }
+    .address-icon { background: #f0fdf4; color: #10b981; }
+    .security-icon { background: #fef2f2; color: #ef4444; }
+
+    .password-notice {
+        background: #fffbeb; border: 1px solid #fde68a; padding: 12px 16px;
+        border-radius: 12px; font-size: 12px; color: #92400e; font-weight: 600;
+        margin-bottom: 20px; display: flex; gap: 10px; align-items: center;
+    }
+
+    .metrics-sidebar { position: sticky; top: 30px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 20px; padding: 24px; }
+    .metrics-title { font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; }
+    
+    .strength-card { background: white; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 20px; }
+    .strength-info { display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; margin-bottom: 10px; }
+    .progress-bar { height: 8px; background: #f1f5f9; border-radius: 10px; overflow: hidden; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--admin-primary), var(--admin-secondary)); }
+
+    .status-list { display: flex; flex-direction: column; gap: 12px; }
+    .status-item { 
+        display: flex; align-items: center; gap: 12px; padding: 12px; 
+        background: white; border-radius: 12px; border: 1px solid #e2e8f0; font-size: 13px; font-weight: 600;
+    }
+    .status-item.verified i { color: #10b981; }
+    .status-item.restricted i { color: #3b82f6; }
+
+    .security-info-box { margin-top: 24px; padding: 15px; background: #f1f5f9; border-radius: 12px; }
+    .info-label { font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; margin-bottom: 6px; }
+    .security-info-box p { font-size: 11px; color: #64748b; line-height: 1.5; margin: 0; }
+
+    .alert { padding: 15px 20px; border-radius: 15px; margin-bottom: 25px; font-weight: 700; display: flex; align-items: center; gap: 12px; font-size: 14px; }
+    .alert-success { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+    .alert-danger { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+
+    @media (max-width: 991px) {
+        .profile-grid { grid-template-columns: 1fr; }
+        .metrics-sidebar { position: static; margin-top: 20px; }
+    }
+
+    @media (max-width: 768px) {
+        .profile-header-cover { height: 160px; }
+        .profile-identity-section { left: 50%; bottom: -80px; transform: translateX(-50%); flex-direction: column; align-items: center; text-align: center; gap: 15px; width: 100%; }
+        .avatar-wrapper { width: 120px; height: 120px; border-radius: 30px; }
+        .identity-info h2 { font-size: 24px; color: #1e293b; text-shadow: none; margin-bottom: 10px; }
+        .status-pills { justify-content: center; }
+        .pill { background: #f1f5f9; color: #64748b; border-color: #e2e8f0; }
+        .profile-content-body { padding: 100px 20px 30px; }
+        .change-cover-btn span { display: none; }
+        .change-cover-btn { padding: 10px; }
+        .main-save-btn { width: 100%; padding: 15px; }
+        .address-row { grid-template-columns: 1fr !important; }
+    }
+</style>
 @endsection
 
 @section('scripts')
@@ -222,7 +346,7 @@
                 if (preview.tagName === 'IMG') {
                     preview.src = e.target.result;
                 } else {
-                    preview.outerHTML = '<img src="' + e.target.result + '" id="adminPreviewImg" style="width: 100%; height: 100%; object-fit: cover;">';
+                    preview.outerHTML = '<img src="' + e.target.result + '" id="adminPreviewImg">';
                 }
             };
             reader.readAsDataURL(input.files[0]);
@@ -234,21 +358,10 @@
             const reader = new FileReader();
             reader.onload = function(e) {
                 const coverContainer = document.getElementById('coverContainer');
-                coverContainer.innerHTML = '<img src="' + e.target.result + '" id="coverPreviewImg" style="width: 100%; height: 100%; object-fit: cover; animation: fadeIn 0.3s;">';
+                coverContainer.innerHTML = '<img src="' + e.target.result + '" id="coverPreviewImg" style="animation: fadeIn 0.3s;">';
             };
             reader.readAsDataURL(input.files[0]);
         }
     }
 </script>
-
-<style>
-@keyframes slideDown {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-</style>
 @endsection

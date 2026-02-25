@@ -45,8 +45,12 @@ class UserDashboardController extends Controller
 
     public function orders()
     {
-        $orders = Auth::user()
-            ->orders()
+        $user = Auth::user();
+        
+        // Mark all as viewed by user
+        $user->orders()->where('is_viewed_by_user', false)->update(['is_viewed_by_user' => true]);
+
+        $orders = $user->orders()
             ->with('items.product')
             ->withCount('items')
             ->latest()

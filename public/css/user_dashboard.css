@@ -499,153 +499,178 @@ body {
 }
 
 /* Responsive */
+/* Responsive */
 @media (max-width: 1200px) {
   .stats-cards {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
-@media (max-width: 992px) {
-  .dashboard-container {
-    flex-direction: column;
-    padding: 16px;
-  }
-
-  .dashboard-sidebar {
-    width: 100%;
-    height: auto;
-    position: relative;
-    top: 0;
-  }
+/* User Mobile Header Bar */
+.user-mobile-header {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 70px;
+  background: white;
+  z-index: 1000;
+  padding: 0 20px;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.06);
+  border-bottom: 1px solid var(--border);
 }
 
-/* Wishlist Styling */
-.wishlist-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 24px;
-}
-
-.wishlist-card {
-  background: #fff;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border);
-  overflow: hidden;
-  transition: all 0.3s;
-}
-
-.wishlist-card:hover {
-  transform: translateY(-5px);
-  box-shadow: var(--shadow-md);
-  border-color: var(--primary);
-}
-
-.wishlist-image-wrap {
-  display: block;
-  height: 200px;
-  background: #f8fafc;
-  overflow: hidden;
-}
-
-.wishlist-image-wrap img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.5s;
-}
-
-.wishlist-card:hover .wishlist-image-wrap img {
-  transform: scale(1.1);
-}
-
-.wishlist-content {
-  padding: 20px;
-}
-
-.wishlist-content h3 {
-  font-size: 15px;
-  font-weight: 700;
-  margin: 0 0 10px;
+.user-sidebar-toggle {
+  width: 45px;
+  height: 45px;
+  border-radius: 12px;
+  border: none;
+  background: var(--bg-main);
   color: var(--text-main);
-}
-
-.wishlist-content p {
   font-size: 18px;
-  font-weight: 800;
-  color: var(--primary);
-  margin-bottom: 20px;
-}
-
-.wishlist-actions {
-  display: flex;
-  gap: 10px;
-}
-
-.action-btn {
-  flex: 1;
-  padding: 10px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
-  background: #f8fafc;
-  color: var(--text-main);
-  font-weight: 600;
-  font-size: 13px;
-  text-align: center;
-  text-decoration: none;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: all 0.2s;
 }
 
-.action-btn:hover {
-  background: var(--primary);
-  color: white;
-  border-color: var(--primary);
-}
-
-/* Premium Table (Orders) */
-.table-responsive {
-  overflow-x: auto;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border);
-}
-
-.premium-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: #fff;
-}
-
-.premium-table th {
-  background: #f8fafc;
-  padding: 16px 20px;
-  text-align: left;
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--text-sub);
-  border-bottom: 1px solid var(--border);
-}
-
-.premium-table td {
-  padding: 16px 20px;
-  font-size: 14px;
-  vertical-align: middle;
-  border-bottom: 1px solid var(--border);
-}
-
-.premium-table tr:last-child td {
-  border-bottom: none;
-}
-
-/* Messaging/Chat placeholders */
-.messages-container {
-  background: var(--bg-card);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border);
-  height: 600px;
+.user-mobile-logo {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800;
+  font-size: 17px;
+  color: var(--text-main);
   display: flex;
-  overflow: hidden;
+  align-items: center;
+  gap: 8px;
+}
+
+.user-mobile-logo i {
+  color: var(--primary);
+}
+
+.user-mobile-avatar {
+  width: 40px;
+  height: 40px;
+}
+
+.user-mobile-avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.m-avatar-init {
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+/* Overlay and Sidebar States */
+.user-sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 1001;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.user-sidebar-overlay.active {
+  display: block;
+  opacity: 1;
+}
+
+/* Sidebar Extra Mobile Classes */
+.sidebar-header-mobile {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 30px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid var(--border);
+}
+
+.m-sidebar-title {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--text-muted);
+  letter-spacing: 2px;
+}
+
+.m-sidebar-close {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: none;
+  background: #fee2e2;
+  color: #ef4444;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 992px) {
+  .user-mobile-header {
+    display: flex;
+  }
+
+  .dashboard-container {
+    flex-direction: column;
+    padding: 90px 16px 40px;
+    /* Space for mobile header */
+    gap: 24px;
+  }
+
+  .dashboard-sidebar {
+    position: fixed;
+    top: 0;
+    left: -320px;
+    /* Start off-screen */
+    bottom: 0;
+    width: 300px;
+    height: 100vh;
+    border-radius: 0;
+    margin: 0;
+    z-index: 1002;
+    transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 20px 0 50px rgba(0, 0, 0, 0.1);
+  }
+
+  .dashboard-sidebar.active {
+    left: 0;
+  }
+
+  .sidebar-header-mobile {
+    display: flex;
+  }
+
+  .dashboard-main {
+    animation: none;
+  }
+
+  .profile-avatar-floating {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .profile-panel .form-grid {
+    grid-template-columns: 1fr !important;
+  }
 }
 
 @media (max-width: 600px) {
@@ -657,5 +682,25 @@ body {
     flex-direction: column;
     text-align: center;
     gap: 20px;
+    padding: 24px;
+  }
+
+  .welcome-badge {
+    text-align: center;
+    width: 100%;
+  }
+
+  .dashboard-cover {
+    height: 180px;
+  }
+
+  .coupon-banner {
+    flex-direction: column;
+    text-align: center;
+    gap: 24px;
+  }
+
+  .coupon-code-box {
+    width: 100%;
   }
 }

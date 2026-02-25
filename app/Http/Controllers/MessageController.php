@@ -8,6 +8,8 @@ use App\Models\Conversation;
 use App\Models\Message;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\Admin\NewInquiryAlert;
 
 class MessageController extends Controller
 {
@@ -30,6 +32,15 @@ class MessageController extends Controller
                 return $c->sender_id === $admin->id || $c->receiver_id === $admin->id;
             });
         }
+
+        // Mark all unread messages for the current user as read when they view the list
+        Message::where('is_read', false)
+            ->where('user_id', '!=', $user->id)
+            ->whereHas('conversation', function($query) use ($user) {
+                $query->where('sender_id', $user->id)
+                      ->orWhere('receiver_id', $user->id);
+            })
+            ->update(['is_read' => true]);
 
         $view = $user->role === 'admin' ? 'admin.messages' : 'user.messages';
 
@@ -140,6 +151,16 @@ class MessageController extends Controller
         ]);
 
         Conversation::where('id', $conversation_id)->update(['last_message_at' => now()]);
+
+        // Notify Admin if receiver is Admin
+        $conversation = Conversation::find($conversation_id);
+        $receiver = $conversation->sender_id === $sender_id ? $conversation->receiver : $conversation->sender;
+        if ($receiver && $receiver->role === 'admin') {
+            try {
+                $message->load('sender');
+                Mail::to($receiver->email)->send(new NewInquiryAlert($message));
+            } catch (\Exception $e) { \Log::error("Admin Message Mail Error: " . $e->getMessage()); }
+        }
 
         if ($request->ajax()) {
             return response()->json([

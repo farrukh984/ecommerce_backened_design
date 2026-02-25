@@ -58,6 +58,10 @@
     @else
         <script src="{{ asset('js/sidebars.js') }}"></script>
     @endif
+    
+    <!-- GSAP for Smooth Animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    
     @yield('scripts')
 
 </body>
