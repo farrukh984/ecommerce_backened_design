@@ -248,7 +248,7 @@
                     <i class="fa-solid fa-envelope"></i>
                 </div>
                 <h3>Email Us</h3>
-                <p>support@brand.com</p>
+                <p>farrokh984@gmail.com</p>
                 <p style="margin-top: 4px; font-size: 12px;">Response within 24 hours</p>
             </div>
             <div class="contact-card">
@@ -256,7 +256,7 @@
                     <i class="fa-solid fa-phone"></i>
                 </div>
                 <h3>Call Us</h3>
-                <p>+92 300 1234567</p>
+                <p>+92 3708541533</p>
                 <p style="margin-top: 4px; font-size: 12px;">Mon-Sat, 9 AM - 6 PM</p>
             </div>
             <div class="contact-card">

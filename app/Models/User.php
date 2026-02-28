@@ -97,4 +97,12 @@ class User extends Authenticatable
         
         return round(($filledCount / count($fields)) * 100);
     }
+
+    /**
+     * Check if user is online
+     */
+    public function isOnline()
+    {
+        return $this->last_seen_at && $this->last_seen_at->diffInMinutes(now()) < 5;
+    }
 }

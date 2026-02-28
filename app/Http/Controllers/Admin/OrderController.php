@@ -20,9 +20,13 @@ class OrderController extends Controller
         // Search
         if ($search = $request->input('search')) {
             $query->where(function ($q) use ($search) {
-                $q->where('id', 'like', "%{$search}%")
-                  ->orWhere('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%");
+                if (is_numeric($search)) {
+                    $q->where('id', $search) // Exact match for numeric IDs
+                      ->orWhere('name', 'like', "%{$search}%");
+                } else {
+                    $q->where('name', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%");
+                }
             });
         }
 

@@ -135,6 +135,7 @@ Route::middleware(['auth', 'is_admin'])
     ->name('admin.')
     ->group(function () {
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/analytics', [AdminDashboardController::class, 'analytics'])->name('analytics');
         
         Route::resources([
             'brands'     => BrandController::class,

@@ -266,7 +266,7 @@
         text-transform: uppercase; border: 1px solid rgba(255,255,255,0.3);
         backdrop-filter: blur(5px);
     }
-    .super-admin { background: rgba(255,255,255,0.2); color: white; }
+    .super-admin { background: rgba(67, 65, 65, 0.2); color: white; text-shadow: 0 2px 10px rgba(0,0,0,0.3);}
     .status-online { background: rgba(16, 185, 129, 0.2); color: #10b981; border-color: rgba(16, 185, 129, 0.4); }
 
     .profile-content-body { padding: 90px 40px 40px; }

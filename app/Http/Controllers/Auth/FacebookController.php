@@ -44,8 +44,8 @@ class FacebookController extends Controller
 
         if (!$user) {
             $user = User::create([
-                'name'          => $facebookUser->getName() ?? $facebookUser->getNickname() ?? $facebookUser->getEmail(),
-                'email'         => $facebookUser->getEmail(),
+                'name'          => $facebookUser->getName() ?? $facebookUser->getNickname() ?? $email,
+                'email'         => $email,
                 'password'      => bcrypt(Str::random(16)),
                 'role'          => 'user',
                 'profile_image' => $facebookUser->getAvatar(),

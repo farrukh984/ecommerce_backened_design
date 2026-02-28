@@ -45,6 +45,41 @@
     </div>
 </div>
 
+<!-- Analytics Chart -->
+<div class="stats-grid" style="grid-template-columns: 1fr; margin-bottom: 24px;">
+    <div class="premium-card chart-card">
+        <div class="action-header" style="background: linear-gradient(to right, #ffffff, #f8fafc);">
+            <div class="header-title">
+                <h2 style="color: #1e293b; font-weight: 800;">Revenue Intelligence</h2>
+                <p>Real-time analytics & sales performance tracking</p>
+            </div>
+            <div class="chart-stats-premium" style="display: flex; gap: 24px;">
+                <div class="stat-minimal">
+                    <span class="label">Total Revenue</span>
+                    <span class="value">${{ number_format(collect($monthlySales)->sum('total'), 2) }}</span>
+                </div>
+                <div class="stat-minimal">
+                    <span class="label">Avg. Monthly</span>
+                    <span class="value">${{ number_format(collect($monthlySales)->avg('total'), 2) }}</span>
+                </div>
+            </div>
+        </div>
+        <div class="chart-wrapper-inner" style="height: 400px; padding: 10px 25px 25px 25px; position: relative;">
+            <div class="chart-overlay-info">
+                @php
+                    $lastMonth = end($monthlySales);
+                    $prevMonth = prev($monthlySales) ?: $lastMonth;
+                    $growth = $prevMonth['total'] > 0 ? (($lastMonth['total'] - $prevMonth['total']) / $prevMonth['total']) * 100 : 0;
+                @endphp
+                <div class="growth-badge {{ $growth >= 0 ? 'up' : 'down' }}">
+                    <i class="fa-solid fa-arrow-{{ $growth >= 0 ? 'up' : 'down' }}"></i> {{ abs(round($growth, 1)) }}%
+                </div>
+            </div>
+            <canvas id="salesChart"></canvas>
+        </div>
+    </div>
+</div>
+
 <div class="dashboard-main-grid">
     <!-- Left Column: Recent Orders & Stock Alerts -->
     <div class="dashboard-left">
@@ -222,21 +257,53 @@
             </div>
         </div>
 
-        <!-- Support Overview -->
+        <!-- Recent Conversations -->
         <div class="premium-card">
             <div class="action-header">
                 <div class="header-title">
-                    <h2>Messages & Support</h2>
-                    <p>Unread inquiries breakdown</p>
+                    <h2>Recent Chats</h2>
+                    <p>Latest customer inquiries</p>
                 </div>
+                <div class="unread-count">{{ $stats['unread_messages'] }} New</div>
             </div>
-            <div style="padding: 32px; text-align: center;">
-                <div style="width: 80px; height: 80px; background: #e0f2fe; color: #0ea5e9; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; margin: 0 auto 16px;">
-                    <i class="fa-solid fa-comment-dots"></i>
-                </div>
-                <h3 style="font-family: 'Outfit', sans-serif; font-size: 24px; font-weight: 800; margin-bottom: 8px;">{{ $stats['unread_messages'] }}</h3>
-                <p style="color: var(--admin-text-sub); font-size: 14px; margin-bottom: 24px;">Unread messages awaiting response</p>
-                <a href="{{ route('admin.messages.index') }}" class="btn-primary" style="width: 100%; justify-content: center;">Open Inbox</a>
+            <div class="dashboard-chat-list">
+                @php
+                    $recentConversations = \App\Models\Conversation::where('sender_id', auth()->id())
+                        ->orWhere('receiver_id', auth()->id())
+                        ->with(['sender', 'receiver', 'messages'])
+                        ->latest('last_message_at')
+                        ->take(3)
+                        ->get();
+                @endphp
+
+                @forelse($recentConversations as $conv)
+                    @php
+                        $otherUser = $conv->sender_id === auth()->id() ? $conv->receiver : $conv->sender;
+                        $lastMsg = $conv->messages->sortByDesc('created_at')->first();
+                    @endphp
+                    <div class="dash-chat-item" onclick="openQuickChat('{{ $conv->id }}', '{{ $otherUser->name }}', '{{ $otherUser->profile_image ? asset('storage/'.$otherUser->profile_image) : '' }}', '{{ strtoupper(substr($otherUser->name, 0, 1)) }}')">
+                        <div class="dash-chat-avatar">
+                            @if($otherUser->profile_image)
+                                <img src="{{ asset('storage/' . $otherUser->profile_image) }}">
+                            @else
+                                <div class="avatar-placeholder">{{ strtoupper(substr($otherUser->name, 0, 1)) }}</div>
+                            @endif
+                            <span class="status-dot {{ $otherUser->isOnline() ? 'online' : '' }}"></span>
+                        </div>
+                        <div class="dash-chat-info">
+                            <div class="chat-name-time">
+                                <span class="chat-name">{{ $otherUser->name }}</span>
+                                <span class="chat-time">{{ $lastMsg ? $lastMsg->created_at->diffForHumans(null, true, true) : '' }}</span>
+                            </div>
+                            <div class="chat-preview">{{ $lastMsg ? Str::limit($lastMsg->message, 35) : 'No messages' }}</div>
+                        </div>
+                    </div>
+                @empty
+                    <div style="padding: 20px; text-align: center; color: #94a3b8;">No recent chats</div>
+                @endforelse
+            </div>
+            <div style="padding: 20px; border-top: 1px solid #f1f5f9;">
+                <a href="{{ route('admin.messages.index') }}" class="btn-outline" style="width: 100%; justify-content: center;">View All Messages</a>
             </div>
         </div>
     </div>
@@ -285,6 +352,152 @@
         gap: 20px;
     }
 
+    /* Chart & Chat Styles */
+    .chart-card {
+        padding: 0 !important;
+        overflow: hidden;
+        border: 1px solid var(--admin-border);
+        background: #fff;
+    }
+
+    .chart-wrapper-inner {
+        position: relative;
+    }
+
+    .chart-overlay-info {
+        position: absolute;
+        top: 20px;
+        right: 30px;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .growth-badge {
+        padding: 6px 14px;
+        border-radius: 50px;
+        font-size: 13px;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+    .growth-badge.up {
+        background: #dcfce7;
+        color: #16a34a;
+        border: 1px solid #bbf7d0;
+    }
+
+    .growth-badge.down {
+        background: #fee2e2;
+        color: #dc2626;
+        border: 1px solid #fecaca;
+    }
+    
+    .stat-minimal {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+    }
+
+    .stat-minimal .label {
+        font-size: 10px;
+        text-transform: uppercase;
+        font-weight: 800;
+        color: #94a3b8;
+        letter-spacing: 1px;
+    }
+
+    .stat-minimal .value {
+        font-size: 18px;
+        font-weight: 900;
+        color: #1e293b;
+        font-family: 'Outfit', sans-serif;
+    }
+    
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .bg-blue { background: #2563eb; box-shadow: 0 0 10px rgba(37, 99, 235, 0.4); }
+
+    .unread-count {
+        background: #ef4444;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+    }
+
+    .dashboard-chat-list {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .dash-chat-item {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 16px 20px;
+        border-bottom: 1px solid #f8fafc;
+        transition: 0.3s;
+        cursor: pointer;
+    }
+
+    .dash-chat-item:hover {
+        background: #f8fafc;
+        transform: translateX(5px);
+    }
+
+    .dash-chat-avatar {
+        position: relative;
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .dash-chat-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    
+    .avatar-placeholder {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #e0f2fe, #bae6fd);
+        color: #0369a1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 16px;
+    }
+
+    .status-dot {
+        position: absolute;
+        bottom: 2px;
+        right: 2px;
+        width: 10px;
+        height: 10px;
+        background: #94a3b8;
+        border: 2px solid white;
+        border-radius: 50%;
+    }
+
+    .status-dot.online { background: #10b981; box-shadow: 0 0 8px rgba(16, 185, 129, 0.5); }
+
+    .dash-chat-info { flex: 1; min-width: 0; }
+    
+    .chat-name-time {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 2px;
+    }
+
+    .chat-name { font-weight: 700; font-size: 14px; color: var(--admin-text-main); }
+    .chat-time { font-size: 11px; color: var(--admin-text-sub); font-weight: 600; }
+    .chat-preview { font-size: 12px; color: var(--admin-text-sub); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
     @media (max-width: 1100px) {
         .dashboard-main-grid {
             grid-template-columns: 1fr;
@@ -313,4 +526,141 @@
         }
     }
 </style>
+@endsection
+@section('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // 1. Entrance Animations (Run first for better UX and fail-safe)
+        const statCards = document.querySelectorAll(".stat-card");
+        const premiumCards = document.querySelectorAll(".premium-card");
+
+        if (statCards.length > 0) {
+            gsap.from(statCards, {
+                duration: 0.8,
+                y: 20,
+                opacity: 0,
+                stagger: 0.05,
+                ease: "power2.out",
+                clearProps: "all"
+            });
+        }
+
+        if (premiumCards.length > 0) {
+            gsap.from(premiumCards, {
+                duration: 0.8,
+                y: 30,
+                opacity: 0,
+                stagger: 0.1,
+                ease: "power3.out",
+                delay: 0.1, // Reduced delay
+                clearProps: "all"
+            });
+        }
+
+        // 2. Sales Chart Initialization
+        try {
+            const chartCanvas = document.getElementById('salesChart');
+            if (chartCanvas) {
+                const ctx = chartCanvas.getContext('2d');
+                const months = @json(collect($monthlySales)->pluck('month'));
+                const totals = @json(collect($monthlySales)->pluck('total'));
+
+                // Premium Gradient
+                const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+                gradient.addColorStop(0, 'rgba(79, 70, 229, 0.4)');
+                gradient.addColorStop(0.5, 'rgba(79, 70, 229, 0.1)');
+                gradient.addColorStop(1, 'rgba(79, 70, 229, 0)');
+
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: months,
+                        datasets: [{
+                            label: 'Revenue',
+                            data: totals,
+                            borderColor: '#4f46e5',
+                            borderWidth: 4,
+                            pointBackgroundColor: '#fff',
+                            pointBorderColor: '#4f46e5',
+                            pointBorderWidth: 3,
+                            pointRadius: 0, // Hidden by default
+                            pointHoverRadius: 8,
+                            pointHoverBackgroundColor: '#4f46e5',
+                            pointHoverBorderColor: '#fff',
+                            pointHoverBorderWidth: 4,
+                            tension: 0.45,
+                            fill: true,
+                            backgroundColor: gradient,
+                            borderCapStyle: 'round',
+                            borderJoinStyle: 'round'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: {
+                            intersect: false,
+                            mode: 'index',
+                        },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                enabled: true,
+                                backgroundColor: '#1e293b',
+                                titleFont: { family: 'Outfit', size: 14, weight: '800' },
+                                bodyFont: { family: 'Inter', size: 13, weight: '600' },
+                                padding: 15,
+                                cornerRadius: 15,
+                                displayColors: false,
+                                callbacks: {
+                                    label: (context) => `Earnings: $${context.parsed.y.toLocaleString()}`
+                                }
+                            }
+                        },
+                        animations: {
+                            y: {
+                                easing: 'easeInOutElastic',
+                                duration: 2000,
+                                from: (ctx) => {
+                                    if (ctx.type === 'data') {
+                                        if (ctx.mode === 'default' && !ctx.dropped) {
+                                            ctx.dropped = true;
+                                            return 0;
+                                        }
+                                    }
+                                }
+                            },
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(226, 232, 240, 0.5)',
+                                    drawBorder: false,
+                                    borderDash: [5, 5]
+                                },
+                                ticks: {
+                                    callback: (value) => '$' + value.toLocaleString(),
+                                    font: { family: 'Outfit', size: 11, weight: '700' },
+                                    color: '#94a3b8',
+                                    padding: 10
+                                }
+                            },
+                            x: {
+                                grid: { display: false },
+                                ticks: { 
+                                    font: { family: 'Outfit', size: 12, weight: '700' }, 
+                                    color: '#94a3b8',
+                                    padding: 10
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        } catch (e) {
+            console.error("Chart initialization failed:", e);
+        }
+    });
+</script>
 @endsection
