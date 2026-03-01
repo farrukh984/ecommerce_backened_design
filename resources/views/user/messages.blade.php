@@ -684,12 +684,13 @@
                     const isSent = msg.user_id === {{ auth()->id() }};
                     const initial = msg.user.name.charAt(0).toUpperCase();
                     const avatar = msg.user.profile_image
-                        ? `<img src="${msg.user.profile_image.startsWith('http') ? msg.user.profile_image : '/storage/' + msg.user.profile_image}" class="msg-mini-avatar">`
+                        ? `<img src="${msg.user.profile_image.includes('http') ? msg.user.profile_image : '/storage/' + msg.user.profile_image}" class="msg-mini-avatar">`
                         : `<div class="msg-mini-avatar-placeholder">${initial}</div>`;
 
                     let content = '';
                     if (msg.type === 'image' && msg.file_path) {
-                        content += `<img src="${msg.file_path.startsWith('http') ? msg.file_path : '/storage/' + msg.file_path}" class="msg-image" onclick="window.open(this.src)">`;
+                        const imgUrl = msg.file_path.includes('http') ? msg.file_path : '/storage/' + msg.file_path;
+                        content += `<img src="${imgUrl}" class="msg-image" onclick="window.open(this.src)">`;
                     }
                     if (msg.message) {
                         content += `<div>${msg.message}</div>`;
