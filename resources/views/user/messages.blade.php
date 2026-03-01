@@ -640,7 +640,7 @@
         .then(r => r.json())
         .then(data => {
             if (data.status === 'success') {
-                window.location.href = `{{ route("user.messages.chat", "") }}/${data.message.conversation_id}`;
+                window.location.href = "{{ route('user.messages.chat', ':id') }}".replace(':id', data.message.conversation_id);
             }
         });
     }
