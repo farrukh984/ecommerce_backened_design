@@ -15,35 +15,31 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-install pdo pdo_mysql zip gd mbstring dom \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Enable Apache mod_rewrite for Laravel routing
+# 1. Enable Apache mod_rewrite
 RUN a2enmod rewrite
 
-# Change Apache Root to Laravel's /public folder
+# 2. Enable AllowOverride All for Apache to read .htaccess
+RUN sed -i 's/AllowOverride None/AllowOverride All/g' /etc/apache2/apache2.conf
+
+# 3. Change Apache Root to Laravel's /public folder
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/000-default.conf
-RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
-
-# IMPORTANT: Allow .htaccess to override settings
-RUN sed -i '/<Directory \/var\/www\/>/,/<\/Directory>/ s/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf
 
 # Set working directory
 WORKDIR /var/www/html
-
-# Copy Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Copy project files
 COPY . .
 COPY --from=node_builder /app/public/build ./public/build
 
 # Install PHP dependencies
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 RUN composer install --no-interaction --no-dev --optimize-autoloader
 
-# Set permissions for Laravel
+# Set permissions
 RUN chown -R www-data:www-data storage bootstrap/cache
 
-# Render uses $PORT, Apache uses 80 by default. We tell Apache to listen to $PORT.
+# Tell Apache to listen to Render's $PORT
 RUN sed -i 's/80/${PORT}/g' /etc/apache2/sites-available/000-default.conf /etc/apache2/ports.conf
 
-# Final command to run Apache
 CMD ["apache2-foreground"]
