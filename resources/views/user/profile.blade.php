@@ -14,7 +14,7 @@
             <div class="profile-header-premium">
                 <div class="cover-image-preview">
                     @if(auth()->user()->cover_image)
-                        <img src="{{ asset('storage/' . auth()->user()->cover_image) }}" id="coverPreviewImg">
+                        <img src="{{ display_image(auth()->user()->cover_image) }}" id="coverPreviewImg">
                     @else
                         <div id="coverPreviewImg" style="width: 100%; height: 100%; background: linear-gradient(135deg, var(--primary), var(--secondary)); opacity: 0.8;"></div>
                     @endif
@@ -29,7 +29,7 @@
                 <div class="profile-avatar-floating">
                     <div class="profile-image-container" id="userProfileImgContainer" style="width: 140px; height: 140px; border-radius: 35px; border: 6px solid white; box-shadow: var(--shadow-lg); background: #f8fafc; overflow: hidden; position: relative;">
                         @if(auth()->user()->profile_image)
-                            <img src="{{ asset('storage/' . auth()->user()->profile_image) }}" id="userPreviewImg" style="width: 100%; height: 100%; object-fit: cover;">
+                            <img src="{{ display_image(auth()->user()->profile_image) }}" id="userPreviewImg" style="width: 100%; height: 100%; object-fit: cover;">
                         @else
                             <div id="userPreviewImg" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #f1f5f9; color: var(--text-muted); font-size: 40px;">
                                 <i class="fa-solid fa-user"></i>

@@ -12,7 +12,7 @@
         <!-- Dashboard Cover -->
         @if(auth()->user()->cover_image)
         <div class="dashboard-cover">
-            <img src="{{ asset('storage/' . auth()->user()->cover_image) }}" alt="Cover">
+            <img src="{{ display_image(auth()->user()->cover_image) }}" alt="Cover">
         </div>
         @endif
 
@@ -105,7 +105,7 @@
                     <div class="order-image-stack">
                         @foreach($order->items->take(3) as $idx => $item)
                             @if($item->product && $item->product->image)
-                                <img src="{{ asset('storage/' . $item->product->image) }}" class="order-img" style="{{ $idx > 0 ? 'margin-left: -15px;' : '' }} z-index: {{ 10 - $idx }};">
+                                <img src="{{ display_image($item->product->image) }}" class="order-img" style="{{ $idx > 0 ? 'margin-left: -15px;' : '' }} z-index: {{ 10 - $idx }};">
                             @endif
                         @endforeach
                     </div>

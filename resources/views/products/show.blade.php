@@ -54,11 +54,11 @@
         <div class="mobile-image-wrapper">
             <div class="m-image-slider" id="mobileImageSlider">
                 <div class="m-slide">
-                    <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}">
+                    <img src="{{ display_image($product->image) }}" alt="{{ $product->name }}">
                 </div>
                 @foreach($product->images as $gImg)
                 <div class="m-slide">
-                    <img src="{{ asset('storage/' . $gImg->image) }}" alt="Gallery Image">
+                    <img src="{{ display_image($gImg->image) }}" alt="Gallery Image">
                 </div>
                 @endforeach
             </div>
@@ -193,7 +193,7 @@
             <div class="m-similar-scroll">
                 @foreach($similarProducts->take(6) as $sim)
                 <a href="{{ route('products.show', $sim->id) }}" class="m-similar-card">
-                    <img src="{{ asset('storage/' . $sim->image) }}" alt="{{ $sim->name }}">
+                    <img src="{{ display_image($sim->image) }}" alt="{{ $sim->name }}">
                     <div class="m-similar-info">
                         <span class="m-sim-price">${{ number_format($sim->price, 2) }}</span>
                         <p>{{ Str::limit($sim->name, 40) }}</p>
@@ -211,15 +211,15 @@
         <!-- LEFT COLUMN: IMAGE GALLERY -->
         <div class="detail-gallery">
             <div class="main-image-box">
-                <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" id="mainProductImg">
+                <img src="{{ display_image($product->image) }}" alt="{{ $product->name }}" id="mainProductImg">
             </div>
             <div class="thumb-list">
-                <div class="thumb-item active" onclick="changeMainImg('{{ asset('storage/' . $product->image) }}', this)">
-                    <img src="{{ asset('storage/' . $product->image) }}" alt="Main Image">
+                <div class="thumb-item active" onclick="changeMainImg('{{ display_image($product->image) }}', this)">
+                    <img src="{{ display_image($product->image) }}" alt="Main Image">
                 </div>
                 @foreach($product->images as $gImg)
-                <div class="thumb-item" onclick="changeMainImg('{{ asset('storage/' . $gImg->image) }}', this)">
-                    <img src="{{ asset('storage/' . $gImg->image) }}" alt="Gallery Image">
+                <div class="thumb-item" onclick="changeMainImg('{{ display_image($gImg->image) }}', this)">
+                    <img src="{{ display_image($gImg->image) }}" alt="Gallery Image">
                 </div>
                 @endforeach
                 {{-- Fill up to 6 with placeholders if needed for design consistency --}}
@@ -597,7 +597,7 @@
                 <h3>Recommended for you</h3>
                 @foreach($youMayLike->take(5) as $yml)
                 <a href="{{ route('products.show', $yml->id) }}" class="yml-item">
-                    <img src="{{ asset('storage/' . $yml->image) }}" alt="{{ $yml->name }}">
+                    <img src="{{ display_image($yml->image) }}" alt="{{ $yml->name }}">
                     <div class="yml-info">
                         <h5>{{ Str::limit($yml->name, 35) }}</h5>
                         <span class="yml-price">${{ number_format($yml->price, 2) }} - ${{ number_format($yml->price * 1.2, 2) }}</span>
@@ -616,7 +616,7 @@
             @foreach($similarProducts->take(6) as $rel)
             <a href="{{ route('products.show', $rel->id) }}" class="rel-item">
                 <div class="rel-img">
-                    <img src="{{ asset('storage/' . $rel->image) }}" alt="{{ $rel->name }}">
+                    <img src="{{ display_image($rel->image) }}" alt="{{ $rel->name }}">
                 </div>
                 <div class="rel-info">
                     <h5>{{ Str::limit($rel->name, 30) }}</h5>

@@ -196,7 +196,7 @@
             @if($product->discount > 0)
                 <div class="discount-tag">-{{ $product->discount }}%</div>
             @endif
-            <img src="{{ filter_var($product->image, FILTER_VALIDATE_URL) ? $product->image : asset('storage/'.$product->image) }}" alt="{{ $product->name }}">
+            <img src="{{ display_image($product->image) }}" alt="{{ $product->name }}">
             <div class="card-body">
                 <h3>{{ $product->name }}</h3>
                 <div class="price-row">

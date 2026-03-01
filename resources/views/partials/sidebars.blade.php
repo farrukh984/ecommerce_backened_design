@@ -12,7 +12,7 @@
             <div class="user-profile-header">
                 <div class="profile-avatar">
                     @if(auth()->user()->profile_image)
-                        <img src="{{ asset('storage/' . auth()->user()->profile_image) }}" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                        <img src="{{ display_image(auth()->user()->profile_image) }}" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
                     @else
                         {{ substr(auth()->user()->name, 0, 1) }}
                     @endif
@@ -88,7 +88,7 @@
                         @endphp
                         <a href="{{ route('user.messages.chat', $sConv->id) }}" class="mini-cart-item" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #f1f5f9;">
                             @if($sOtherUser->profile_image)
-                                <img src="{{ asset('storage/' . $sOtherUser->profile_image) }}" alt="{{ $sOtherUser->name }}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; flex-shrink: 0; border: 2px solid #e2e8f0;">
+                                <img src="{{ display_image($sOtherUser->profile_image) }}" alt="{{ $sOtherUser->name }}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; flex-shrink: 0; border: 2px solid #e2e8f0;">
                             @else
                                 <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; flex-shrink: 0;">
                                     {{ strtoupper(substr($sOtherUser->name, 0, 1)) }}
@@ -165,7 +165,7 @@
                             <div style="display: flex; align-items: center; flex-shrink: 0;">
                                 @foreach($order->items->take(2) as $idx => $item)
                                     @if($item->product && $item->product->image)
-                                        <img src="{{ asset('storage/' . $item->product->image) }}" alt="" style="width: 36px; height: 36px; border-radius: 8px; object-fit: cover; border: 2px solid #fff; {{ $idx > 0 ? 'margin-left: -10px;' : '' }} box-shadow: 0 1px 3px rgba(0,0,0,0.06);">
+                                        <img src="{{ display_image($item->product->image) }}" alt="" style="width: 36px; height: 36px; border-radius: 8px; object-fit: cover; border: 2px solid #fff; {{ $idx > 0 ? 'margin-left: -10px;' : '' }} box-shadow: 0 1px 3px rgba(0,0,0,0.06);">
                                     @else
                                         <div style="width: 36px; height: 36px; border-radius: 8px; background: #f1f5f9; border: 2px solid #fff; {{ $idx > 0 ? 'margin-left: -10px;' : '' }} display: flex; align-items: center; justify-content: center; color: #cbd5e1; font-size: 11px;">
                                             <i class="fa-solid fa-box"></i>
@@ -223,7 +223,7 @@
             <div class="mini-cart-list">
                 @foreach($cart as $id => $details)
                     <div class="mini-cart-item">
-                        <img src="{{ asset('storage/' . $details['image']) }}" alt="{{ $details['name'] }}">
+                        <img src="{{ display_image($details['image']) }}" alt="{{ $details['name'] }}">
                         <div class="m-item-info">
                             <h5>{{ Str::limit($details['name'], 30) }}</h5>
                             <span>{{ $details['quantity'] }} x ${{ number_format($details['price'], 2) }}</span>

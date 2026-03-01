@@ -78,7 +78,7 @@
                         <td>
                             <div style="display: flex; align-items: center; gap: 12px;">
                                 @if($user->profile_image)
-                                    <img src="{{ asset('storage/' . $user->profile_image) }}" style="width: 40px; height: 40px; border-radius: 10px; object-fit: cover; border: 2px solid var(--admin-border);">
+                                    <img src="{{ display_image($user->profile_image) }}" style="width: 40px; height: 40px; border-radius: 10px; object-fit: cover; border: 2px solid var(--admin-border);">
                                 @else
                                     <div style="width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, var(--admin-primary), var(--admin-secondary)); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px;">
                                         {{ strtoupper(substr($user->name, 0, 1)) }}

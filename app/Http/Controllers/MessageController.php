@@ -138,7 +138,9 @@ class MessageController extends Controller
 
         if ($request->hasFile('image')) {
             $type = 'image';
-            $file_path = $request->file('image')->store('chat_images', 'public');
+            $file_path = cloudinary()->upload($request->file('image')->getRealPath(), [
+                'folder' => 'chat_images'
+            ])->getSecurePath();
         }
 
         $message = Message::create([

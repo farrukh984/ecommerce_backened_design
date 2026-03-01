@@ -114,7 +114,7 @@
             <div class="sidebar-footer">
                 <a href="{{ route('admin.profile') }}" class="user-profile-badge" style="text-decoration: none;">
                     @if(auth()->user()->profile_image)
-                        <img src="{{ asset('storage/' . auth()->user()->profile_image) }}" style="width: 32px; height: 32px; border-radius: 10px; object-fit: cover; border: 2px solid white;">
+                        <img src="{{ display_image(auth()->user()->profile_image) }}" style="width: 32px; height: 32px; border-radius: 10px; object-fit: cover; border: 2px solid white;">
                     @else
                         <div class="user-avatar-small">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</div>
                     @endif

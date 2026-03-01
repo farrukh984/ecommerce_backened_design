@@ -49,7 +49,7 @@
                     <div class="card-avatar">
                         @auth
                             @if(auth()->user()->profile_image)
-                                <img src="{{ asset('storage/' . auth()->user()->profile_image) }}" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                                <img src="{{ display_image(auth()->user()->profile_image) }}" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
                             @else
                                 <i class="fa-regular fa-circle-user"></i>
                             @endif
@@ -113,7 +113,7 @@
             @foreach($deals as $deal)
             <div class="deal-item">
                 <a href="{{ route('products.show', $deal->id) }}" style="text-decoration: none; color: inherit; text-align: center; display: block;">
-                    <img src="{{ filter_var($deal->image, FILTER_VALIDATE_URL) ? $deal->image : asset('storage/'.$deal->image) }}" alt="{{ $deal->name }}">
+                    <img src="{{ display_image($deal->image) }}" alt="{{ $deal->name }}">
                     <p>{{ $deal->name }}</p>
                     <span class="discount">-{{ $deal->discount }}%</span>
                 </a>
@@ -138,7 +138,7 @@
 <div class="category-section">
     <div class="category-left {{ $loop->iteration % 2 == 0 ? 'blue-bg' : 'green-bg' }}" 
          @if($category->background_image)
-             style="background-image: url('{{ asset('storage/'.$category->background_image) }}'); background-size: cover; background-position: center;"
+             style="background-image: url('{{ display_image($category->background_image) }}'); background-size: cover; background-position: center;"
          @endif
     >
         <h3>{!! str_replace(' ', '<br>', $category->name) !!}</h3>
@@ -155,7 +155,7 @@
                         </span>
                     </div>
 
-                    <img src="{{ filter_var($product->image, FILTER_VALIDATE_URL) ? $product->image : asset('storage/'.$product->image) }}" 
+                    <img src="{{ display_image($product->image) }}" 
                          alt="{{ $product->name }}">
                 </a>
             </div>
@@ -218,7 +218,7 @@
 @foreach($recommended as $product)
 <div class="recommended-item">
     <a href="{{ route('products.show', $product->id) }}" style="text-decoration: none; color: inherit;">
-        <img src="{{ filter_var($product->image, FILTER_VALIDATE_URL) ? $product->image : asset('storage/'.$product->image) }}" 
+        <img src="{{ display_image($product->image) }}" 
              alt="{{ $product->name }}">
 
         <div class="rec-info">

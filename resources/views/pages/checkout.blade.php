@@ -143,7 +143,7 @@
                         @foreach($cart as $details)
                             <div class="summary-product">
                                 <div class="summary-product-image">
-                                    <img src="{{ asset('storage/' . $details['image']) }}" alt="{{ $details['name'] }}">
+                                    <img src="{{ display_image($details['image']) }}" alt="{{ $details['name'] }}">
                                     <span class="summary-qty-badge">{{ $details['quantity'] }}</span>
                                 </div>
                                 <div class="summary-product-info">

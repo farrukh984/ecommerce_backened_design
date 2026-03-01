@@ -35,7 +35,7 @@
                 @php $subtotal += $details['price'] * $details['quantity']; @endphp
                 <div class="cart-item" data-id="{{ $id }}">
                     <div class="cart-item-img">
-                        <img src="{{ asset('storage/' . $details['image']) }}" alt="{{ $details['name'] }}">
+                        <img src="{{ display_image($details['image']) }}" alt="{{ $details['name'] }}">
                     </div>
                     <div class="cart-item-info">
                         <h4>{{ $details['name'] }}</h4>
@@ -265,7 +265,7 @@
             @foreach($saved as $sid => $sitem)
             <div class="saved-item">
                 <div class="saved-item-img">
-                    <img src="{{ asset('storage/' . $sitem['image']) }}" alt="{{ $sitem['name'] }}">
+                    <img src="{{ display_image($sitem['image']) }}" alt="{{ $sitem['name'] }}">
                 </div>
                 <div class="saved-item-info">
                     <span class="saved-price">${{ number_format($sitem['price'], 2) }}</span>
@@ -287,7 +287,7 @@
             @foreach($saved as $sid => $sitem)
             <div class="saved-list-item">
                 <div class="saved-list-img">
-                    <img src="{{ asset('storage/' . $sitem['image']) }}" alt="{{ $sitem['name'] }}">
+                    <img src="{{ display_image($sitem['image']) }}" alt="{{ $sitem['name'] }}">
                 </div>
                 <div class="saved-list-info">
                     <h5>{{ Str::limit($sitem['name'], 35) }}</h5>

@@ -324,7 +324,7 @@
                             <article class="wishlist-card-premium" id="wishlist-item-{{ $item->product->id }}">
                                 <div class="image-container">
                                     <a href="{{ route('products.show', $item->product->id) }}">
-                                        <img src="{{ asset('storage/' . $item->product->image) }}" alt="{{ $item->product->name }}">
+                                        <img src="{{ display_image($item->product->image) }}" alt="{{ $item->product->name }}">
                                     </a>
                                 </div>
                                 <div class="card-details">

@@ -57,7 +57,7 @@
                             <td>
                                 <div style="display: flex; align-items: center; gap: 12px;">
                                     @if($item->product && $item->product->image)
-                                        <img src="{{ asset('storage/' . $item->product->image) }}" style="width: 48px; height: 48px; border-radius: 8px; object-fit: cover; border: 1px solid var(--admin-border);">
+                                        <img src="{{ display_image($item->product->image) }}" style="width: 48px; height: 48px; border-radius: 8px; object-fit: cover; border: 1px solid var(--admin-border);">
                                     @else
                                         <div style="width: 48px; height: 48px; border-radius: 8px; background: #f1f5f9; display: flex; align-items: center; justify-content: center;">
                                             <i class="fa-solid fa-image" style="color: #cbd5e1;"></i>
@@ -144,7 +144,7 @@
                 <h3 style="font-family: 'Outfit', sans-serif; font-size: 16px; margin-bottom: 16px;">Customer Info</h3>
                 <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
                     @if($order->user && $order->user->profile_image)
-                        <img src="{{ asset('storage/' . $order->user->profile_image) }}" style="width: 52px; height: 52px; border-radius: 50%; object-fit: cover; border: 3px solid #e2e8f0; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                        <img src="{{ display_image($order->user->profile_image) }}" style="width: 52px; height: 52px; border-radius: 50%; object-fit: cover; border: 3px solid #e2e8f0; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
                     @else
                         <div style="width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, var(--admin-primary-light, #eff6ff), #dbeafe); color: var(--admin-primary, #2563eb); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 20px; border: 3px solid #e2e8f0;">
                             {{ strtoupper(substr($order->name, 0, 1)) }}

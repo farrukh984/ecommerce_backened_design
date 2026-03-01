@@ -46,7 +46,7 @@
                     <td>#{{ $product->id }}</td>
                     <td>
                         <div style="display: flex; align-items: center; gap: 12px;">
-                            <img src="{{ asset('storage/' . $product->image) }}" style="width: 40px; height: 40px; border-radius: 6px; object-fit: cover; border: 1px solid #eee;">
+                            <img src="{{ display_image($product->image) }}" style="width: 40px; height: 40px; border-radius: 6px; object-fit: cover; border: 1px solid #eee;">
                             <div>
                                 <div style="font-weight: 700; color: #1c1c1c;">{{ $product->name }}</div>
                                 <div style="font-size: 11px; color: #8b96a5;">{{ $product->brand }}</div>

@@ -501,7 +501,7 @@
                         @endphp
                         <a href="{{ route('user.messages.chat', $conv->id) }}" class="conv-item {{ isset($conversation) && $conversation->id === $conv->id ? 'active' : '' }}">
                             @if($otherUser->profile_image)
-                                <img src="{{ asset('storage/' . $otherUser->profile_image) }}" class="conv-avatar">
+                                <img src="{{ display_image($otherUser->profile_image) }}" class="conv-avatar">
                             @else
                                 <div class="conv-avatar-placeholder">{{ strtoupper(substr($otherUser->name, 0, 1)) }}</div>
                             @endif
@@ -544,7 +544,7 @@
                         <i class="fa-solid fa-chevron-left"></i>
                     </a>
                     @if($chatUser->profile_image)
-                        <img src="{{ asset('storage/' . $chatUser->profile_image) }}" class="conv-avatar" style="width: 40px; height: 40px;">
+                        <img src="{{ display_image($chatUser->profile_image) }}" class="conv-avatar" style="width: 40px; height: 40px;">
                     @else
                         <div class="conv-avatar-placeholder" style="width: 40px; height: 40px; font-size: 14px;">{{ strtoupper(substr($chatUser->name, 0, 1)) }}</div>
                     @endif
@@ -562,14 +562,14 @@
                         <div class="msg-avatar-group {{ $msg->user_id === auth()->id() ? 'sent' : '' }}">
                             @if($msg->user_id !== auth()->id())
                                 @if($msg->user->profile_image)
-                                    <img src="{{ asset('storage/' . $msg->user->profile_image) }}" class="msg-mini-avatar">
+                                    <img src="{{ display_image($msg->user->profile_image) }}" class="msg-mini-avatar">
                                 @else
                                     <div class="msg-mini-avatar-placeholder">{{ strtoupper(substr($msg->user->name, 0, 1)) }}</div>
                                 @endif
                             @endif
                             <div id="msg-{{ $msg->id }}" class="msg-bubble {{ $msg->user_id === auth()->id() ? 'sent' : 'received' }}">
                                 @if($msg->type === 'image' && $msg->file_path)
-                                    <img src="{{ asset('storage/' . $msg->file_path) }}" class="msg-image" onclick="window.open(this.src)">
+                                    <img src="{{ display_image($msg->file_path) }}" class="msg-image" onclick="window.open(this.src)">
                                 @endif
                                 @if($msg->message)
                                     <div>{{ $msg->message }}</div>
@@ -684,12 +684,12 @@
                     const isSent = msg.user_id === {{ auth()->id() }};
                     const initial = msg.user.name.charAt(0).toUpperCase();
                     const avatar = msg.user.profile_image
-                        ? `<img src="/storage/${msg.user.profile_image}" class="msg-mini-avatar">`
+                        ? `<img src="${msg.user.profile_image.startsWith('http') ? msg.user.profile_image : '/storage/' + msg.user.profile_image}" class="msg-mini-avatar">`
                         : `<div class="msg-mini-avatar-placeholder">${initial}</div>`;
 
                     let content = '';
                     if (msg.type === 'image' && msg.file_path) {
-                        content += `<img src="/storage/${msg.file_path}" class="msg-image" onclick="window.open(this.src)">`;
+                        content += `<img src="${msg.file_path.startsWith('http') ? msg.file_path : '/storage/' + msg.file_path}" class="msg-image" onclick="window.open(this.src)">`;
                     }
                     if (msg.message) {
                         content += `<div>${msg.message}</div>`;

@@ -282,7 +282,7 @@
 
                     <!-- Image -->
                     <a href="{{ route('products.show', $product->id) }}" class="product-img">
-                        <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}">
+                        <img src="{{ display_image($product->image) }}" alt="{{ $product->name }}">
                     </a>
 
                     <!-- Info -->

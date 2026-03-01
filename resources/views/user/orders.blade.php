@@ -277,7 +277,7 @@
                         @foreach($order->items->take(3) as $item)
                             <div class="order-item-row">
                                 @if($item->product && $item->product->image)
-                                    <img src="{{ asset('storage/' . $item->product->image) }}" class="order-item-img" alt="{{ $item->product->name ?? 'Product' }}">
+                                    <img src="{{ display_image($item->product->image) }}" class="order-item-img" alt="{{ $item->product->name ?? 'Product' }}">
                                 @else
                                     <div class="order-item-placeholder">
                                         <i class="fa-solid fa-image"></i>

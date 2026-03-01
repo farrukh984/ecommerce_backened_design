@@ -10,7 +10,7 @@
         <div class="profile-header-cover">
             <div id="coverContainer" class="cover-image-container">
                 @if(auth()->user()->cover_image)
-                    <img src="{{ asset('storage/' . auth()->user()->cover_image) }}" id="coverPreviewImg">
+                    <img src="{{ display_image(auth()->user()->cover_image) }}" id="coverPreviewImg">
                 @else
                     <div id="coverPreviewImg" class="cover-placeholder"></div>
                 @endif
@@ -26,7 +26,7 @@
             <div class="profile-identity-section">
                 <div class="avatar-wrapper">
                     @if(auth()->user()->profile_image)
-                        <img src="{{ asset('storage/' . auth()->user()->profile_image) }}" id="adminPreviewImg">
+                        <img src="{{ display_image(auth()->user()->profile_image) }}" id="adminPreviewImg">
                     @else
                         <div id="adminPreviewImg" class="avatar-placeholder">
                             {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}

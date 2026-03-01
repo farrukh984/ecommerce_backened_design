@@ -107,7 +107,7 @@
                         <td>
                             <div class="customer-info">
                                 @if($order->user && $order->user->profile_image)
-                                    <img src="{{ asset('storage/' . $order->user->profile_image) }}" class="customer-avatar">
+                                    <img src="{{ display_image($order->user->profile_image) }}" class="customer-avatar">
                                 @else
                                     <div class="customer-avatar-fallback">
                                         {{ strtoupper(substr($order->name, 0, 1)) }}

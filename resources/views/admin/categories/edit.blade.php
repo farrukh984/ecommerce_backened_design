@@ -26,7 +26,7 @@
             <input type="file" name="background_image" id="background_image" class="form-control" onchange="previewImage(event)">
             <div id="image_preview_container" style="margin-top: 15px; {{ $category->background_image ? '' : 'display: none;' }}">
                 <p style="font-size: 12px; color: #666; margin-bottom: 5px;">{{ $category->background_image ? 'Current / New Image Preview:' : 'Image Preview:' }}</p>
-                <img id="image_preview" src="{{ $category->background_image ? asset('storage/'.$category->background_image) : '#' }}" width="150" style="border-radius: 8px; border: 2px solid #0d6efd; padding: 2px;">
+                <img id="image_preview" src="{{ $category->background_image ? display_image($category->background_image) : '#' }}" width="150" style="border-radius: 8px; border: 2px solid #0d6efd; padding: 2px;">
             </div>
         </div>
 

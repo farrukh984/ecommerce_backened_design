@@ -33,7 +33,7 @@
             <a href="javascript:void(0)" class="icon-item" id="profileTrigger">
                 @auth
                     @if(auth()->user()->profile_image)
-                        <img src="{{ asset('storage/' . auth()->user()->profile_image) }}" alt="Profile" style="width: 20px; height: 20px; border-radius: 50%; object-fit: cover;">
+                        <img src="{{ display_image(auth()->user()->profile_image) }}" alt="Profile" style="width: 20px; height: 20px; border-radius: 50%; object-fit: cover;">
                     @else
                         <i class="fa-regular fa-user"></i>
                     @endif

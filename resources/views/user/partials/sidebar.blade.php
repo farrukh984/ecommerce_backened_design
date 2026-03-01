@@ -21,7 +21,7 @@
     </div>
     <div class="user-mobile-avatar">
         @if($user->profile_image)
-            <img src="{{ asset('storage/' . $user->profile_image) }}" alt="P">
+            <img src="{{ display_image($user->profile_image) }}" alt="P">
         @else
             <div class="m-avatar-init">{{ strtoupper(substr($user->name, 0, 1)) }}</div>
         @endif
@@ -48,7 +48,7 @@
     <div class="sidebar-profile-card">
         <div class="profile-avatar-wrapper">
             @if($user->profile_image)
-                <img src="{{ asset('storage/' . $user->profile_image) }}" class="profile-avatar" alt="Profile">
+                <img src="{{ display_image($user->profile_image) }}" class="profile-avatar" alt="Profile">
             @else
                 <div class="profile-avatar" style="display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #3b82f6, #06b6d4); color: white; font-weight: 800; font-size: 32px;">
                     {{ strtoupper(substr($user->name, 0, 1)) }}

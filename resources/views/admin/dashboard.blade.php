@@ -101,7 +101,7 @@
                         @foreach($outOfStockProducts->take(6) as $product)
                         <div style="background: #f8fafc; border: 1px solid #fee2e2; padding: 12px; border-radius: 14px; display: flex; align-items: center; gap: 12px;">
                             @if($product->image)
-                                <img src="{{ asset('storage/' . $product->image) }}" style="width: 40px; height: 40px; border-radius: 8px; object-fit: cover;">
+                                <img src="{{ display_image($product->image) }}" style="width: 40px; height: 40px; border-radius: 8px; object-fit: cover;">
                             @endif
                             <div style="flex: 1; min-width: 0;">
                                 <div style="font-weight: 700; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $product->name }}</div>
@@ -120,7 +120,7 @@
                         @foreach($lowStockProducts->take(6) as $product)
                         <div style="background: #f8fafc; border: 1px solid #fef3c7; padding: 12px; border-radius: 14px; display: flex; align-items: center; gap: 12px;">
                             @if($product->image)
-                                <img src="{{ asset('storage/' . $product->image) }}" style="width: 40px; height: 40px; border-radius: 8px; object-fit: cover;">
+                                <img src="{{ display_image($product->image) }}" style="width: 40px; height: 40px; border-radius: 8px; object-fit: cover;">
                             @endif
                             <div style="flex: 1; min-width: 0;">
                                 <div style="font-weight: 700; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $product->name }}</div>
@@ -172,7 +172,7 @@
                             <td>
                                 <div style="display: flex; align-items: center; gap: 12px;">
                                     @if($order->user && $order->user->profile_image)
-                                        <img src="{{ asset('storage/' . $order->user->profile_image) }}" style="width: 32px; height: 32px; border-radius: 10px; object-fit: cover;">
+                                        <img src="{{ display_image($order->user->profile_image) }}" style="width: 32px; height: 32px; border-radius: 10px; object-fit: cover;">
                                     @else
                                         <div style="width: 32px; height: 32px; border-radius: 10px; background: #f1f5f9; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; color: #64748b;">
                                             {{ strtoupper(substr($order->name, 0, 1)) }}
@@ -281,10 +281,10 @@
                         $otherUser = $conv->sender_id === auth()->id() ? $conv->receiver : $conv->sender;
                         $lastMsg = $conv->messages->sortByDesc('created_at')->first();
                     @endphp
-                    <div class="dash-chat-item" onclick="openQuickChat('{{ $conv->id }}', '{{ $otherUser->name }}', '{{ $otherUser->profile_image ? asset('storage/'.$otherUser->profile_image) : '' }}', '{{ strtoupper(substr($otherUser->name, 0, 1)) }}')">
+                    <div class="dash-chat-item" onclick="openQuickChat('{{ $conv->id }}', '{{ $otherUser->name }}', '{{ $otherUser->profile_image ? display_image($otherUser->profile_image) : '' }}', '{{ strtoupper(substr($otherUser->name, 0, 1)) }}')">
                         <div class="dash-chat-avatar">
                             @if($otherUser->profile_image)
-                                <img src="{{ asset('storage/' . $otherUser->profile_image) }}">
+                                <img src="{{ display_image($otherUser->profile_image) }}">
                             @else
                                 <div class="avatar-placeholder">{{ strtoupper(substr($otherUser->name, 0, 1)) }}</div>
                             @endif

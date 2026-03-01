@@ -141,7 +141,7 @@
             <div style="display: flex; align-items: center; gap: 20px;">
                 <input type="file" name="image" class="form-control" style="flex: 1;" accept="image/*" onchange="previewImage(this, 'mainPreview')">
                 <div class="image-preview-box" id="mainPreview">
-                    <img src="{{ asset('storage/' . $product->image) }}">
+                    <img src="{{ display_image($product->image) }}">
                 </div>
             </div>
         </div>
@@ -152,7 +152,7 @@
             <div class="gallery-preview" style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;">
                 @foreach($product->images as $gImg)
                     <div class="image-preview-box">
-                        <img src="{{ asset('storage/' . $gImg->image) }}">
+                        <img src="{{ display_image($gImg->image) }}">
                     </div>
                 @endforeach
             </div>
