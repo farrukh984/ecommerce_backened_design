@@ -18,10 +18,10 @@ RUN apt-get update && apt-get install -y \
 # 1. Enable Apache mod_rewrite
 RUN a2enmod rewrite
 
-# 2. Enable AllowOverride All for Apache to read .htaccess
+# 2. Enable AllowOverride All
 RUN sed -i 's/AllowOverride None/AllowOverride All/g' /etc/apache2/apache2.conf
 
-# 3. Change Apache Root to Laravel's /public folder
+# 3. Change Apache Root to /public
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/000-default.conf
 
@@ -36,10 +36,11 @@ COPY --from=node_builder /app/public/build ./public/build
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 RUN composer install --no-interaction --no-dev --optimize-autoloader
 
-# Set permissions
-RUN chown -R www-data:www-data storage bootstrap/cache
+# Create storage symlink AND set permissions (ZAROORI)
+RUN php artisan storage:link
+RUN chown -R www-data:www-data storage bootstrap/cache public/storage
 
-# Tell Apache to listen to Render's $PORT
+# Listen to Render Port
 RUN sed -i 's/80/${PORT}/g' /etc/apache2/sites-available/000-default.conf /etc/apache2/ports.conf
 
 CMD ["apache2-foreground"]
