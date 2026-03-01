@@ -25,7 +25,7 @@ class MessageController extends Controller
             ->get();
 
         // Check if user has an active conversation with admin
-        $admin = User::where('role', 'admin')->first();
+        $admin = User::where('role', 'admin')->orderBy('id', 'desc')->first();
         $hasAdminChat = false;
         if ($admin) {
             $hasAdminChat = $conversations->contains(function($c) use ($admin) {
@@ -82,7 +82,7 @@ class MessageController extends Controller
         $messages = $conversation->messages->sortBy('created_at');
 
         // Check if user has an active conversation with admin
-        $admin = User::where('role', 'admin')->first();
+        $admin = User::where('role', 'admin')->orderBy('id', 'desc')->first();
         $hasAdminChat = false;
         if ($admin) {
             $hasAdminChat = $conversations->contains(function($c) use ($admin) {

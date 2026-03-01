@@ -567,7 +567,7 @@
                                     <div class="msg-mini-avatar-placeholder">{{ strtoupper(substr($msg->user->name, 0, 1)) }}</div>
                                 @endif
                             @endif
-                            <div class="msg-bubble {{ $msg->user_id === auth()->id() ? 'sent' : 'received' }}">
+                            <div id="msg-{{ $msg->id }}" class="msg-bubble {{ $msg->user_id === auth()->id() ? 'sent' : 'received' }}">
                                 @if($msg->type === 'image' && $msg->file_path)
                                     <img src="{{ asset('storage/' . $msg->file_path) }}" class="msg-image" onclick="window.open(this.src)">
                                 @endif
@@ -633,14 +633,14 @@
                 'Accept': 'application/json'
             },
             body: JSON.stringify({
-                receiver_id: 1,
+                receiver_id: {{ $admin ? $admin->id : 1 }},
                 message: 'Hello! I need help.'
             })
         })
         .then(r => r.json())
         .then(data => {
             if (data.status === 'success') {
-                window.location.reload();
+                window.location.href = `{{ route("user.messages.chat", "") }}/${data.message.conversation_id}`;
             }
         });
     }
@@ -676,6 +676,11 @@
         .then(data => {
             if (data.messages && data.messages.length > 0) {
                 data.messages.forEach(msg => {
+                    // Prevent duplicates
+                    if (document.getElementById(`msg-${msg.id}`)) {
+                        return;
+                    }
+
                     const isSent = msg.user_id === {{ auth()->id() }};
                     const initial = msg.user.name.charAt(0).toUpperCase();
                     const avatar = msg.user.profile_image
@@ -696,7 +701,7 @@
                     const html = `
                         <div class="msg-avatar-group ${isSent ? 'sent' : ''}">
                             ${!isSent ? avatar : ''}
-                            <div class="msg-bubble ${isSent ? 'sent' : 'received'}">
+                            <div id="msg-${msg.id}" class="msg-bubble ${isSent ? 'sent' : 'received'}">
                                 ${content}
                                 <div class="msg-time">${time} ${readIcon}</div>
                             </div>
@@ -704,7 +709,7 @@
                     `;
 
                     chatBox.insertAdjacentHTML('beforeend', html);
-                    lastMsgId = msg.id;
+                    if (msg.id > lastMsgId) lastMsgId = msg.id;
                 });
                 chatBox.scrollTop = chatBox.scrollHeight;
             }
