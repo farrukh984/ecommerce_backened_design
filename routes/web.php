@@ -20,6 +20,7 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\Admin\DealController;
+use App\Http\Controllers\Admin\SupplierController;
 
 
 /*
@@ -143,6 +144,7 @@ Route::middleware(['auth', 'is_admin'])
             'conditions' => ConditionController::class,
             'features'   => FeatureController::class,
             'products'   => AdminProductController::class,
+            'suppliers'  => SupplierController::class,
         ]);
 
         // Deals Management

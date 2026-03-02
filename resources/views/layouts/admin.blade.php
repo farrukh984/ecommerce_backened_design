@@ -50,6 +50,9 @@
                 <a href="{{ route('admin.brands.index') }}" class="menu-item {{ request()->routeIs('admin.brands.*') ? 'active' : '' }}">
                     <i class="fa-solid fa-copyright"></i> Brands
                 </a>
+                <a href="{{ route('admin.suppliers.index') }}" class="menu-item {{ request()->routeIs('admin.suppliers.*') ? 'active' : '' }}">
+                    <i class="fa-solid fa-truck-field"></i> Suppliers
+                </a>
                 <a href="{{ route('admin.deals.index') }}" class="menu-item {{ request()->routeIs('admin.deals.*') ? 'active' : '' }}">
                     <i class="fa-solid fa-fire"></i> Deals & Offers
                 </a>
