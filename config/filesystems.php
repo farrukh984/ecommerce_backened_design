@@ -62,10 +62,10 @@ return [
 
         'cloudinary' => [
             'driver' => 'cloudinary',
-            'cloud' => env('CLOUDINARY_CLOUD_NAME'),
-            'key' => env('CLOUDINARY_API_KEY'),
-            'secret' => env('CLOUDINARY_API_SECRET'),
-            'url' => env('CLOUDINARY_URL'),
+            'cloud' => env('CLOUDINARY_CLOUD_NAME', 'davd1xf1l'),
+            'key' => env('CLOUDINARY_API_KEY', '853337394996799'),
+            'secret' => env('CLOUDINARY_API_SECRET', '9PPh8PJISr_6Ns3-D42O9H-v_4s'),
+            'url' => env('CLOUDINARY_URL', 'cloudinary://853337394996799:9PPh8PJISr_6Ns3-D42O9H-v_4s@davd1xf1l'),
         ],
 
     ],

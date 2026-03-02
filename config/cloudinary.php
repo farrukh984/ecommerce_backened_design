@@ -31,13 +31,13 @@ return [
     |
     |
     */
-    'cloud_url' => env('CLOUDINARY_URL'),
+    'cloud_url' => env('CLOUDINARY_URL', 'cloudinary://853337394996799:9PPh8PJISr_6Ns3-D42O9H-v_4s@davd1xf1l'),
 
-    'cloud_name' => env('CLOUDINARY_CLOUD_NAME'),
+    'cloud_name' => env('CLOUDINARY_CLOUD_NAME', 'davd1xf1l'),
 
-    'api_key' => env('CLOUDINARY_API_KEY'),
+    'api_key' => env('CLOUDINARY_API_KEY', '853337394996799'),
 
-    'api_secret' => env('CLOUDINARY_API_SECRET'),
+    'api_secret' => env('CLOUDINARY_API_SECRET', '9PPh8PJISr_6Ns3-D42O9H-v_4s'),
 
     /**
      * Upload Preset From Cloudinary Dashboard
