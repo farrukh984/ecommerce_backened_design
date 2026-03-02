@@ -6,6 +6,12 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
 use App\Models\Category;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Order;
+use App\Models\ProductReview;
+use App\Models\Product;
+use App\Models\Message;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -26,22 +32,45 @@ class AppServiceProvider extends ServiceProvider
             URL::forceScheme('https');
         }
 
-        // Share categories to all views for dynamic nav/search selects
+        // Share categories with caching (1 hour)
         try {
-            View::share('categories', Category::orderBy('name')->get());
-            
-            // Share unread message count for admin
-            View::composer('layouts.admin', function ($view) {
-                if (auth()->check()) {
-                    $unreadCount = \App\Models\Message::where('is_read', false)
-                        ->whereHas('conversation', function ($q) {
-                            $q->where('receiver_id', auth()->id());
-                        })->count();
-                    $view->with('unreadAdminCount', $unreadCount);
-                }
-            });
+            if (!app()->runningInConsole()) {
+                $categories = Cache::remember('site_categories', 3600, function () {
+                    return Category::orderBy('name')->get();
+                });
+                View::share('categories', $categories);
+                
+                // Optimized View Composer for Admin layout
+                View::composer('layouts.admin', function ($view) {
+                    if (Auth::check() && Auth::user()->role === 'admin') {
+                        $authId = Auth::id();
+
+                        // Cache counts for 5 minutes instead of every page load
+                        $stats = Cache::remember("admin_counts_{$authId}", 300, function () use ($authId) {
+                            return [
+                                'unreadMessages' => Message::where('is_read', false)
+                                    ->where('user_id', '!=', $authId)
+                                    ->whereHas('conversation', function ($q) use ($authId) {
+                                        $q->where('sender_id', $authId)
+                                          ->orWhere('receiver_id', $authId);
+                                    })->count(),
+                                'unviewedOrders' => Order::where('is_viewed', false)->count(),
+                                'unviewedReviews' => ProductReview::where('is_viewed', false)->count(),
+                                'lowStockCount'  => Product::where('stock_quantity', '<', 10)->count(),
+                            ];
+                        });
+
+                        $view->with([
+                            'unreadAdminCount' => $stats['unreadMessages'],
+                            'unviewedOrdersCount' => $stats['unviewedOrders'],
+                            'unviewedReviewsCount' => $stats['unviewedReviews'],
+                            'lowStockCount' => $stats['lowStockCount'],
+                        ]);
+                    }
+                });
+            }
         } catch (\Throwable $e) {
-            // ignore when running migrations or before DB exists
+            // ignore
         }
     }
 }

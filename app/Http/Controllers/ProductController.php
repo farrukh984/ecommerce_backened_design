@@ -8,6 +8,8 @@ use App\Models\Category;
 use App\Models\Condition;
 use App\Models\Feature;
 use App\Models\WishlistItem;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Auth;
 
 
 class ProductController extends Controller
@@ -89,20 +91,26 @@ class ProductController extends Controller
 
             $products = $query->paginate(9)->withQueryString();
 
-            // Dynamic filter data
-            $brands = \App\Models\Brand::orderBy('name')->pluck('name');
+            // Cache filter data for 1 hour to reduce DB load
+            $filterData = Cache::remember('product_filters_data', 3600, function() {
+                return [
+                    'brands' => \App\Models\Brand::orderBy('name')->pluck('name'),
+                    'conditions' => Condition::orderBy('name')->get(),
+                    'features' => Feature::orderBy('name')->get(),
+                    'minPrice' => Product::whereNotNull('price')->min('price') ?? 0,
+                    'maxPrice' => Product::whereNotNull('price')->max('price') ?? 1000,
+                    'categories' => Category::orderBy('name')->get(),
+                ];
+            });
 
-            $conditions = Condition::orderBy('name')->get();
+            $brands = $filterData['brands'];
+            $conditions = $filterData['conditions'];
+            $features = $filterData['features'];
+            $minPrice = $filterData['minPrice'];
+            $maxPrice = $filterData['maxPrice'];
+            $categories = $filterData['categories'];
             $ratings = [5, 4, 3, 2, 1];
-
-            // Get all features from features table
-            $features = Feature::orderBy('name')->get();
-
-            // Get price range
-            $minPrice = Product::whereNotNull('price')->min('price') ?? 0;
-            $maxPrice = Product::whereNotNull('price')->max('price') ?? 1000;
-
-            $categories = Category::orderBy('name')->get();
+            
             $currentCategory = $request->category ? Category::with('parent.parent')->find($request->category) : null;
 
             return view('products.index', compact('products', 'categories', 'brands', 'conditions', 'ratings', 'features', 'minPrice', 'maxPrice', 'currentCategory'));

@@ -60,9 +60,6 @@
                 <div class="menu-label">Customer Operations</div>
                 <a href="{{ route('admin.orders.index') }}" class="menu-item {{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
                     <i class="fa-solid fa-receipt"></i> Orders
-                    @php
-                        $unviewedOrdersCount = \App\Models\Order::where('is_viewed', false)->count();
-                    @endphp
                     @if($unviewedOrdersCount > 0)
                         <span style="background: white; color: var(--admin-primary); border-radius: 6px; padding: 2px 8px; font-size: 10px; font-weight: 800; margin-left: auto; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">{{ $unviewedOrdersCount }}</span>
                     @endif
@@ -72,23 +69,12 @@
                 </a>
                 <a href="{{ route('admin.reviews.index') }}" class="menu-item {{ request()->routeIs('admin.reviews.*') ? 'active' : '' }}">
                     <i class="fa-solid fa-star"></i> Product Reviews
-                    @php
-                        $unviewedReviewsCount = \App\Models\ProductReview::where('is_viewed', false)->count();
-                    @endphp
                     @if($unviewedReviewsCount > 0)
                         <span style="background: white; color: var(--admin-primary); border-radius: 6px; padding: 2px 8px; font-size: 10px; font-weight: 800; margin-left: auto; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">{{ $unviewedReviewsCount }}</span>
                     @endif
                 </a>
                 <a href="{{ route('admin.messages.index') }}" class="menu-item {{ request()->routeIs('admin.messages.*') ? 'active' : '' }}">
                     <i class="fa-solid fa-comments"></i> Inquiries
-                    @php
-                        $unreadAdminCount = \App\Models\Message::where('is_read', false)
-                            ->where('user_id', '!=', auth()->id())
-                            ->whereHas('conversation', function($q) {
-                                $q->where('sender_id', auth()->id())
-                                  ->orWhere('receiver_id', auth()->id());
-                            })->count();
-                    @endphp
                     @if($unreadAdminCount > 0)
                         <span style="background: white; color: var(--admin-primary); border-radius: 6px; padding: 2px 8px; font-size: 10px; font-weight: 800; margin-left: auto; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">{{ $unreadAdminCount }}</span>
                     @endif
@@ -144,9 +130,6 @@
                     <h1>@yield('header_title', 'Dashboard')</h1>
                 </div>
                 <div class="topbar-right">
-                    @php
-                        $lowStockCount = \App\Models\Product::where('stock_quantity', '<', 10)->count();
-                    @endphp
                     @if($lowStockCount > 0)
                         <a href="{{ route('admin.products.index') }}" class="stock-warning-pill" style="margin-right: 15px; background: #fff7ed; border: 1px solid #ffedd5; color: #9a3412; padding: 10px 18px; border-radius: 14px; font-size: 12px; font-weight: 800; display: flex; align-items: center; gap: 10px; text-decoration: none; box-shadow: 0 4px 10px rgba(234, 88, 12, 0.1);">
                             <i class="fa-solid fa-triangle-exclamation" style="color: #ea580c; font-size: 14px;"></i>
