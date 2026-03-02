@@ -27,9 +27,7 @@ class CategoryController extends Controller
         ]);
 
         if ($request->hasFile('background_image')) {
-            $data['background_image'] = cloudinary()->upload($request->file('background_image')->getRealPath(), [
-                'folder' => 'categories'
-            ])->getSecurePath();
+            $data['background_image'] = $request->file('background_image')->storeOnCloudinary('categories')->getSecurePath();
         }
 
 
@@ -50,9 +48,7 @@ class CategoryController extends Controller
         ]);
 
         if ($request->hasFile('background_image')) {
-            $data['background_image'] = cloudinary()->upload($request->file('background_image')->getRealPath(), [
-                'folder' => 'categories'
-            ])->getSecurePath();
+            $data['background_image'] = $request->file('background_image')->storeOnCloudinary('categories')->getSecurePath();
         }
 
 

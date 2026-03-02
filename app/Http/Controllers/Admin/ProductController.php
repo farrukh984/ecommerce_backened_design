@@ -75,9 +75,7 @@ class ProductController extends Controller
 
         // handle image upload
         if ($request->hasFile('image')) {
-            $data['image'] = cloudinary()->upload($request->file('image')->getRealPath(), [
-                'folder' => 'products'
-            ])->getSecurePath();
+            $data['image'] = $request->file('image')->storeOnCloudinary('products')->getSecurePath();
         }
 
         $product = Product::create($data);
@@ -88,9 +86,7 @@ class ProductController extends Controller
         // Handle Gallery
         if ($request->hasFile('gallery')) {
             foreach ($request->file('gallery') as $img) {
-                $path = cloudinary()->upload($img->getRealPath(), [
-                    'folder' => 'products/gallery'
-                ])->getSecurePath();
+                $path = $img->storeOnCloudinary('products/gallery')->getSecurePath();
                 $product->images()->create(['image' => $path]);
             }
         }
@@ -153,9 +149,7 @@ class ProductController extends Controller
         unset($data['features']);
 
         if ($request->hasFile('image')) {
-            $data['image'] = cloudinary()->upload($request->file('image')->getRealPath(), [
-                'folder' => 'products'
-            ])->getSecurePath();
+            $data['image'] = $request->file('image')->storeOnCloudinary('products')->getSecurePath();
         }
 
         $product->update($data);
@@ -164,9 +158,7 @@ class ProductController extends Controller
         // Handle Gallery (append)
         if ($request->hasFile('gallery')) {
             foreach ($request->file('gallery') as $img) {
-                $path = cloudinary()->upload($img->getRealPath(), [
-                    'folder' => 'products/gallery'
-                ])->getSecurePath();
+                $path = $img->storeOnCloudinary('products/gallery')->getSecurePath();
                 $product->images()->create(['image' => $path]);
             }
         }

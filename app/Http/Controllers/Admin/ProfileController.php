@@ -42,15 +42,11 @@ class ProfileController extends Controller
         }
 
         if ($request->hasFile('profile_image')) {
-            $user->profile_image = cloudinary()->upload($request->file('profile_image')->getRealPath(), [
-                'folder' => 'profile_images'
-            ])->getSecurePath();
+            $user->profile_image = $request->file('profile_image')->storeOnCloudinary('profile_images')->getSecurePath();
         }
 
         if ($request->hasFile('cover_image')) {
-            $user->cover_image = cloudinary()->upload($request->file('cover_image')->getRealPath(), [
-                'folder' => 'cover_images'
-            ])->getSecurePath();
+            $user->cover_image = $request->file('cover_image')->storeOnCloudinary('cover_images')->getSecurePath();
         }
 
         $user->name = $validated['name'];
