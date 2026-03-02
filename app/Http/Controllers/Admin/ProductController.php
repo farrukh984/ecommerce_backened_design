@@ -9,6 +9,7 @@ use App\Models\Category;
 use App\Models\Brand;
 use App\Models\Condition;
 use App\Models\Feature;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class ProductController extends Controller
 {
@@ -75,7 +76,7 @@ class ProductController extends Controller
 
         // handle image upload
         if ($request->hasFile('image')) {
-            $data['image'] = $request->file('image')->storeOnCloudinary('products')->getSecurePath();
+            $data['image'] = Cloudinary::upload($request->file('image')->getRealPath(), ['folder' => 'products'])->getSecurePath();
         }
 
         $product = Product::create($data);
@@ -86,7 +87,7 @@ class ProductController extends Controller
         // Handle Gallery
         if ($request->hasFile('gallery')) {
             foreach ($request->file('gallery') as $img) {
-                $path = $img->storeOnCloudinary('products/gallery')->getSecurePath();
+                $path = Cloudinary::upload($img->getRealPath(), ['folder' => 'products/gallery'])->getSecurePath();
                 $product->images()->create(['image' => $path]);
             }
         }
@@ -149,7 +150,7 @@ class ProductController extends Controller
         unset($data['features']);
 
         if ($request->hasFile('image')) {
-            $data['image'] = $request->file('image')->storeOnCloudinary('products')->getSecurePath();
+            $data['image'] = Cloudinary::upload($request->file('image')->getRealPath(), ['folder' => 'products'])->getSecurePath();
         }
 
         $product->update($data);
@@ -158,7 +159,7 @@ class ProductController extends Controller
         // Handle Gallery (append)
         if ($request->hasFile('gallery')) {
             foreach ($request->file('gallery') as $img) {
-                $path = $img->storeOnCloudinary('products/gallery')->getSecurePath();
+                $path = Cloudinary::upload($img->getRealPath(), ['folder' => 'products/gallery'])->getSecurePath();
                 $product->images()->create(['image' => $path]);
             }
         }

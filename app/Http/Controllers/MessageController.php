@@ -10,6 +10,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\Admin\NewInquiryAlert;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class MessageController extends Controller
 {
@@ -138,7 +139,7 @@ class MessageController extends Controller
 
         if ($request->hasFile('image')) {
             $type = 'image';
-            $file_path = $request->file('image')->storeOnCloudinary('chat_images')->getSecurePath();
+            $file_path = Cloudinary::upload($request->file('image')->getRealPath(), ['folder' => 'chat_images'])->getSecurePath();
         }
 
         $message = Message::create([

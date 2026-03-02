@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use App\Models\Order;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class UserDashboardController extends Controller
 {
@@ -146,11 +147,11 @@ class UserDashboardController extends Controller
         }
 
         if ($request->hasFile('profile_image')) {
-            $user->profile_image = $request->file('profile_image')->storeOnCloudinary('profile_images')->getSecurePath();
+            $user->profile_image = Cloudinary::upload($request->file('profile_image')->getRealPath(), ['folder' => 'profile_images'])->getSecurePath();
         }
 
         if ($request->hasFile('cover_image')) {
-            $user->cover_image = $request->file('cover_image')->storeOnCloudinary('cover_images')->getSecurePath();
+            $user->cover_image = Cloudinary::upload($request->file('cover_image')->getRealPath(), ['folder' => 'cover_images'])->getSecurePath();
         }
 
         $user->name = $validated['name'];

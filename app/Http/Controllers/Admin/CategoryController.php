@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Category;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class CategoryController extends Controller
 {
@@ -27,7 +28,7 @@ class CategoryController extends Controller
         ]);
 
         if ($request->hasFile('background_image')) {
-            $data['background_image'] = $request->file('background_image')->storeOnCloudinary('categories')->getSecurePath();
+            $data['background_image'] = Cloudinary::upload($request->file('background_image')->getRealPath(), ['folder' => 'categories'])->getSecurePath();
         }
 
 
@@ -48,7 +49,7 @@ class CategoryController extends Controller
         ]);
 
         if ($request->hasFile('background_image')) {
-            $data['background_image'] = $request->file('background_image')->storeOnCloudinary('categories')->getSecurePath();
+            $data['background_image'] = Cloudinary::upload($request->file('background_image')->getRealPath(), ['folder' => 'categories'])->getSecurePath();
         }
 
 
