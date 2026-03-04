@@ -118,7 +118,7 @@
 
     /* Conversations Sidebar */
     .conv-sidebar {
-        border-right: 1px solid var(--admin-border);
+        border-left: 1px solid var(--admin-border);
         display: flex;
         flex-direction: column;
         background: #fcfdfe;
@@ -242,6 +242,7 @@
         min-height: 0;
         height: 100%;
         position: relative;
+        border-right: 1px solid var(--admin-border);
     }
     .chat-header {
         padding: 12px 20px;
@@ -469,61 +470,13 @@
 @section('admin_content')
 
 <div class="chat-container">
-    <div class="chat-overlay" id="chatOverlay" onclick="toggleChatSidebar()"></div>
-    <!-- Conversations List -->
-    <div class="conv-sidebar">
-        <div class="conv-sidebar-header">
-            <h3>Conversations</h3>
-            <p>{{ $conversations->count() }} active chats</p>
-        </div>
-        <div class="conv-list">
-            @forelse($conversations as $conv)
-                @php
-                    $otherUser = $conv->sender_id === auth()->id() ? $conv->receiver : $conv->sender;
-                    $lastMsg = $conv->messages->sortByDesc('created_at')->first();
-                    $unread = $conv->messages->where('user_id', '!=', auth()->id())->where('is_read', false)->count();
-                @endphp
-                <a href="{{ route('admin.messages.chat', $conv->id) }}" class="conv-item {{ isset($conversation) && $conversation->id === $conv->id ? 'active' : '' }}">
-                    @if($otherUser->profile_image)
-                        <img src="{{ display_image($otherUser->profile_image) }}" class="conv-avatar">
-                    @else
-                        <div class="conv-avatar-placeholder">{{ strtoupper(substr($otherUser->name, 0, 1)) }}</div>
-                    @endif
-                    <div class="conv-info">
-                        <div class="conv-name">{{ $otherUser->name }}</div>
-                        <div class="conv-last-msg">
-                            @if($lastMsg)
-                                {{ $lastMsg->user_id === auth()->id() ? 'You: ' : '' }}{{ $lastMsg->type === 'image' ? '📷 Image' : Str::limit($lastMsg->message, 35) }}
-                            @else
-                                Start a conversation
-                            @endif
-                        </div>
-                    </div>
-                    <div class="conv-meta">
-                        @if($lastMsg)
-                            <span class="conv-time">{{ $lastMsg->created_at->diffForHumans(null, true, true) }}</span>
-                        @endif
-                        @if($unread > 0)
-                            <span class="conv-unread-badge">{{ $unread }}</span>
-                        @endif
-                    </div>
-                </a>
-            @empty
-                <div class="empty-chat">
-                    <i class="fa-solid fa-headset"></i>
-                    <h3>Inbox Empty</h3>
-                    <p>No conversations yet. Your customer messages will appear here.</p>
-                </div>
-            @endforelse
-        </div>
-    </div>
-
     <!-- Chat Window -->
     @if(isset($conversation))
     @php
         $chatUser = $conversation->sender_id === auth()->id() ? $conversation->receiver : $conversation->sender;
     @endphp
     <div class="chat-window">
+        <!-- ... existing chat window content ... -->
         <div class="chat-header">
             @if(isset($conversation))
             <a href="{{ route('admin.messages.index') }}" class="mobile-back-btn">
@@ -544,11 +497,6 @@
                     <span class="online-dot offline" id="onlineDot"></span>
                     <span id="onlineText" style="color: #94a3b8;">Checking...</span>
                 </div>
-            </div>
-            <div style="margin-left: auto; display: flex; align-items: center; gap: 8px;">
-                @if($chatUser->email)
-                    <span class="md-only-hidden" style="font-size: 11px; color: var(--admin-text-sub); background: #f8fafc; padding: 4px 12px; border: 1px solid var(--admin-border); border-radius: 20px; font-weight: 600;">{{ $chatUser->email }}</span>
-                @endif
             </div>
         </div>
 
@@ -603,8 +551,8 @@
                 <input type="text" name="message" id="messageInput" placeholder="Type a reply..." autocomplete="off">
                 <input type="file" name="image" id="imageInput" accept="image/*" style="display: none;" onchange="previewImage(this)">
                 <label for="imageInput"><i class="fa-solid fa-image" style="font-size: 18px;"></i></label>
-                <button type="submit" class="chat-send-btn">
-                    <i class="fa-solid fa-paper-plane"></i> <span>Reply</span>
+                <button type="submit" class="chat-send-btn" style="padding: 10px 15px;">
+                    <i class="fa-solid fa-paper-plane"></i>
                 </button>
             </form>
         </div>
@@ -614,10 +562,60 @@
         <div class="empty-chat">
             <i class="fa-solid fa-headset"></i>
             <h3>Customer Support</h3>
-            <p>Select a conversation from the left to start replying</p>
+            <p>Select a conversation from the right to start replying</p>
         </div>
     </div>
     @endif
+
+    <div class="chat-overlay" id="chatOverlay" onclick="toggleChatSidebar()"></div>
+
+    <!-- Conversations List -->
+    <div class="conv-sidebar">
+        <div class="conv-sidebar-header">
+            <h3>Conversations</h3>
+            <p>{{ $conversations->count() }} active chats</p>
+        </div>
+        <div class="conv-list">
+            @forelse($conversations as $conv)
+                @php
+                    $otherUser = $conv->sender_id === auth()->id() ? $conv->receiver : $conv->sender;
+                    $lastMsg = $conv->messages->sortByDesc('created_at')->first();
+                    $unread = $conv->messages->where('user_id', '!=', auth()->id())->where('is_read', false)->count();
+                @endphp
+                <a href="{{ route('admin.messages.chat', $conv->id) }}" class="conv-item {{ isset($conversation) && $conversation->id === $conv->id ? 'active' : '' }}">
+                    @if($otherUser->profile_image)
+                        <img src="{{ display_image($otherUser->profile_image) }}" class="conv-avatar">
+                    @else
+                        <div class="conv-avatar-placeholder">{{ strtoupper(substr($otherUser->name, 0, 1)) }}</div>
+                    @endif
+                    <div class="conv-info">
+                        <div class="conv-name">{{ $otherUser->name }}</div>
+                        <div class="conv-last-msg">
+                            @if($lastMsg)
+                                {{ $lastMsg->user_id === auth()->id() ? 'You: ' : '' }}{{ $lastMsg->type === 'image' ? '📷 Image' : $lastMsg->message }}
+                            @else
+                                Start a conversation
+                            @endif
+                        </div>
+                    </div>
+                    <div class="conv-meta">
+                        @if($lastMsg)
+                            <span class="conv-time">{{ $lastMsg->created_at->diffForHumans() }}</span>
+                        @endif
+                        @if($unread > 0)
+                            <span class="conv-unread-badge">{{ $unread }}</span>
+                        @endif
+                    </div>
+                </a>
+            @empty
+                <div class="empty-chat">
+                    <i class="fa-solid fa-headset"></i>
+                    <h3>Inbox Empty</h3>
+                    <p>No conversations yet.</p>
+                </div>
+            @endforelse
+        </div>
+    </div>
 </div>
 
 @endsection
