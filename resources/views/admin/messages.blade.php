@@ -15,95 +15,88 @@
         border: 1px solid var(--admin-border);
     }
 
-    @media (max-width: 900px) {
+    @media (max-width: 991px) {
         .chat-container {
             grid-template-columns: 1fr;
             height: calc(100vh - 120px);
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
+            border-radius: 0;
+            border: none;
         }
-        
+
         .conv-sidebar {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 280px !important;
+            height: 100%;
+            z-index: 100;
+            transform: translateX(-100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 20px 0 50px rgba(0,0,0,0.1);
+            border-right: 1px solid var(--admin-border);
             display: flex !important;
-            height: {{ isset($conversation) ? '85px' : '100%' }} !important;
-            width: 100% !important;
-            border-right: none;
-            overflow-x: auto !important;
-            background: #fff;
-            flex-shrink: 0;
         }
 
-        .conv-list {
-            display: flex !important;
-            flex-direction: {{ isset($conversation) ? 'row' : 'column' }} !important;
-            overflow-x: auto !important;
-            width: 100%;
-        }
-
-        .conv-item {
-            min-width: {{ isset($conversation) ? '180px' : '100%' }} !important;
-            padding: 10px 15px !important;
-            border-bottom: {{ isset($conversation) ? 'none' : '1px solid #f1f5f9' }};
-            border-right: {{ isset($conversation) ? '1px solid #f1f5f9' : 'none' }};
-        }
-
-        .conv-avatar {
-            width: 38px !important;
-            height: 38px !important;
+        .conv-sidebar.mobile-open {
+            transform: translateX(0);
         }
 
         .chat-window {
-            display: flex !important;
-            height: {{ isset($conversation) ? 'calc(100% - 85px)' : '100%' }} !important;
             width: 100% !important;
-        }
-
-        .chat-input-area {
-            padding: 8px 10px;
-        }
-
-        .chat-send-btn {
-            width: 40px;
-            height: 40px;
-            padding: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            min-width: 40px;
-        }
-
-        .chat-send-btn span {
-            display: none !important;
-        }
-
-        .chat-send-btn i {
-            margin-right: -2px; /* Visual center adjustment */
-            font-size: 16px;
+            display: flex !important;
         }
 
         .mobile-back-btn {
             display: flex !important;
+            width: 40px;
+            height: 40px;
             align-items: center;
             justify-content: center;
-            width: 36px;
-            height: 36px;
             background: #f1f5f9;
-            border-radius: 10px;
-            color: #475569;
-            text-decoration: none;
-            margin-right: 5px;
+            border-radius: 12px;
+            color: #1e293b;
+            margin-right: 10px;
         }
 
-        .chat-header-info h4 {
-            font-size: 14px !important;
-            max-width: 130px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+        .conv-header-mobile {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            background: #fff;
+            border-bottom: 1px solid var(--admin-border);
         }
+
+        .chat-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.3);
+            z-index: 90;
+            display: none;
+            backdrop-filter: blur(2px);
+        }
+
+        .chat-overlay.active {
+            display: block;
+        }
+        
+        /* Hide conversation list when viewing a chat but allow sidebar toggle */
+        @if(isset($conversation))
+            .conv-sidebar {
+                /* Sidebar is hidden by default, toggled via mobile-back-btn or a menu icon */
+            }
+        @else
+            .conv-sidebar {
+                transform: translateX(0);
+                width: 100% !important;
+                box-shadow: none;
+            }
+            .chat-window {
+                display: none !important;
+            }
+        @endif
 
         .md-only-hidden {
             display: none !important;
@@ -442,6 +435,7 @@
 @section('admin_content')
 
 <div class="chat-container">
+    <div class="chat-overlay" id="chatOverlay" onclick="toggleChatSidebar()"></div>
     <!-- Conversations List -->
     <div class="conv-sidebar">
         <div class="conv-sidebar-header">
@@ -497,7 +491,10 @@
     @endphp
     <div class="chat-window">
         <div class="chat-header">
-            <a href="{{ route('admin.messages.index') }}" class="mobile-back-btn">
+            <button class="mobile-back-btn" onclick="toggleChatSidebar()">
+                <i class="fa-solid fa-bars-staggered"></i>
+            </button>
+            <a href="{{ route('admin.messages.index') }}" class="mobile-back-btn" style="display: none !important;">
                 <i class="fa-solid fa-chevron-left"></i>
             </a>
             @if($chatUser->profile_image)
@@ -583,6 +580,13 @@
 
 @section('scripts')
 <script>
+    function toggleChatSidebar() {
+        const sidebar = document.querySelector('.conv-sidebar');
+        const overlay = document.getElementById('chatOverlay');
+        sidebar.classList.toggle('mobile-open');
+        overlay.classList.toggle('active');
+    }
+
     function previewImage(input) {
         if (input.files && input.files[0]) {
             const reader = new FileReader();

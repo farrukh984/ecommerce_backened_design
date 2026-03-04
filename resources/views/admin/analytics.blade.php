@@ -118,7 +118,57 @@
                 </div>
                 @endforeach
             </div>
+    </div>
+</div>
+
+<!-- Customer Engagement Section -->
+<div class="premium-card" style="margin-top: 30px;">
+    <div class="action-header-premium">
+        <div class="header-info">
+            <h2>Real-time Engagement</h2>
+            <p>Latest customer inquiries and support activity</p>
         </div>
+        <div class="header-badge" style="background: #fdf2f8; color: #db2777;">Live Activity</div>
+    </div>
+    
+    <div class="engagement-grid">
+        @php
+            $recentConvs = \App\Models\Conversation::where('sender_id', auth()->id())
+                ->orWhere('receiver_id', auth()->id())
+                ->with(['sender', 'receiver', 'messages'])
+                ->latest('last_message_at')
+                ->take(4)
+                ->get();
+        @endphp
+
+        @forelse($recentConvs as $conv)
+            @php
+                $other = $conv->sender_id === auth()->id() ? $conv->receiver : $conv->sender;
+                $lastMsg = $conv->messages->sortByDesc('created_at')->first();
+            @endphp
+            <div class="engagement-card" onclick="openQuickChat('{{ $conv->id }}', '{{ $other->name }}', '{{ $other->profile_image ? display_image($other->profile_image) : '' }}', '{{ strtoupper(substr($other->name, 0, 1)) }}')">
+                <div class="engagement-avatar">
+                    @if($other->profile_image)
+                        <img src="{{ display_image($other->profile_image) }}">
+                    @else
+                        <div class="avatar-init">{{ strtoupper(substr($other->name, 0, 1)) }}</div>
+                    @endif
+                    <span class="status-pulse"></span>
+                </div>
+                <div class="engagement-details">
+                    <div class="engagement-name">{{ $other->name }}</div>
+                    <div class="engagement-msg">{{ $lastMsg ? Str::limit($lastMsg->message, 40) : 'New conversation' }}</div>
+                    <div class="engagement-time">{{ $lastMsg ? $lastMsg->created_at->diffForHumans() : '' }}</div>
+                </div>
+                <div class="engagement-action">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </div>
+            </div>
+        @empty
+            <div style="padding: 40px; text-align: center; color: #94a3b8; width: 100%;">
+                <p>No recent engagement activity recorded.</p>
+            </div>
+        @endforelse
     </div>
 </div>
 
@@ -253,6 +303,71 @@
 
     .performer-name { font-weight: 700; color: #1e293b; font-size: 14px; margin-bottom: 2px; }
     .performer-meta { font-size: 12px; color: #64748b; font-weight: 500; }
+
+    /* Engagement Section Styles */
+    .engagement-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+        padding: 25px 30px;
+    }
+
+    .engagement-card {
+        background: #f8fafc;
+        border: 1px solid #f1f5f9;
+        padding: 18px;
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        cursor: pointer;
+        transition: 0.3s;
+        position: relative;
+    }
+
+    .engagement-card:hover {
+        background: #fff;
+        transform: translateY(-4px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        border-color: #3b82f6;
+    }
+
+    .engagement-avatar {
+        position: relative;
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        overflow: hidden;
+        flex-shrink: 0;
+    }
+
+    .engagement-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .avatar-init {
+        width: 100%; height: 100%;
+        background: linear-gradient(135deg, #e0f2fe, #bae6fd);
+        color: #0369a1;
+        display: flex; align-items: center; justify-content: center;
+        font-weight: 800; font-size: 18px;
+    }
+
+    .status-pulse {
+        position: absolute;
+        bottom: 2px;
+        right: 2px;
+        width: 10px;
+        height: 10px;
+        background: #10b981;
+        border-radius: 50%;
+        border: 2px solid #fff;
+        box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+    }
+
+    .engagement-details { flex: 1; min-width: 0; }
+    .engagement-name { font-weight: 800; font-size: 14px; color: #1e293b; margin-bottom: 2px; }
+    .engagement-msg { font-size: 12px; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; }
+    .engagement-time { font-size: 10px; color: #94a3b8; margin-top: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    .engagement-action { color: #cbd5e1; font-size: 12px; }
 
     /* Stat Icon Colors */
     .bg-indigo { background: #e0e7ff; color: #4338ca; }
