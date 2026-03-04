@@ -9,10 +9,9 @@
        WHATSAPP DESKTOP DARK THEME — ADMIN PANEL
        ═══════════════════════════════════════════════════════════ */
 
-    @media (min-width: 992px) {
-        .admin-topbar { margin-bottom: 0 !important; }
-        .admin-main { padding: 10px 20px 10px !important; }
-    }
+    /* Remove all padding so chat fills the full admin-main space */
+    .admin-topbar { margin-bottom: 0 !important; }
+    .admin-main   { padding: 0 !important; overflow: hidden !important; }
 
     :root {
         --wa-bg-deep: #0b141a;
