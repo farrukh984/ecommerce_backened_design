@@ -7,20 +7,24 @@
 <style>
     .chat-container {
         display: grid;
-        grid-template-columns: 340px 1fr;
-        height: calc(100vh - 140px);
+        grid-template-columns: 350px 1fr;
+        height: calc(100vh - 160px);
         background: #fff;
-        border-radius: 16px;
+        border-radius: 20px;
         overflow: hidden;
         border: 1px solid var(--admin-border);
+        box-shadow: var(--admin-shadow-lg);
+        position: relative;
     }
 
     @media (max-width: 991px) {
         .chat-container {
             grid-template-columns: 1fr;
-            height: calc(100vh - 120px);
+            height: calc(100vh - 100px);
             border-radius: 0;
             border: none;
+            margin: -24px -15px; /* Compensate for admin-main padding */
+            width: calc(100% + 30px);
         }
 
         .conv-sidebar {
@@ -110,8 +114,9 @@
         border-right: 1px solid var(--admin-border);
         display: flex;
         flex-direction: column;
-        background: #fafbfc;
+        background: #fcfdfe;
         min-height: 0;
+        z-index: 10;
     }
     .conv-sidebar-header {
         padding: 20px;
@@ -155,27 +160,33 @@
         color: inherit;
     }
     .conv-item:hover { background: #f1f5f9; }
-    .conv-item.active { background: rgba(37, 99, 235, 0.05); border-left: 3px solid var(--admin-primary); }
+    .conv-item.active { 
+        background: #f1f5f9; 
+        border-left: 4px solid var(--admin-primary); 
+        box-shadow: inset 5px 0 15px -5px var(--admin-primary-glow);
+    }
     .conv-avatar {
-        width: 44px;
-        height: 44px;
-        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
         object-fit: cover;
         flex-shrink: 0;
-        border: 2px solid #e2e8f0;
+        border: 2px solid white;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
     }
     .conv-avatar-placeholder {
-        width: 44px;
-        height: 44px;
-        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
         background: linear-gradient(135deg, var(--admin-primary), var(--admin-secondary));
         color: white;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-weight: 700;
-        font-size: 16px;
+        font-weight: 800;
+        font-size: 18px;
         flex-shrink: 0;
+        box-shadow: 0 4px 12px var(--admin-primary-glow);
     }
     .conv-info {
         flex: 1;
@@ -202,16 +213,17 @@
     }
     .conv-time { font-size: 11px; color: #94a3b8; }
     .conv-unread-badge {
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
+        width: 22px;
+        height: 22px;
+        border-radius: 8px;
         background: var(--admin-primary);
         color: white;
-        font-size: 10px;
-        font-weight: 700;
+        font-size: 11px;
+        font-weight: 800;
         display: flex;
         align-items: center;
         justify-content: center;
+        box-shadow: 0 4px 10px var(--admin-primary-glow);
     }
 
     /* Chat Window */
@@ -222,12 +234,13 @@
         min-height: 0;
     }
     .chat-header {
-        padding: 16px 24px;
+        padding: 12px 20px;
         border-bottom: 1px solid var(--admin-border);
         display: flex;
         align-items: center;
-        gap: 14px;
-        background: #fff;
+        gap: 12px;
+        background: #ffffff;
+        z-index: 5;
     }
     .chat-header-info h4 {
         margin: 0;
@@ -247,7 +260,7 @@
         border-radius: 50%;
         display: inline-block;
     }
-    .online-dot.online { background: #22c55e; box-shadow: 0 0 6px rgba(34,197,94,0.4); }
+    .online-dot.online { background: #22c55e; box-shadow: 0 0 10px rgba(34,197,94,0.6); }
     .online-dot.offline { background: #94a3b8; }
 
     .chat-messages {
@@ -288,36 +301,40 @@
         border: 2px solid #e2e8f0;
     }
     .msg-mini-avatar-placeholder {
-        width: 28px;
-        height: 28px;
-        border-radius: 50%;
+        width: 32px;
+        height: 32px;
+        border-radius: 10px;
         background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
         color: #64748b;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 11px;
-        font-weight: 700;
+        font-size: 12px;
+        font-weight: 800;
         flex-shrink: 0;
     }
     .msg-bubble {
-        max-width: 65%;
-        padding: 12px 18px;
-        border-radius: 18px;
+        max-width: 75%;
+        padding: 12px 20px;
+        border-radius: 20px;
         font-size: 14px;
-        line-height: 1.6;
+        line-height: 1.5;
         word-wrap: break-word;
-        animation: fadeInMsg 0.3s ease;
+        position: relative;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.03);
     }
     .msg-bubble.sent {
         background: linear-gradient(135deg, var(--admin-primary), var(--admin-secondary));
         color: white;
         border-bottom-right-radius: 4px;
+        box-shadow: 0 8px 20px var(--admin-primary-glow);
     }
     .msg-bubble.received {
-        background: #f1f5f9;
+        background: #ffffff;
         color: #1e293b;
         border-bottom-left-radius: 4px;
+        border: 1px solid #f1f5f9;
     }
     .msg-time {
         font-size: 10px;
@@ -337,9 +354,9 @@
 
     /* Chat Input */
     .chat-input-area {
-        padding: 16px 24px;
+        padding: 12px 20px;
         border-top: 1px solid var(--admin-border);
-        background: #fff;
+        background: #ffffff;
     }
     .chat-input-form {
         display: flex;
@@ -372,22 +389,23 @@
     }
     .chat-input-form label:hover { color: var(--admin-primary); }
     .chat-send-btn {
-        padding: 10px 20px;
-        background: linear-gradient(135deg, var(--admin-primary), var(--admin-secondary, #4f46e5));
+        padding: 12px 24px;
+        background: linear-gradient(135deg, var(--admin-primary), var(--admin-secondary));
         color: white;
         border: none;
-        border-radius: 12px;
-        font-weight: 600;
+        border-radius: 14px;
+        font-weight: 700;
         font-size: 14px;
         cursor: pointer;
-        transition: all 0.2s;
+        transition: all 0.3s;
         display: flex;
         align-items: center;
-        gap: 6px;
+        gap: 8px;
+        box-shadow: 0 4px 12px var(--admin-primary-glow);
     }
     .chat-send-btn:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px var(--admin-primary-glow);
     }
 
     .empty-chat {
@@ -426,8 +444,13 @@
     }
 
     @keyframes fadeInMsg {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
+        from { opacity: 0; transform: translateY(15px) scale(0.95); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* Hide the global chat launcher when on this page to avoid overlap */
+    .admin-chat-widget {
+        display: none !important;
     }
 </style>
 @endsection
@@ -511,13 +534,13 @@
             </div>
             <div style="margin-left: auto; display: flex; align-items: center; gap: 8px;">
                 @if($chatUser->email)
-                    <span class="md-only-hidden" style="font-size: 12px; color: var(--admin-text-sub); background: #f1f5f9; padding: 4px 10px; border-radius: 20px;">{{ $chatUser->email }}</span>
+                    <span class="md-only-hidden" style="font-size: 11px; color: var(--admin-text-sub); background: #f8fafc; padding: 4px 12px; border: 1px solid var(--admin-border); border-radius: 20px; font-weight: 600;">{{ $chatUser->email }}</span>
                 @endif
             </div>
         </div>
 
         <div class="chat-messages" id="chatMessages">
-            @foreach($messages as $msg)
+            @forelse($messages as $msg)
                 <div class="msg-avatar-group {{ $msg->user_id === auth()->id() ? 'sent' : '' }}">
                     @if($msg->user_id !== auth()->id())
                         @if($msg->user->profile_image)
@@ -528,20 +551,28 @@
                     @endif
                     <div id="msg-{{ $msg->id }}" class="msg-bubble {{ $msg->user_id === auth()->id() ? 'sent' : 'received' }}">
                         @if($msg->type === 'image' && $msg->file_path)
-                            <img src="{{ display_image($msg->file_path) }}" class="msg-image" onclick="window.open(this.src)">
+                            <div style="margin-bottom: 8px;">
+                                <img src="{{ display_image($msg->file_path) }}" class="msg-image" onclick="window.open(this.src)">
+                            </div>
                         @endif
                         @if($msg->message)
-                            <div>{{ $msg->message }}</div>
+                            <div style="font-weight: 500;">{{ $msg->message }}</div>
                         @endif
                         <div class="msg-time">
                             {{ $msg->created_at->format('h:i A') }}
                             @if($msg->user_id === auth()->id())
-                                <i class="fa-solid {{ $msg->is_read ? 'fa-check-double' : 'fa-check' }}" style="font-size: 10px;"></i>
+                                <i class="fa-solid {{ $msg->is_read ? 'fa-check-double' : 'fa-check' }}" style="font-size: 10px; margin-left: 4px;"></i>
                             @endif
                         </div>
                     </div>
                 </div>
-            @endforeach
+            @empty
+                <div class="empty-chat" style="height: 100%;">
+                    <i class="fa-solid fa-comments"></i>
+                    <h3>Send a message</h3>
+                    <p>Start your conversation with {{ $chatUser->name }}</p>
+                </div>
+            @endforelse
         </div>
 
         <div class="image-preview-container" id="imagePreview">
