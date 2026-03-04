@@ -71,15 +71,15 @@
         }
 
         .chat-overlay {
-            position: absolute;
+            position: fixed; /* Fixed to cover whole screen */
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0,0,0,0.3);
-            z-index: 90;
+            background: rgba(15, 23, 42, 0.5); /* Matching main sidebar overlay */
+            z-index: 1045; /* Below sidebar, above chat window */
             display: none;
-            backdrop-filter: blur(2px);
+            backdrop-filter: blur(4px);
         }
 
         .chat-overlay.active {
@@ -116,7 +116,7 @@
         flex-direction: column;
         background: #fcfdfe;
         min-height: 0;
-        z-index: 10;
+        z-index: 1050; /* Higher than overlay on mobile */
     }
     .conv-sidebar-header {
         padding: 20px;
@@ -447,11 +447,6 @@
         from { opacity: 0; transform: translateY(15px) scale(0.95); }
         to { opacity: 1; transform: translateY(0) scale(1); }
     }
-
-    /* Hide the global chat launcher when on this page to avoid overlap */
-    .admin-chat-widget {
-        display: none !important;
-    }
 </style>
 @endsection
 
@@ -514,12 +509,14 @@
     @endphp
     <div class="chat-window">
         <div class="chat-header">
-            <button class="mobile-back-btn" onclick="toggleChatSidebar()">
-                <i class="fa-solid fa-bars-staggered"></i>
-            </button>
-            <a href="{{ route('admin.messages.index') }}" class="mobile-back-btn" style="display: none !important;">
+            @if(isset($conversation))
+            <a href="{{ route('admin.messages.index') }}" class="mobile-back-btn">
                 <i class="fa-solid fa-chevron-left"></i>
             </a>
+            @endif
+            <button class="mobile-back-btn md-only-hidden" onclick="toggleChatSidebar()" style="display: none;">
+                <i class="fa-solid fa-bars-staggered"></i>
+            </button>
             @if($chatUser->profile_image)
                 <img src="{{ display_image($chatUser->profile_image) }}" class="conv-avatar" style="width: 40px; height: 40px;">
             @else

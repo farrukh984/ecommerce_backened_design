@@ -249,8 +249,9 @@
             position: absolute;
             bottom: 80px;
             right: 0;
-            width: 380px;
-            height: 550px;
+            width: 400px;
+            height: 650px;
+            max-height: 80vh;
             background: rgba(255, 255, 255, 0.98);
             border-radius: 24px;
             box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.2);
@@ -353,18 +354,20 @@
         .q-msg-time { font-size: 9px; opacity: 0.7; margin-top: 4px; display: block; text-align: right; }
 
         @media (max-width: 600px) {
-            .admin-chat-widget { bottom: 20px; right: 20px; }
+            .admin-chat-widget { 
+                bottom: 120px; /* Above the chat input on messages page */
+                right: 20px; 
+            }
             .chat-launcher { width: 50px; height: 50px; font-size: 20px; }
             .chat-popup { 
                 position: fixed;
                 top: 0;
                 left: 0;
                 right: 0;
-                bottom: 0;
+                bottom: 0px;
                 width: 100vw;
                 height: 100vh;
                 border-radius: 0;
-                bottom: 0px;
                 transform-origin: center;
                 z-index: 10000;
             }
