@@ -171,6 +171,8 @@ Route::middleware(['auth', 'is_admin'])
         Route::get('/messages/{id}', [App\Http\Controllers\MessageController::class, 'chat'])->name('messages.chat');
         Route::get('/messages/{id}/poll', [App\Http\Controllers\MessageController::class, 'getMessages'])->name('messages.poll');
         Route::post('/messages/send', [App\Http\Controllers\MessageController::class, 'send'])->name('messages.send');
+        Route::post('/messages/typing', [App\Http\Controllers\MessageController::class, 'typing'])->name('messages.typing');
+        Route::get('/messages/{id}/typing-status', [App\Http\Controllers\MessageController::class, 'typingStatus'])->name('messages.typing.status');
         // Reviews Management
         Route::get('/reviews', [App\Http\Controllers\Admin\ProductReviewController::class, 'index'])->name('reviews.index');
         Route::patch('/reviews/{review}/approve', [App\Http\Controllers\Admin\ProductReviewController::class, 'approve'])->name('reviews.approve');
@@ -197,6 +199,8 @@ Route::middleware(['auth', 'is_user'])->group(function () {
     Route::get('/dashboard/messages/{id}', [App\Http\Controllers\MessageController::class, 'chat'])->name('user.messages.chat');
     Route::get('/dashboard/messages/{id}/poll', [App\Http\Controllers\MessageController::class, 'getMessages'])->name('user.messages.poll');
     Route::post('/dashboard/messages/send', [App\Http\Controllers\MessageController::class, 'send'])->name('user.messages.send');
+    Route::post('/dashboard/messages/typing', [App\Http\Controllers\MessageController::class, 'typing'])->name('user.messages.typing');
+    Route::get('/dashboard/messages/{id}/typing-status', [App\Http\Controllers\MessageController::class, 'typingStatus'])->name('user.messages.typing.status');
 
     // Review Routes
     Route::post('/reviews', [App\Http\Controllers\ReviewController::class, 'store'])->name('reviews.store');

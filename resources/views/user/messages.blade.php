@@ -352,6 +352,34 @@
         to { opacity: 1; transform: translateY(0); }
     }
 
+    /* Typing Indicator */
+    .typing-indicator {
+        display: none;
+        align-items: center; gap: 10px;
+        padding: 4px 0;
+        animation: fadeInMsg 0.3s ease;
+    }
+    .typing-indicator.active { display: flex; }
+    .typing-bubble {
+        background: #f1f5f9;
+        padding: 12px 18px;
+        border-radius: 18px;
+        border-bottom-left-radius: 6px;
+        display: flex; align-items: center; gap: 4px;
+    }
+    .typing-dot {
+        width: 7px; height: 7px;
+        border-radius: 50%;
+        background: #94a3b8;
+        animation: typingBounce 1.4s infinite ease-in-out;
+    }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes typingBounce {
+        0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+        30% { transform: translateY(-6px); opacity: 1; }
+    }
+
     @media (max-width: 991px) {
         .chat-container {
             grid-template-columns: 1fr;
@@ -535,6 +563,20 @@
                             </div>
                         </div>
                     @endforeach
+
+                    {{-- Typing Indicator --}}
+                    <div class="typing-indicator" id="typingIndicator">
+                        @if($chatUser->profile_image)
+                            <img src="{{ display_image($chatUser->profile_image) }}" class="msg-mini-avatar">
+                        @else
+                            <div class="msg-mini-avatar-placeholder">{{ strtoupper(substr($chatUser->name, 0, 1)) }}</div>
+                        @endif
+                        <div class="typing-bubble">
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="image-preview-container" id="imagePreview">
@@ -688,6 +730,37 @@
             }
         });
     }, 3000);
+
+    // Typing indicator: send typing event
+    let typingTimeout = null;
+    document.getElementById('messageInput')?.addEventListener('input', function() {
+        clearTimeout(typingTimeout);
+        fetch('{{ route("user.messages.typing") }}', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ conversation_id: {{ $conversation->id }} })
+        }).catch(() => {});
+        typingTimeout = setTimeout(() => {}, 3000);
+    });
+
+    // Poll typing status
+    setInterval(() => {
+        fetch(`{{ route('user.messages.typing.status', $conversation->id) }}`)
+        .then(r => r.json())
+        .then(data => {
+            const indicator = document.getElementById('typingIndicator');
+            if (data.isTyping) {
+                indicator.classList.add('active');
+                chatBox.scrollTop = chatBox.scrollHeight;
+            } else {
+                indicator.classList.remove('active');
+            }
+        }).catch(() => {});
+    }, 2500);
 
     document.getElementById('messageForm').addEventListener('submit', function(e) {
         e.preventDefault();

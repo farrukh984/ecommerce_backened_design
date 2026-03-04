@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\Admin\NewInquiryAlert;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
+use Illuminate\Support\Facades\Cache;
 
 class MessageController extends Controller
 {
@@ -198,5 +199,28 @@ class MessageController extends Controller
             'isOnline' => $isOnline,
             'lastSeen' => $otherUser->last_seen_at ? $otherUser->last_seen_at->diffForHumans() : 'Never'
         ]);
+    }
+
+    public function typing(Request $request)
+    {
+        $request->validate([
+            'conversation_id' => 'required|exists:conversations,id',
+        ]);
+
+        $cacheKey = 'typing_' . $request->conversation_id . '_' . Auth::id();
+        Cache::put($cacheKey, true, now()->addSeconds(5));
+
+        return response()->json(['status' => 'ok']);
+    }
+
+    public function typingStatus($id)
+    {
+        $conversation = Conversation::findOrFail($id);
+        $otherUserId = $conversation->sender_id === Auth::id() ? $conversation->receiver_id : $conversation->sender_id;
+
+        $cacheKey = 'typing_' . $id . '_' . $otherUserId;
+        $isTyping = Cache::get($cacheKey, false);
+
+        return response()->json(['isTyping' => $isTyping]);
     }
 }
