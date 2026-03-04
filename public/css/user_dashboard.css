@@ -218,7 +218,7 @@ body {
 .profile-form input:focus {
   outline: none;
   border-color: var(--primary);
-  background: #fff;
+  background: var(--bg-card, #fff);
   box-shadow: 0 0 0 4px var(--primary-glow);
 }
 
@@ -323,7 +323,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #fff;
+  background: var(--bg-card, #fff);
   padding: 32px;
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
@@ -360,7 +360,7 @@ body {
 }
 
 .stat-card {
-  background: #fff;
+  background: var(--bg-card, #fff);
   padding: 24px;
   border-radius: var(--radius-lg);
   display: flex;
@@ -404,7 +404,7 @@ body {
 
 /* Recent Orders Section */
 .recent-activity {
-  background: #fff;
+  background: var(--bg-card, #fff);
   border-radius: var(--radius-lg);
   padding: 32px;
   box-shadow: var(--shadow-md);
@@ -438,7 +438,7 @@ body {
 }
 
 .order-item-card:hover {
-  background: #fff;
+  background: var(--bg-card, #fff);
   border-color: var(--primary);
   transform: scale(1.01);
   box-shadow: var(--shadow-md);

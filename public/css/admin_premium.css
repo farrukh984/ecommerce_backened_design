@@ -40,7 +40,7 @@ body {
 /* Sidebar */
 .admin-sidebar {
     width: 280px;
-    background: #fff;
+    background: var(--bg-card, #fff);
     border-right: 1px solid var(--admin-border);
     display: flex;
     flex-direction: column;
@@ -160,7 +160,7 @@ body {
 }
 
 .user-profile-badge {
-    background: #f8fafc;
+    background: var(--bg-card-alt, #f8fafc);
     padding: 10px 16px;
     border-radius: 14px;
     border: 1px solid var(--admin-border);
@@ -222,7 +222,7 @@ body {
 
 /* Global Card Design */
 .premium-card {
-    background: #fff;
+    background: var(--bg-card, #fff);
     border-radius: var(--admin-radius-lg);
     border: 1px solid var(--admin-border);
     box-shadow: var(--admin-shadow-md);
@@ -293,7 +293,7 @@ body {
 .btn-outline:hover {
     border-color: var(--admin-primary);
     color: var(--admin-primary);
-    background: #f8fafc;
+    background: var(--bg-card-alt, #f8fafc);
 }
 
 /* Premium Table */
@@ -327,7 +327,7 @@ body {
 }
 
 .premium-table tr:hover td {
-    background: #f8fafc;
+    background: var(--bg-card-alt, #f8fafc);
 }
 
 /* Stats Widget Design */
@@ -340,7 +340,7 @@ body {
 }
 
 .stat-card {
-    background: #fff;
+    background: var(--bg-card, #fff);
     padding: 28px;
     border-radius: var(--admin-radius-lg);
     border: 1px solid var(--admin-border);
@@ -429,7 +429,7 @@ body {
     border-radius: 12px;
     font-size: 14px;
     font-family: inherit;
-    background: #f8fafc;
+    background: var(--bg-card-alt, #f8fafc);
     outline: none;
     transition: all 0.2s;
 }
@@ -457,7 +457,7 @@ body {
     justify-content: center;
     margin-top: 12px;
     overflow: hidden;
-    background: #f8fafc;
+    background: var(--bg-card-alt, #f8fafc);
 }
 
 .image-preview-box img {
@@ -540,7 +540,7 @@ body {
     }
 
     .mobile-toggle {
-        background: #fff;
+        background: var(--bg-card, #fff);
         border: 1px solid var(--admin-border);
         color: var(--admin-primary);
         width: 40px;

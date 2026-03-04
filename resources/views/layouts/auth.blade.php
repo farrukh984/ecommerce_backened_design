@@ -8,15 +8,19 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
-    <!-- Core CSS -->
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ asset('css/base.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/dark-mode.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/login.css') }}">
     
-    <!-- Auth Specific CSS -->
+    <!-- Theme JS -->
+    <script src="{{ asset('js/theme.js') }}"></script>
+    
     @yield('styles')
 </head>
 <body class="auth-body">

@@ -11,7 +11,7 @@
     .sidebar {
         width: 100%;
         border-right: none;
-        border-bottom: 1px solid #e3e8ee;
+        border-bottom: 1px solid var(--border, #e3e8ee);
     }
 
     .sidebar ul {
@@ -112,7 +112,7 @@
     }
 
     .header-icons-mobile a {
-        color: #505050;
+        color: var(--text-secondary, #505050);
         font-size: 20px;
     }
 
@@ -120,7 +120,7 @@
     .mobile-search-bar {
         display: block;
         padding: 0 12px 10px;
-        background: #fff;
+        background: var(--bg-card, #fff);
     }
 
     .mobile-search-wrap {
@@ -133,7 +133,7 @@
     }
 
     .mobile-search-wrap i {
-        color: #8b96a5;
+        color: var(--text-muted, #8b96a5);
         font-size: 14px;
     }
 
@@ -144,14 +144,14 @@
         outline: none;
         font-size: 14px;
         font-family: 'Inter', sans-serif;
-        color: #333;
+        color: var(--text-primary, #333);
     }
 
     /* Show mobile category tabs */
     .mobile-category-tabs {
         display: block;
-        background: #fff;
-        border-bottom: 1px solid #e3e8ee;
+        background: var(--bg-card, #fff);
+        border-bottom: 1px solid var(--border, #e3e8ee);
         padding: 0 12px 8px;
         overflow: hidden;
     }
@@ -173,7 +173,7 @@
         flex-shrink: 0;
         padding: 6px 14px;
         background: #e7f0ff;
-        color: #0d6efd;
+        color: var(--primary, #0d6efd);
         border-radius: 20px;
         font-size: 13px;
         font-weight: 500;
@@ -182,7 +182,7 @@
     }
 
     .cat-tab.active {
-        background: #0d6efd;
+        background: var(--primary, #0d6efd);
         color: #fff;
     }
 
@@ -303,9 +303,9 @@
         -webkit-overflow-scrolling: touch;
         scrollbar-width: none;
         gap: 0;
-        background: #fff;
+        background: var(--bg-card, #fff);
         border-radius: 10px;
-        border: 1px solid #e3e8ee;
+        border: 1px solid var(--border, #e3e8ee);
     }
 
     .deals-grid::-webkit-scrollbar {
@@ -355,7 +355,7 @@
     .category-left h3 {
         font-size: 18px;
         margin-bottom: 0;
-        color: #1c1c1c;
+        color: var(--text-primary, #1c1c1c);
     }
 
     .category-left h3 br {
@@ -365,7 +365,7 @@
     .btn-source {
         background: transparent;
         padding: 0;
-        color: #0d6efd;
+        color: var(--primary, #0d6efd);
         font-weight: 600;
         font-size: 14px;
     }
@@ -381,9 +381,9 @@
         scrollbar-width: none;
         gap: 0;
         padding-bottom: 4px;
-        background: #fff;
+        background: var(--bg-card, #fff);
         border-radius: 10px;
-        border: 1px solid #e3e8ee;
+        border: 1px solid var(--border, #e3e8ee);
     }
 
     .category-grid::-webkit-scrollbar {
@@ -620,7 +620,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: #fff;
+        background: var(--bg-card, #fff);
         padding: 20px;
         overflow-y: auto;
     }

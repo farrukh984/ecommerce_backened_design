@@ -1,4 +1,6 @@
-/* ================= RESET & BASE ================= */
+/* ═════════════════════════════════════
+   RESET & BASE STYLES
+   ═════════════════════════════════════ */
 
 * {
     margin: 0;
@@ -16,8 +18,8 @@ body {
 
 body {
     font-family: 'Inter', sans-serif;
-    background: #f7fafc;
-    color: #1c1c1c;
+    background: var(--bg-body, #f7fafc);
+    color: var(--text-primary, #1c1c1c);
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
 }
@@ -31,20 +33,14 @@ ul {
     list-style: none;
 }
 
-.inquiry-form {
-    background: #fff;
-    padding: 25px;
-    border-radius: 10px;
-    width: 100%;
-    max-width: 400px;
-    flex-shrink: 1;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-}
-
 img {
     max-width: 100%;
     display: block;
 }
+
+/* ═════════════════════════════════════
+   CONTAINER
+   ═════════════════════════════════════ */
 
 .container {
     width: 100%;
@@ -53,11 +49,12 @@ img {
     padding: 0 15px;
 }
 
-
-/* ================= GENERAL UTILITIES ================= */
+/* ═════════════════════════════════════
+   UTILITIES
+   ═════════════════════════════════════ */
 
 .see-all {
-    color: #0d6efd;
+    color: var(--primary, #0d6efd);
     cursor: pointer;
     font-size: 14px;
 }
@@ -70,22 +67,17 @@ img {
     transform: rotate(180deg);
 }
 
+/* ═════════════════════════════════════
+   FORM ELEMENTS (DARK MODE READY)
+   ═════════════════════════════════════ */
 
-
-
-
-
-
-
-
-
-
-/* css/
-├── base.css               # Reset, body, container, utilities
-├── header.css             # Top header, sub-navbar, mobile menu
-├── footer.css             # Main footer
-├── home.css               # Homepage: hero, deals, categories, inquiry, recommended, services, suppliers, newsletter
-├── products.css           # Products listing: filter sidebar, list/grid views, pagination
-├── product-detail.css     # Product detail page (mobile & desktop)
-├── cart.css               # Shopping cart page
-└── responsive.css         # Global responsive overrides (max-width 1024px, 768px, etc.) */
+.inquiry-form {
+    background: var(--bg-card, #fff);
+    padding: 25px;
+    border-radius: 10px;
+    width: 100%;
+    max-width: 400px;
+    flex-shrink: 1;
+    box-shadow: var(--shadow-md, 0 4px 20px rgba(0, 0, 0, 0.1));
+    border: 1px solid var(--border, #e2e8f0);
+}

@@ -30,6 +30,10 @@
 
         <!-- Desktop icons -->
         <div class="header-icons">
+            <button class="theme-toggle icon-item" title="Toggle dark mode" style="border:none;background:none;cursor:pointer;padding:4px 8px;">
+                <i class="fa-solid fa-moon theme-toggle-icon"></i>
+                <span>Theme</span>
+            </button>
             <a href="javascript:void(0)" class="icon-item" id="profileTrigger">
                 @auth
                     @if(auth()->user()->profile_image)

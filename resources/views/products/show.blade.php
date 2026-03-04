@@ -105,22 +105,22 @@
             <!-- Add to Cart (Inquiry) Section -->
             <form action="{{ route('cart.add', $product->id) }}" method="POST">
                 @csrf
-                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
-                    <div class="qty-control" style="display: flex; align-items: center; border: 1px solid #dee2e7; border-radius: 6px; overflow: hidden; height: 40px;">
-                        <button type="button" onclick="changeQty(-1, 'm-qty')" style="width: 35px; height: 100%; border: none; background: #f7f7f7; font-size: 18px; cursor: pointer;">-</button>
-                        <input type="number" name="quantity" id="m-qty" value="1" min="1" style="width: 40px; text-align: center; border: none; font-size: 14px; font-weight: 600; outline: none; -moz-appearance: textfield;">
-                        <button type="button" onclick="changeQty(1, 'm-qty')" style="width: 35px; height: 100%; border: none; background: #f7f7f7; font-size: 16px; cursor: pointer;">+</button>
+                <div class="m-button-row">
+                    <div class="qty-control">
+                        <button type="button" onclick="changeQty(-1, 'm-qty')">-</button>
+                        <input type="number" name="quantity" id="m-qty" value="1" min="1">
+                        <button type="button" onclick="changeQty(1, 'm-qty')">+</button>
                     </div>
                     @if($product->stock_quantity > 0)
-                        <button type="submit" class="btn-m-inquiry" style="flex: 1; border: none;">Send inquiry</button>
+                        <button type="submit" class="btn-m-inquiry">Send inquiry</button>
                     @else
-                        <button type="button" class="btn-m-inquiry" style="flex: 1; border: none; background: #94a3b8; cursor: not-allowed;" disabled>Sold Out</button>
+                        <button type="button" class="btn-m-inquiry sold-out" disabled>Sold Out</button>
                     @endif
                 </div>
             </form>
 
             <div class="m-button-row">
-                <button class="btn-m-heart wishlist-toggle" data-id="{{ $product->id }}" style="width: 100%; height: 40px; flex-direction: row; gap: 8px; font-size: 14px; {{ $inWishlist ? 'color: #fa3434; border-color: #fa3434;' : '' }}">
+                <button class="btn-m-heart wishlist-toggle" data-id="{{ $product->id }}" style="{{ $inWishlist ? 'color: #fa3434; border-color: #fa3434;' : '' }}">
                     <i class="{{ $inWishlist ? 'fa-solid' : 'fa-regular' }} fa-heart"></i> 
                     <span class="wish-text">{{ $inWishlist ? 'Added to wishlist' : 'Add to wishlist' }}</span>
                 </button>
@@ -151,21 +151,21 @@
                 <div class="description-expand-box" id="mobileDescBox">
                     <p>{{ $product->description }}</p>
                 </div>
-                <a href="javascript:void(0)" class="m-read-more-btn" id="mobileDescBtn" style="display: none;" onclick="toggleReadMore('mobileDescBox', this)">Read more</a>
+                <a href="javascript:void(0)" class="m-read-more-btn" id="mobileDescBtn" onclick="toggleReadMore('mobileDescBox', this)">Read more</a>
             </div>
 
             <!-- Shipping & Delivery (Mobile) -->
-            <div class="m-shipping-info" style="margin-top: 25px; border-top: 1px solid #eee; padding-top: 20px;">
-                <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 12px;">Shipping & Delivery</h3>
-                <div style="display: flex; gap: 12px; margin-bottom: 15px;">
-                    <i class="fa-solid fa-truck-fast" style="color: #0d6efd; font-size: 18px;"></i>
-                    <div style="font-size: 13px; color: #505050; line-height: 1.4;">
+            <div class="m-shipping-info">
+                <h3>Shipping & Delivery</h3>
+                <div class="m-shipping-content">
+                    <i class="fa-solid fa-truck-fast blue"></i>
+                    <div class="m-shipping-text">
                         Fast international shipping from <strong>{{ $product->supplier->location ?? 'Global Warehouse' }}</strong>. 
                         Estimated delivery: 7-15 business days.
                     </div>
                 </div>
-                <div style="background: #f8fafc; padding: 12px; border-radius: 8px; font-size: 12px; color: #64748b;">
-                    <i class="fa-solid fa-shield-check" style="color: #16a34a; margin-right: 5px;"></i> All shipments are fully insured and trackable.
+                <div class="m-shipping-note">
+                    <i class="fa-solid fa-shield-check green"></i> All shipments are fully insured and trackable.
                 </div>
             </div>
         </div>
@@ -348,19 +348,19 @@
                 </div>
                 <form action="{{ route('cart.add', $product->id) }}" method="POST">
                     @csrf
-                    <div style="margin-bottom: 20px;">
-                        <label style="display: block; font-size: 13px; color: #505050; margin-bottom: 8px;">Quantity:</label>
-                        <div style="display: flex; align-items: center; border: 1px solid #dee2e7; border-radius: 6px; overflow: hidden; height: 36px; width: 110px;">
-                            <button type="button" onclick="changeQty(-1, 'd-qty')" style="width: 35px; height: 100%; border: none; background: #f7f7f7; font-size: 18px; cursor: pointer;">-</button>
-                            <input type="number" name="quantity" id="d-qty" value="1" min="1" style="width: 40px; text-align: center; border: none; font-size: 14px; font-weight: 600; outline: none;">
-                            <button type="button" onclick="changeQty(1, 'd-qty')" style="width: 35px; height: 100%; border: none; background: #f7f7f7; font-size: 16px; cursor: pointer;">+</button>
+                    <div class="desktop-qty-section">
+                        <label>Quantity:</label>
+                        <div class="qty-control">
+                            <button type="button" onclick="changeQty(-1, 'd-qty')">-</button>
+                            <input type="number" name="quantity" id="d-qty" value="1" min="1">
+                            <button type="button" onclick="changeQty(1, 'd-qty')">+</button>
                         </div>
                     </div>
                     <div class="s-actions">
                         @if($product->stock_quantity > 0)
-                            <button type="submit" class="btn-pry-blue" style="width: 100%; margin-bottom: 10px; border: none;">Send inquiry</button>
+                            <button type="submit" class="btn-pry-blue">Send inquiry</button>
                         @else
-                            <button type="button" class="btn-pry-blue" style="width: 100%; margin-bottom: 10px; border: none; background: #94a3b8; cursor: not-allowed;" disabled>Sold Out</button>
+                            <button type="button" class="btn-pry-blue sold-out" disabled>Sold Out</button>
                         @endif
                         <a href="#" class="btn-sec-link">Seller's profile</a>
                     </div>
@@ -412,17 +412,17 @@
                 </ul>
             </div>
 
-            <div class="tab-content" id="reviews-tab" style="display: none;">
-                <div class="reviews-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
-                    <h4 style="margin: 0; font-size: 20px; font-weight: 700;">Customer Feedback</h4>
-                    <div class="rating-summary" style="text-align: right;">
-                        <span style="font-size: 24px; font-weight: 800; color: #1c1c1c;">{{ number_format($product->approvedReviews->avg('rating') ?: $product->rating, 1) }}</span>
-                        <div style="color: #ff9017; font-size: 14px;">
+            <div class="tab-content" id="reviews-tab">
+                <div class="reviews-header">
+                    <h4>Customer Feedback</h4>
+                    <div class="rating-summary">
+                        <span class="avg-rating">{{ number_format($product->approvedReviews->avg('rating') ?: $product->rating, 1) }}</span>
+                        <div class="stars-display">
                             @for($i=1; $i<=5; $i++)
                                 <i class="fa-{{ $i <= round($product->approvedReviews->avg('rating') ?: $product->rating) ? 'solid' : 'regular' }} fa-star"></i>
                             @endfor
                         </div>
-                        <span style="font-size: 12px; color: #8b96a5;">{{ $product->approvedReviews->count() }} reviews</span>
+                        <span class="review-count">{{ $product->approvedReviews->count() }} reviews</span>
                     </div>
                 </div>
 
@@ -437,113 +437,113 @@
                     @endphp
 
                     @if($hasBought && !$alreadyReviewed)
-                        <div class="add-review-card" style="background: #f8fafc; border-radius: 12px; padding: 20px; margin-bottom: 30px; border: 1px solid #e2e8f0;">
-                            <h5 style="margin-top: 0; margin-bottom: 15px;">Write a Review</h5>
+                        <div class="add-review-card">
+                            <h5>Write a Review</h5>
                             <form action="{{ route('reviews.store') }}" method="POST">
                                 @csrf
                                 <input type="hidden" name="product_id" value="{{ $product->id }}">
-                                <div class="rating-input" style="margin-bottom: 15px;">
-                                    <label style="display: block; margin-bottom: 5px; font-size: 14px;">Your Rating:</label>
-                                    <div class="star-rating" style="display: flex; gap: 5px; cursor: pointer; font-size: 20px; color: #dee2e7;">
+                                <div class="rating-input">
+                                    <label>Your Rating:</label>
+                                    <div class="star-rating-input">
                                         @for($i=1; $i<=5; $i++)
                                             <i class="fa-regular fa-star star-btn" data-value="{{ $i }}"></i>
                                         @endfor
                                     </div>
                                     <input type="hidden" name="rating" id="review_rating_val" value="5" required>
                                 </div>
-                                <div class="form-group" style="margin-bottom: 15px;">
-                                    <textarea name="comment" rows="3" class="form-control" placeholder="Tell others about your experience..." style="width: 100%; padding: 12px; border: 1px solid #dee2e7; border-radius: 8px; resize: none;" required></textarea>
+                                <div class="form-group">
+                                    <textarea name="comment" rows="3" class="review-form-control" placeholder="Tell others about your experience..." required></textarea>
                                 </div>
-                                <button type="submit" class="btn-pry-blue" style="border: none; padding: 10px 25px;">Submit Review</button>
+                                <button type="submit" class="btn-pry-blue">Submit Review</button>
                             </form>
                         </div>
                     @elseif($alreadyReviewed && !$alreadyReviewed->is_approved)
-                        <div style="background: #e0f2fe; border: 1px solid #bae6fd; border-radius: 10px; padding: 15px; margin-bottom: 25px; display: flex; align-items: center; gap: 10px;">
-                            <i class="fa-solid fa-clock" style="color: #0ea5e9;"></i>
-                            <span style="font-size: 13px; color: #0369a1;">Your review is pending admin approval. It will be visible soon!</span>
+                        <div class="alert alert-info">
+                            <i class="fa-solid fa-clock"></i>
+                            <span>Your review is pending admin approval. It will be visible soon!</span>
                         </div>
                     @elseif(!$hasBought)
-                         <div style="background: #fff9f0; border: 1px solid #ffeeba; border-radius: 10px; padding: 15px; margin-bottom: 25px; display: flex; align-items: center; gap: 10px;">
-                            <i class="fa-solid fa-circle-info" style="color: #ff9017;"></i>
-                            <span style="font-size: 13px; color: #856404;">Only verified buyers can leave a review.</span>
+                         <div class="alert alert-warning">
+                            <i class="fa-solid fa-circle-info"></i>
+                            <span>Only verified buyers can leave a review.</span>
                          </div>
                     @endif
                 @endauth
 
                 <div class="reviews-list">
                     @forelse($product->approvedReviews as $review)
-                        <div class="review-item" style="margin-bottom: 20px; border-bottom: 1px solid #eff2f4; padding-bottom: 15px;">
-                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
-                                <div style="display: flex; gap: 12px; align-items: center;">
-                                    <div style="width: 40px; height: 40px; border-radius: 50%; background: #e0f2fe; color: #0369a1; display: flex; align-items: center; justify-content: center; font-weight: 700;">
+                        <div class="review-item">
+                            <div class="review-header">
+                                <div class="review-user-box">
+                                    <div class="review-user-avatar">
                                         {{ substr($review->user->name, 0, 1) }}
                                     </div>
-                                    <div>
-                                        <div style="display: flex; align-items: center; gap: 8px;">
-                                            <strong style="font-size: 15px;">{{ $review->user->name }}</strong>
-                                            <span style="background: #dcfce7; color: #166534; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 600;">Verified Buyer</span>
+                                    <div class="review-user-info">
+                                        <div class="review-name-row">
+                                            <strong>{{ $review->user->name }}</strong>
+                                            <span class="buyer-badge">Verified Buyer</span>
                                         </div>
-                                        <div style="color: #ff9017; font-size: 11px;">
+                                        <div class="stars-display mini">
                                             @for($i=1; $i<=5; $i++)
                                                 <i class="fa-{{ $i <= $review->rating ? 'solid' : 'regular' }} fa-star"></i>
                                             @endfor
                                         </div>
                                     </div>
                                 </div>
-                                <span style="font-size: 11px; color: #8b96a5;">{{ $review->created_at->diffForHumans() }}</span>
+                                <span class="review-date">{{ $review->created_at->diffForHumans() }}</span>
                             </div>
-                            <p style="color: #4b5563; font-size: 14px; margin: 0; line-height: 1.6; padding-left: 52px;">{{ $review->comment }}</p>
+                            <p class="review-text">{{ $review->comment }}</p>
                         </div>
                     @empty
-                        <div style="text-align: center; padding: 40px 0;">
-                            <i class="fa-regular fa-comments" style="font-size: 40px; color: #dee2e7; margin-bottom: 15px; display: block;"></i>
-                            <p style="color: #8b96a5;">No reviews for this product yet. Be the first to share your thoughts!</p>
+                        <div class="no-reviews">
+                            <i class="fa-regular fa-comments"></i>
+                            <p>No reviews for this product yet. Be the first to share your thoughts!</p>
                         </div>
                     @endforelse
                 </div>
             </div>
 
-            <div class="tab-content" id="shipping-tab" style="display: none;">
+            <div class="tab-content" id="shipping-tab">
                 <div class="shipping-info-wrapper">
-                    <h4 style="font-size: 20px; font-weight: 700; margin-bottom: 25px;">Logistics & Delivery</h4>
-                    <div class="shipping-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                        <div class="shipping-card" style="padding: 20px; border: 1px solid #f1f5f9; border-radius: 12px; background: #fff;">
-                            <div style="width: 45px; height: 45px; border-radius: 10px; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 15px;">
+                    <h4>Logistics & Delivery</h4>
+                    <div class="shipping-grid">
+                        <div class="shipping-card">
+                            <div class="shipping-card-icon blue">
                                 <i class="fa-solid fa-plane-up"></i>
                             </div>
-                            <h5 style="margin: 0 0 8px; font-size: 16px;">Fast International Shipping</h5>
-                            <p style="font-size: 13px; color: #64748b; line-height: 1.5;">Shipped from {{ $product->supplier->location ?? 'Global Hub' }}. Track your order every step of the way with our real-time portal.</p>
+                            <h5>Fast International Shipping</h5>
+                            <p>Shipped from {{ $product->supplier->location ?? 'Global Hub' }}. Track your order every step of the way with our real-time portal.</p>
                         </div>
-                        <div class="shipping-card" style="padding: 20px; border: 1px solid #f1f5f9; border-radius: 12px; background: #fff;">
-                            <div style="width: 45px; height: 45px; border-radius: 10px; background: #f0fdf4; color: #16a34a; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 15px;">
+                        <div class="shipping-card">
+                            <div class="shipping-card-icon green">
                                 <i class="fa-solid fa-box-open"></i>
                             </div>
-                            <h5 style="margin: 0 0 8px; font-size: 16px;">Premium Packaging</h5>
-                            <p style="font-size: 13px; color: #64748b; line-height: 1.5;">Every {{ $product->name }} is packed with industry-standard export materials to ensure Zero-Damage arrival.</p>
+                            <h5>Premium Packaging</h5>
+                            <p>Every {{ $product->name }} is packed with industry-standard export materials to ensure Zero-Damage arrival.</p>
                         </div>
                     </div>
                     
-                    <div class="premium-delivery-timeline" style="margin-top: 30px; background: #f8fafc; padding: 25px; border-radius: 15px;">
-                        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
-                            <i class="fa-solid fa-clock-rotate-left" style="color: #3b82f6; font-size: 20px;"></i>
-                            <h5 style="margin: 0; font-size: 16px;">Estimated Timeline</h5>
+                    <div class="premium-delivery-timeline">
+                        <div class="timeline-header">
+                            <i class="fa-solid fa-clock-rotate-left blue-color"></i>
+                            <h5>Estimated Timeline</h5>
                         </div>
-                        <div style="display: flex; justify-content: space-between; position: relative;">
-                            <div style="position: absolute; top: 10px; left: 0; right: 0; height: 4px; background: #e2e8f0; z-index: 1;"></div>
-                            <div class="timeline-point" style="z-index: 2; text-align: center; width: 33%;">
-                                <div style="width: 24px; height: 24px; border-radius: 50%; background: #3b82f6; border: 4px solid #fff; margin: 0 auto 10px; box-shadow: 0 0 10px rgba(59,130,246,0.2);"></div>
-                                <span style="display: block; font-size: 12px; font-weight: 700; color: #1e293b;">Order Confirmed</span>
-                                <span style="display: block; font-size: 11px; color: #94a3b8;">Instant</span>
+                        <div class="timeline-body">
+                            <div class="timeline-line"></div>
+                            <div class="timeline-point">
+                                <div class="timeline-dot active"></div>
+                                <span class="point-label">Order Confirmed</span>
+                                <span class="point-time">Instant</span>
                             </div>
-                            <div class="timeline-point" style="z-index: 2; text-align: center; width: 33%;">
-                                <div style="width: 24px; height: 24px; border-radius: 50%; background: #e2e8f0; border: 4px solid #fff; margin: 0 auto 10px;"></div>
-                                <span style="display: block; font-size: 12px; font-weight: 600; color: #64748b;">Quality Check</span>
-                                <span style="display: block; font-size: 11px; color: #94a3b8;">1-2 Days</span>
+                            <div class="timeline-point">
+                                <div class="timeline-dot"></div>
+                                <span class="point-label">Quality Check</span>
+                                <span class="point-time">1-2 Days</span>
                             </div>
-                            <div class="timeline-point" style="z-index: 2; text-align: center; width: 33%;">
-                                <div style="width: 24px; height: 24px; border-radius: 50%; background: #e2e8f0; border: 4px solid #fff; margin: 0 auto 10px;"></div>
-                                <span style="display: block; font-size: 12px; font-weight: 600; color: #64748b;">Arrives to You</span>
-                                <span style="display: block; font-size: 11px; color: #94a3b8;">7-15 Days</span>
+                            <div class="timeline-point">
+                                <div class="timeline-dot"></div>
+                                <span class="point-label">Arrives to You</span>
+                                <span class="point-time">7-15 Days</span>
                             </div>
                         </div>
                     </div>
@@ -551,41 +551,41 @@
             </div>
 
             <div class="tab-content" id="about-tab" style="display: none;">
-                <div class="seller-profile-wrapper" style="opacity: 0;">
-                    <div style="display: flex; gap: 30px; align-items: center; margin-bottom: 35px; background: linear-gradient(135deg, #0d6efd08, #ffffff); padding: 30px; border-radius: 20px; border: 1px solid #0d6efd15;">
-                        <div class="seller-big-avatar" style="width: 100px; height: 100px; border-radius: 25px; background: #0d6efd; color: white; display: flex; align-items: center; justify-content: center; font-size: 40px; font-weight: 800; transform: rotate(-5deg); box-shadow: 10px 10px 30px rgba(13,110,253,0.15);">
+                <div class="seller-profile-wrapper">
+                    <div class="seller-header-card">
+                        <div class="seller-big-avatar">
                              {{ substr($product->supplier->name ?? 'S', 0, 1) }}
                         </div>
-                        <div>
-                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
-                                <h3 style="margin: 0; font-size: 24px; font-weight: 800; color: #1e293b;">{{ $product->supplier->name ?? 'Global Brand' }}</h3>
+                        <div class="seller-header-info">
+                            <div class="seller-title-row">
+                                <h3>{{ $product->supplier->name ?? 'Global Brand' }}</h3>
                                 @if($product->supplier && $product->supplier->is_verified)
-                                    <div title="Verified Supplier" style="width: 22px; height: 22px; background: #00b517; border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-size: 12px;">
+                                    <div class="verified-badge" title="Verified Supplier">
                                         <i class="fa-solid fa-check"></i>
                                     </div>
                                 @endif
                             </div>
-                            <p style="margin: 0 0 15px; color: #64748b; font-size: 15px;"><i class="fa-solid fa-location-dot" style="margin-right: 5px; color: #ef4444;"></i> {{ $product->supplier->location ?? 'Headquarters' }}</p>
-                            <div style="display: flex; gap: 15px;">
-                                <div style="background: #f1f5f9; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; color: #475569;">
-                                    <i class="fa-solid fa-award" style="color: #eab308; margin-right: 5px;"></i> Top Rated Seller
+                            <p class="seller-location"><i class="fa-solid fa-location-dot"></i> {{ $product->supplier->location ?? 'Headquarters' }}</p>
+                            <div class="seller-badges">
+                                <div class="seller-badge-item">
+                                    <i class="fa-solid fa-award"></i> Top Rated Seller
                                 </div>
-                                <div style="background: #f1f5f9; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; color: #475569;">
-                                     <i class="fa-solid fa-globe" style="color: #3b82f6; margin-right: 5px;"></i> Official Supplier
+                                <div class="seller-badge-item">
+                                     <i class="fa-solid fa-globe"></i> Official Supplier
                                 </div>
                             </div>
                         </div>
                     </div>
                     
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
-                        <div>
-                            <h5 style="font-size: 18px; margin-bottom: 15px;">Seller Story</h5>
-                            <p style="line-height: 1.8; color: #4b5563; font-size: 14px;">Our partner, <strong>{{ $product->supplier->name ?? 'this supplier' }}</strong>, has been a leading force in the electronics and consumer goods market for over a decade. Committed to excellence and quality assurance, they have served over thousands of satisfied customers globally.</p>
+                    <div class="seller-info-grid">
+                        <div class="seller-story">
+                            <h5>Seller Story</h5>
+                            <p>Our partner, <strong>{{ $product->supplier->name ?? 'this supplier' }}</strong>, has been a leading force in the electronics and consumer goods market for over a decade. Committed to excellence and quality assurance, they have served over thousands of satisfied customers globally.</p>
                         </div>
-                        <div style="background: #1e293b; color: #fff; padding: 25px; border-radius: 18px; position: relative; overflow: hidden;">
-                             <i class="fa-solid fa-quote-right" style="position: absolute; right: -10px; bottom: -10px; font-size: 100px; color: #ffffff08;"></i>
-                             <h5 style="margin: 0 0 10px; color: #94a3b8; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Quality Commitment</h5>
-                             <p style="margin: 0; font-size: 16px; font-style: italic; line-height: 1.6; color: #cbd5e1;">"We ensure every single product meets international standards before shipping to our valued customers."</p>
+                        <div class="seller-commitment-card">
+                             <i class="fa-solid fa-quote-right quote"></i>
+                             <h5 class="commitment-label">Quality Commitment</h5>
+                             <p class="commitment-text">"We ensure every single product meets international standards before shipping to our valued customers."</p>
                         </div>
                     </div>
                 </div>

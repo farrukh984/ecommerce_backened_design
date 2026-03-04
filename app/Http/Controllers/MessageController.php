@@ -3,223 +3,227 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Mail;
 use App\Models\Conversation;
 use App\Models\Message;
 use App\Models\User;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Mail;
 use App\Mail\Admin\NewInquiryAlert;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
-use Illuminate\Support\Facades\Cache;
 
 class MessageController extends Controller
 {
+    /**
+     * List all conversations for the authenticated user.
+     */
     public function index()
     {
-        $user = Auth::user();
-        
-        // Get all conversations for this user with messages for unread count
+        $user  = Auth::user();
+        $admin = User::where('role', 'admin')->latest('id')->first();
+
         $conversations = Conversation::where('sender_id', $user->id)
             ->orWhere('receiver_id', $user->id)
             ->with(['sender', 'receiver', 'messages.user'])
             ->latest('last_message_at')
             ->get();
 
-        // Check if user has an active conversation with admin
-        $admin = User::where('role', 'admin')->orderBy('id', 'desc')->first();
-        $hasAdminChat = false;
-        if ($admin) {
-            $hasAdminChat = $conversations->contains(function($c) use ($admin) {
-                return $c->sender_id === $admin->id || $c->receiver_id === $admin->id;
-            });
-        }
-
-        // Mark all unread messages for the current user as read when they view the list
+        // Mark all unread messages as read when viewing the list
         Message::where('is_read', false)
             ->where('user_id', '!=', $user->id)
-            ->whereHas('conversation', function($query) use ($user) {
-                $query->where('sender_id', $user->id)
-                      ->orWhere('receiver_id', $user->id);
-            })
+            ->whereHas('conversation', fn($q) =>
+                $q->where('sender_id', $user->id)->orWhere('receiver_id', $user->id)
+            )
             ->update(['is_read' => true]);
 
         $view = $user->role === 'admin' ? 'admin.messages' : 'user.messages';
 
-        return view($view, [
-            'conversations' => $conversations,
-            'active' => 'messages',
-            'admin' => $admin,
-            'hasAdminChat' => $hasAdminChat
-        ]);
+        return view($view, compact('conversations', 'admin'));
     }
 
+    /**
+     * Show a specific conversation chat.
+     */
     public function chat($id)
     {
-        $conversation = Conversation::with(['sender', 'receiver', 'messages.user'])
-            ->findOrFail($id);
+        $user  = Auth::user();
+        $admin = User::where('role', 'admin')->latest('id')->first();
 
-        $authId = (int) Auth::id();
-        $senderId = (int) $conversation->sender_id;
-        $receiverId = (int) $conversation->receiver_id;
+        $conversation = Conversation::with(['sender', 'receiver', 'messages.user'])->findOrFail($id);
 
-        // Security check: user must be part of the conversation
-        if ($senderId !== $authId && $receiverId !== $authId) {
-            abort(403, 'You are not authorized to view this conversation.');
+        // Security: user must be part of conversation
+        if ((int) $conversation->sender_id !== (int) $user->id &&
+            (int) $conversation->receiver_id !== (int) $user->id) {
+            abort(403, 'Unauthorized.');
         }
 
-        // Mark messages as read
+        // Mark messages from the other user as read
         Message::where('conversation_id', $id)
-            ->where('user_id', '!=', Auth::id())
+            ->where('user_id', '!=', $user->id)
             ->update(['is_read' => true]);
 
-        // Get all conversations for sidebar
-        $conversations = Conversation::where('sender_id', Auth::id())
-            ->orWhere('receiver_id', Auth::id())
+        // All conversations for sidebar
+        $conversations = Conversation::where('sender_id', $user->id)
+            ->orWhere('receiver_id', $user->id)
             ->with(['sender', 'receiver', 'messages.user'])
             ->latest('last_message_at')
             ->get();
 
-        // Messages for this conversation
         $messages = $conversation->messages->sortBy('created_at');
 
-        // Check if user has an active conversation with admin
-        $admin = User::where('role', 'admin')->orderBy('id', 'desc')->first();
-        $hasAdminChat = false;
-        if ($admin) {
-            $hasAdminChat = $conversations->contains(function($c) use ($admin) {
-                return $c->sender_id === $admin->id || $c->receiver_id === $admin->id;
-            });
-        }
+        $view = $user->role === 'admin' ? 'admin.messages' : 'user.messages';
 
-        $view = Auth::user()->role === 'admin' ? 'admin.messages' : 'user.messages';
-
-        return view($view, [
-            'conversations' => $conversations,
-            'conversation' => $conversation,
-            'messages' => $messages,
-            'active' => 'messages',
-            'admin' => $admin,
-            'hasAdminChat' => $hasAdminChat
-        ]);
+        return view($view, compact('conversations', 'conversation', 'messages', 'admin'));
     }
 
+    /**
+     * Send a message (text or image).
+     */
     public function send(Request $request)
     {
         $request->validate([
-            'message' => 'nullable|string',
-            'image' => 'nullable|image|max:5120', // Max 5MB
-            'receiver_id' => 'required_without:conversation_id|exists:users,id',
-            'conversation_id' => 'nullable|exists:conversations,id'
+            'message'         => 'nullable|string',
+            'image'           => 'nullable|image|max:5120',
+            'receiver_id'     => 'required_without:conversation_id|exists:users,id',
+            'conversation_id' => 'nullable|exists:conversations,id',
         ]);
 
-        $sender_id = Auth::id();
-        $conversation_id = $request->conversation_id;
+        $senderId       = Auth::id();
+        $conversationId = $request->conversation_id;
 
-        // Find or Create conversation
-        if (!$conversation_id) {
-            $receiver_id = $request->receiver_id;
-            $conversation = Conversation::where(function($q) use ($sender_id, $receiver_id) {
-                $q->where('sender_id', $sender_id)->where('receiver_id', $receiver_id);
-            })->orWhere(function($q) use ($sender_id, $receiver_id) {
-                $q->where('sender_id', $receiver_id)->where('receiver_id', $sender_id);
+        // Find or create conversation
+        if (! $conversationId) {
+            $receiverId   = $request->receiver_id;
+            $conversation = Conversation::where(function ($q) use ($senderId, $receiverId) {
+                $q->where('sender_id', $senderId)->where('receiver_id', $receiverId);
+            })->orWhere(function ($q) use ($senderId, $receiverId) {
+                $q->where('sender_id', $receiverId)->where('receiver_id', $senderId);
             })->first();
 
-            if (!$conversation) {
+            if (! $conversation) {
                 $conversation = Conversation::create([
-                    'sender_id' => $sender_id,
-                    'receiver_id' => $receiver_id,
-                    'last_message_at' => now()
+                    'sender_id'       => $senderId,
+                    'receiver_id'     => $receiverId,
+                    'last_message_at' => now(),
                 ]);
             }
-            $conversation_id = $conversation->id;
+
+            $conversationId = $conversation->id;
         }
 
-        $type = 'text';
-        $file_path = null;
+        // Handle image upload
+        $type     = 'text';
+        $filePath = null;
 
         if ($request->hasFile('image')) {
-            $type = 'image';
-            $file_path = Cloudinary::uploadApi()->upload($request->file('image')->getRealPath(), ['folder' => 'chat_images'])['secure_url'];
+            $type     = 'image';
+            $filePath = Cloudinary::uploadApi()
+                ->upload($request->file('image')->getRealPath(), ['folder' => 'chat_images'])['secure_url'];
         }
 
+        // Create message
         $message = Message::create([
-            'conversation_id' => $conversation_id,
-            'user_id' => $sender_id,
-            'message' => $request->message ?? ($type === 'image' ? 'Sent an image' : ''),
-            'is_read' => false,
-            'type' => $type,
-            'file_path' => $file_path
+            'conversation_id' => $conversationId,
+            'user_id'         => $senderId,
+            'message'         => $request->message ?? ($type === 'image' ? 'Sent an image' : ''),
+            'is_read'         => false,
+            'type'            => $type,
+            'file_path'       => $filePath,
         ]);
 
-        Conversation::where('id', $conversation_id)->update(['last_message_at' => now()]);
+        Conversation::where('id', $conversationId)->update(['last_message_at' => now()]);
 
-        // Notify Admin if receiver is Admin
-        $conversation = Conversation::find($conversation_id);
-        $receiver = $conversation->sender_id === $sender_id ? $conversation->receiver : $conversation->sender;
+        // Notify admin if receiver is admin
+        $conversation = Conversation::find($conversationId);
+        $receiver     = $conversation->sender_id === $senderId
+            ? $conversation->receiver
+            : $conversation->sender;
+
         if ($receiver && $receiver->role === 'admin') {
             try {
                 $message->load('sender');
                 Mail::to($receiver->email)->send(new NewInquiryAlert($message));
-            } catch (\Exception $e) { \Log::error("Admin Message Mail Error: " . $e->getMessage()); }
+            } catch (\Exception $e) {
+                \Log::error('Admin Message Mail Error: ' . $e->getMessage());
+            }
         }
 
         if ($request->ajax()) {
             return response()->json([
-                'status' => 'success',
-                'message' => $message->load('user')
+                'status'  => 'success',
+                'message' => $message->load('user'),
             ]);
         }
 
         return redirect()->back();
     }
 
+    /**
+     * Poll new messages for a conversation (AJAX).
+     */
     public function getMessages($id)
     {
-        $last_message_id = request('last_id');
-        
+        $lastId = request('last_id', 0);
+
         $messages = Message::where('conversation_id', $id)
-            ->where('id', '>', $last_message_id)
+            ->where('id', '>', $lastId)
             ->with('user')
             ->get();
 
-        // Mark as read while fetching
+        // Mark messages from other user as read
         Message::where('conversation_id', $id)
             ->where('user_id', '!=', Auth::id())
             ->where('is_read', false)
             ->update(['is_read' => true]);
 
-        // Get other user online status
+        // Other user's online status
         $conversation = Conversation::find($id);
-        $otherUser = $conversation->sender_id === Auth::id() ? $conversation->receiver : $conversation->sender;
-        $isOnline = $otherUser->last_seen_at && $otherUser->last_seen_at->diffInMinutes(now()) < 5;
+        $otherUser    = $conversation->sender_id === Auth::id()
+            ? $conversation->receiver
+            : $conversation->sender;
+
+        $isOnline = $otherUser->last_seen_at
+            && $otherUser->last_seen_at->diffInMinutes(now()) < 5;
 
         return response()->json([
             'messages' => $messages,
             'isOnline' => $isOnline,
-            'lastSeen' => $otherUser->last_seen_at ? $otherUser->last_seen_at->diffForHumans() : 'Never'
+            'lastSeen' => $otherUser->last_seen_at
+                ? $otherUser->last_seen_at->diffForHumans()
+                : 'Never',
         ]);
     }
 
+    /**
+     * Record that the current user is typing.
+     */
     public function typing(Request $request)
     {
         $request->validate([
             'conversation_id' => 'required|exists:conversations,id',
         ]);
 
-        $cacheKey = 'typing_' . $request->conversation_id . '_' . Auth::id();
-        Cache::put($cacheKey, true, now()->addSeconds(5));
+        Cache::put(
+            'typing_' . $request->conversation_id . '_' . Auth::id(),
+            true,
+            now()->addSeconds(5)
+        );
 
         return response()->json(['status' => 'ok']);
     }
 
+    /**
+     * Check if the other user is typing.
+     */
     public function typingStatus($id)
     {
         $conversation = Conversation::findOrFail($id);
-        $otherUserId = $conversation->sender_id === Auth::id() ? $conversation->receiver_id : $conversation->sender_id;
 
-        $cacheKey = 'typing_' . $id . '_' . $otherUserId;
-        $isTyping = Cache::get($cacheKey, false);
+        $otherUserId = $conversation->sender_id === Auth::id()
+            ? $conversation->receiver_id
+            : $conversation->sender_id;
+
+        $isTyping = Cache::get('typing_' . $id . '_' . $otherUserId, false);
 
         return response()->json(['isTyping' => $isTyping]);
     }
