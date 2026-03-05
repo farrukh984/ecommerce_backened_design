@@ -491,14 +491,15 @@
 
 .bubble {
     max-width: 100%;
-    padding: 12px 14px;
-    border-radius: 20px;
+    padding: 10px 14px;
+    border-radius: 18px;
     font-size: 14px;
     line-height: 1.5;
     word-wrap: break-word;
     position: relative;
     overflow: hidden;
-    /* Added to contain children */
+    display: flex;
+    flex-direction: column;
     animation: bubIn 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
 }
 
@@ -531,7 +532,8 @@
 
 .b-text {
     display: block;
-    margin-right: 54px;
+    margin-bottom: 4px;
+    width: 100%;
 }
 
 .b-img {
@@ -550,15 +552,15 @@
 }
 
 .b-meta {
-    float: right;
-    margin-top: 3px;
-    margin-left: 10px;
+    align-self: flex-end;
+    margin-top: 2px;
     display: flex;
     align-items: center;
-    gap: 3px;
+    gap: 4px;
     font-size: 10px;
     color: var(--c-time);
     white-space: nowrap;
+    opacity: 0.8;
 }
 
 .bubble.received .b-meta {
@@ -973,7 +975,13 @@ label.ci-btn {
     }
 
     .bubble {
-        max-width: 82%;
+        max-width: 90%;
+        padding: 8px 12px;
+    }
+
+    .b-img {
+        max-width: 100% !important;
+        margin-bottom: 6px;
     }
 }
 
