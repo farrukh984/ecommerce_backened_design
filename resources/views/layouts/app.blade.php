@@ -115,7 +115,7 @@
             <div class="l-box"></div>
             <div class="l-box"></div>
         </div>
-        <div class="loader-text">Loading</div>
+        <div class="loader-text">ShopBrand</div>
     </div>
 
     <script>
