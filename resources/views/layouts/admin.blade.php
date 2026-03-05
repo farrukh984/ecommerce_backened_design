@@ -25,8 +25,98 @@
     <script src="{{ asset('js/theme.js') }}"></script>
     
     @yield('styles')
+    <!-- Loader CSS -->
+    <style>
+        /* ══════════════════════════════════════════════════════════
+           GLOBAL PAGE LOADER (PREMIUM)
+           ══════════════════════════════════════════════════════════ */
+        #global-loader {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 999999;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.6s;
+        }
+        [data-theme="dark"] #global-loader {
+            background: #0f172a; 
+        }
+        
+        .loader-boxes {
+            position: relative;
+            width: 60px; height: 60px;
+        }
+        .loader-boxes .l-box {
+            position: absolute;
+            width: 24px; height: 24px;
+            background: linear-gradient(135deg, #4f46e5, #0ea5e9);
+            border-radius: 6px;
+            animation: l-box-move 1.5s infinite ease-in-out;
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+        }
+        .loader-boxes .l-box:nth-child(1) { top: 0; left: 0; animation-delay: 0s; }
+        .loader-boxes .l-box:nth-child(2) { top: 0; right: 0; animation-delay: -0.375s; }
+        .loader-boxes .l-box:nth-child(3) { bottom: 0; right: 0; animation-delay: -0.75s; }
+        .loader-boxes .l-box:nth-child(4) { bottom: 0; left: 0; animation-delay: -1.125s; }
+
+        @keyframes l-box-move {
+            0%, 100% { transform: scale(1) rotate(0deg); opacity:1; }
+            50% { transform: scale(0.5) rotate(90deg); opacity:0.5; }
+        }
+
+        .loader-text {
+            margin-top: 24px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #334155;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            animation: loader-pulse 1.5s ease-in-out infinite;
+            font-family: 'Outfit', sans-serif;
+        }
+        [data-theme="dark"] .loader-text {
+            color: #94a3b8;
+        }
+        @keyframes loader-pulse {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 1; }
+        }
+        body.is-loading {
+            overflow: hidden !important;
+        }
+        #global-loader.hide {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+    </style>
 </head>
-<body>
+<body class="is-loading">
+
+    <!-- Global Preloader -->
+    <div id="global-loader">
+        <div class="loader-boxes">
+            <div class="l-box"></div>
+            <div class="l-box"></div>
+            <div class="l-box"></div>
+            <div class="l-box"></div>
+        </div>
+        <div class="loader-text">Admin Panel</div>
+    </div>
+
+    <script>
+        window.addEventListener('load', function() {
+            const loader = document.getElementById('global-loader');
+            setTimeout(() => {
+                loader.classList.add('hide');
+                document.body.classList.remove('is-loading');
+            }, 350);
+        });
+    </script>
 
     <div class="admin-layout">
         
