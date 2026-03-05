@@ -49,6 +49,11 @@
     --overlay: rgba(0, 0, 0, 0.4);
     --glass: rgba(255, 255, 255, 0.8);
 
+    /* Layout Radius */
+    --radius-sm: 10px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+
     /* Navbar / Header */
     --header-bg: #ffffff;
     --header-border: #e2e8f0;

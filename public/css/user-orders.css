@@ -1,0 +1,314 @@
+/* ═════════════════════════════════════
+   USER ORDERS PAGE — Dark Mode Ready
+   ═════════════════════════════════════ */
+
+.order-card {
+    background: var(--bg-card, #fff);
+    border-radius: 16px;
+    border: 1px solid var(--border, #f1f5f9);
+    overflow: hidden;
+    transition: all 0.3s ease;
+    margin-bottom: 20px;
+}
+
+.order-card:hover {
+    box-shadow: var(--shadow-lg, 0 8px 24px rgba(0, 0, 0, 0.06));
+    border-color: var(--border, #e2e8f0);
+}
+
+.order-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    background: var(--bg-card-alt, linear-gradient(135deg, #f8fafc, #f1f5f9));
+    border-bottom: 1px solid var(--border, #f1f5f9);
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.order-id-badge {
+    font-weight: 800;
+    font-size: 16px;
+    color: var(--text-primary, #0f172a);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.order-id-badge .hash {
+    background: linear-gradient(135deg, #3b82f6, #06b6d4);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 13px;
+}
+
+.order-meta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.order-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--text-secondary, #64748b);
+}
+
+.order-meta-item i {
+    color: var(--text-muted, #94a3b8);
+}
+
+.order-items-preview {
+    padding: 16px 24px;
+}
+
+.order-item-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border-light, #f8fafc);
+}
+
+.order-item-row:last-child {
+    border-bottom: none;
+}
+
+.order-item-img {
+    width: 56px;
+    height: 56px;
+    border-radius: 10px;
+    object-fit: cover;
+    border: 1px solid var(--border, #f1f5f9);
+    flex-shrink: 0;
+}
+
+.order-item-placeholder {
+    width: 56px;
+    height: 56px;
+    border-radius: 10px;
+    background: var(--bg-card-alt, #f1f5f9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted, #cbd5e1);
+    flex-shrink: 0;
+}
+
+.order-item-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.order-item-name {
+    font-weight: 600;
+    color: var(--text-primary, #1e293b);
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.order-item-attrs {
+    font-size: 12px;
+    color: var(--text-muted, #94a3b8);
+    margin-top: 2px;
+}
+
+.order-item-price {
+    font-weight: 700;
+    color: var(--text-primary, #0f172a);
+    font-size: 14px;
+    text-align: right;
+    white-space: nowrap;
+}
+
+.order-item-qty {
+    font-size: 12px;
+    color: var(--text-secondary, #64748b);
+}
+
+.order-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    border-top: 1px solid var(--border, #f1f5f9);
+    background: var(--bg-card-alt, #fcfcfc);
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.order-total {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--text-primary, #0f172a);
+}
+
+.order-total span {
+    color: var(--primary, #3b82f6);
+}
+
+.order-actions-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-detail {
+    padding: 8px 18px;
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: white;
+    border-radius: 10px;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+}
+
+.btn-detail:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    color: white;
+}
+
+.btn-delete-order {
+    padding: 8px 14px;
+    background: rgba(239, 68, 68, 0.08);
+    color: #dc2626;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+}
+
+.btn-delete-order:hover {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: #dc2626;
+}
+
+.status-pill {
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.status-pending {
+    background: rgba(245, 158, 11, 0.12);
+    color: #a16207;
+}
+
+.status-approved {
+    background: rgba(14, 165, 233, 0.12);
+    color: #0369a1;
+}
+
+.status-processing {
+    background: rgba(168, 85, 247, 0.12);
+    color: #7e22ce;
+}
+
+.status-shipped {
+    background: rgba(13, 110, 253, 0.12);
+    color: #0d6efd;
+}
+
+.status-delivered {
+    background: rgba(16, 185, 129, 0.12);
+    color: #166534;
+}
+
+.status-cancelled {
+    background: rgba(239, 68, 68, 0.12);
+    color: #991b1b;
+}
+
+.empty-orders {
+    text-align: center;
+    padding: 60px 24px;
+    color: var(--text-muted, #94a3b8);
+}
+
+.empty-orders i {
+    font-size: 60px;
+    margin-bottom: 16px;
+    display: block;
+    opacity: 0.3;
+}
+
+.empty-orders h3 {
+    color: var(--text-secondary, #475569);
+    margin-bottom: 8px;
+}
+
+.more-items-note {
+    text-align: center;
+    padding: 8px 0;
+    font-size: 12px;
+    color: var(--text-muted, #94a3b8);
+}
+
+/* ─── Dark Mode Overrides ─── */
+[data-theme="dark"] .status-pending {
+    background: rgba(245, 158, 11, 0.2);
+    color: #fbbf24;
+}
+
+[data-theme="dark"] .status-approved {
+    background: rgba(56, 189, 248, 0.2);
+    color: #38bdf8;
+}
+
+[data-theme="dark"] .status-processing {
+    background: rgba(168, 85, 247, 0.2);
+    color: #c084fc;
+}
+
+[data-theme="dark"] .status-shipped {
+    background: rgba(56, 189, 248, 0.2);
+    color: #60a5fa;
+}
+
+[data-theme="dark"] .status-delivered {
+    background: rgba(52, 211, 153, 0.2);
+    color: #34d399;
+}
+
+[data-theme="dark"] .status-cancelled {
+    background: rgba(248, 113, 113, 0.2);
+    color: #f87171;
+}
+
+[data-theme="dark"] .btn-delete-order {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: rgba(239, 68, 68, 0.3);
+    color: #f87171;
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-10px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}

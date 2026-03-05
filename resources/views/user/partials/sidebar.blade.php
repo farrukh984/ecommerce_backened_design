@@ -93,6 +93,9 @@
     </nav>
 
     <div class="sidebar-footer">
+        <button class="sidebar-link theme-toggle" style="width: 100%; border: none; cursor: pointer; background: transparent;">
+            <i class="fa-solid fa-moon theme-toggle-icon"></i> Dark Mode
+        </button>
         <form method="POST" action="{{ route('logout') }}" style="margin: 0;">
             @csrf
             <button type="submit" class="sidebar-link" style="width: 100%; border: none; background: transparent; cursor: pointer; color: #ef4444;">

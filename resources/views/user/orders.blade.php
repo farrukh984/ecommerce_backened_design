@@ -4,208 +4,7 @@
 
 @section('content')
 <link rel="stylesheet" href="{{ asset('css/user_dashboard.css') }}">
-<style>
-    .order-card {
-        background: #fff;
-        border-radius: 16px;
-        border: 1px solid #f1f5f9;
-        overflow: hidden;
-        transition: all 0.3s ease;
-        margin-bottom: 20px;
-    }
-    .order-card:hover {
-        box-shadow: 0 8px 24px rgba(0,0,0,0.06);
-        border-color: #e2e8f0;
-    }
-    .order-card-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 20px 24px;
-        background: linear-gradient(135deg, #f8fafc, #f1f5f9);
-        border-bottom: 1px solid #f1f5f9;
-        flex-wrap: wrap;
-        gap: 12px;
-    }
-    .order-id-badge {
-        font-weight: 800;
-        font-size: 16px;
-        color: #0f172a;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-    .order-id-badge .hash {
-        background: linear-gradient(135deg, #3b82f6, #06b6d4);
-        color: white;
-        padding: 4px 10px;
-        border-radius: 8px;
-        font-size: 13px;
-    }
-    .order-meta {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-    }
-    .order-meta-item {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        font-size: 13px;
-        color: #64748b;
-    }
-    .order-meta-item i {
-        color: #94a3b8;
-    }
-    .order-items-preview {
-        padding: 16px 24px;
-    }
-    .order-item-row {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        padding: 12px 0;
-        border-bottom: 1px solid #f8fafc;
-    }
-    .order-item-row:last-child {
-        border-bottom: none;
-    }
-    .order-item-img {
-        width: 56px;
-        height: 56px;
-        border-radius: 10px;
-        object-fit: cover;
-        border: 1px solid #f1f5f9;
-        flex-shrink: 0;
-    }
-    .order-item-placeholder {
-        width: 56px;
-        height: 56px;
-        border-radius: 10px;
-        background: #f1f5f9;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #cbd5e1;
-        flex-shrink: 0;
-    }
-    .order-item-info {
-        flex: 1;
-        min-width: 0;
-    }
-    .order-item-name {
-        font-weight: 600;
-        color: #1e293b;
-        font-size: 14px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    .order-item-attrs {
-        font-size: 12px;
-        color: #94a3b8;
-        margin-top: 2px;
-    }
-    .order-item-price {
-        font-weight: 700;
-        color: #0f172a;
-        font-size: 14px;
-        text-align: right;
-        white-space: nowrap;
-    }
-    .order-item-qty {
-        font-size: 12px;
-        color: #64748b;
-    }
-    .order-card-footer {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 16px 24px;
-        border-top: 1px solid #f1f5f9;
-        background: #fcfcfc;
-        flex-wrap: wrap;
-        gap: 12px;
-    }
-    .order-total {
-        font-size: 18px;
-        font-weight: 800;
-        color: #0f172a;
-    }
-    .order-total span {
-        color: #3b82f6;
-    }
-    .order-actions-group {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-    .btn-detail {
-        padding: 8px 18px;
-        background: linear-gradient(135deg, #3b82f6, #2563eb);
-        color: white;
-        border-radius: 10px;
-        text-decoration: none;
-        font-size: 13px;
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        transition: all 0.2s;
-    }
-    .btn-detail:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(59,130,246,0.3);
-    }
-    .btn-delete-order {
-        padding: 8px 14px;
-        background: #fef2f2;
-        color: #dc2626;
-        border: 1px solid #fecaca;
-        border-radius: 10px;
-        font-size: 13px;
-        font-weight: 600;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        transition: all 0.2s;
-    }
-    .btn-delete-order:hover {
-        background: #fee2e2;
-        border-color: #dc2626;
-    }
-    .status-pill {
-        padding: 5px 14px;
-        border-radius: 20px;
-        font-size: 12px;
-        font-weight: 700;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-    }
-    .status-pending { background: #fff8eb; color: #a16207; }
-    .status-approved { background: #e0f2fe; color: #0369a1; }
-    .status-processing { background: #f3e8ff; color: #7e22ce; }
-    .status-shipped { background: #e7f0ff; color: #0d6efd; }
-    .status-delivered { background: #dcfce7; color: #166534; }
-    .status-cancelled { background: #fee2e2; color: #991b1b; }
-    .empty-orders {
-        text-align: center;
-        padding: 60px 24px;
-        color: #94a3b8;
-    }
-    .empty-orders i {
-        font-size: 60px;
-        margin-bottom: 16px;
-        display: block;
-        opacity: 0.3;
-    }
-    .empty-orders h3 {
-        color: #475569;
-        margin-bottom: 8px;
-    }
-</style>
+<link rel="stylesheet" href="{{ asset('css/user-orders.css') }}">
 
 <div class="dashboard-container">
     @include('user.partials.sidebar', ['active' => 'orders'])
@@ -300,7 +99,7 @@
                             </div>
                         @endforeach
                         @if($order->items->count() > 3)
-                            <div style="text-align: center; padding: 8px 0; font-size: 12px; color: #94a3b8;">
+                            <div class="more-items-note">
                                 +{{ $order->items->count() - 3 }} more items
                             </div>
                         @endif
@@ -346,12 +145,7 @@
     </main>
 </div>
 
-<style>
-    @keyframes slideDown {
-        from { transform: translateY(-10px); opacity: 0; }
-        to { transform: translateY(0); opacity: 1; }
-    }
-</style>
+
 
 <script>
 function confirmDelete(orderId) {
