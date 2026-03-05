@@ -109,12 +109,53 @@
     </div>
 
     <script>
+        // Once everything is loaded (CSS, Images, etc.), hide the loader
         window.addEventListener('load', function() {
             const loader = document.getElementById('global-loader');
             setTimeout(() => {
                 loader.classList.add('hide');
                 document.body.classList.remove('is-loading');
             }, 350);
+        });
+
+        // ──────── IMMEDIATE TRANSITION LOGIC ────────
+        // Show loader IMMEDIATELY when a link is clicked or form submitted
+        document.addEventListener('click', function(e) {
+            const link = e.target.closest('a');
+            if (link && 
+                link.href && 
+                !link.href.startsWith('#') && 
+                !link.href.includes('javascript:') &&
+                !link.getAttribute('target') && 
+                !e.ctrlKey && !e.shiftKey && !e.metaKey &&
+                link.hostname === window.location.hostname) {
+                
+                const loader = document.getElementById('global-loader');
+                if(loader) {
+                    loader.classList.remove('hide');
+                    document.body.classList.add('is-loading');
+                }
+            }
+        });
+
+        // Show on form submit
+        document.addEventListener('submit', function(e) {
+            const loader = document.getElementById('global-loader');
+            if(loader) {
+                loader.classList.remove('hide');
+                document.body.classList.add('is-loading');
+            }
+        });
+
+        // Hide when navigating back (BFcache)
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                const loader = document.getElementById('global-loader');
+                if(loader) {
+                    loader.classList.add('hide');
+                    document.body.classList.remove('is-loading');
+                }
+            }
         });
     </script>
 
