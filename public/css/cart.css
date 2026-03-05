@@ -64,8 +64,8 @@
     height: 80px;
     flex-shrink: 0;
     margin-right: 15px;
-    background: #f7f7f7;
-    border: 1px solid #eff2f4;
+    background: var(--bg-card-alt, #f7f7f7);
+    border: 1px solid var(--border, #eff2f4);
     border-radius: 6px;
     display: flex;
     align-items: center;
@@ -170,7 +170,7 @@
     width: 32px;
     height: 32px;
     border: none;
-    background: #f7f7f7;
+    background: var(--bg-card-alt, #f7f7f7);
     color: var(--primary, #0d6efd);
     font-size: 14px;
     cursor: pointer;
@@ -181,7 +181,7 @@
 }
 
 .qty-selector .qty-btn:hover {
-    background: #e8f0fe;
+    background: var(--bg-hover, #e8f0fe);
 }
 
 .qty-selector .qty-input {
@@ -193,8 +193,8 @@
     font-weight: 600;
     outline: none;
     -moz-appearance: textfield;
-    border-left: 1px solid #dee2e7;
-    border-right: 1px solid #dee2e7;
+    border-left: 1px solid var(--border, #dee2e7);
+    border-right: 1px solid var(--border, #dee2e7);
     height: 32px;
 }
 
@@ -310,7 +310,7 @@
     font-weight: 600;
     padding: 0 14px;
     cursor: pointer;
-    border-left: 1px solid #dee2e7;
+    border-left: 1px solid var(--border, #dee2e7);
     font-size: 14px;
     transition: background 0.2s;
 }
@@ -345,7 +345,7 @@
 
 .summary-divider {
     border: none;
-    border-top: 1px solid #eff2f4;
+    border-top: 1px solid var(--border, #eff2f4);
     margin: 15px 0;
 }
 
@@ -491,8 +491,8 @@
     align-items: center;
     justify-content: center;
     padding: 15px;
-    background: #fafafa;
-    border-bottom: 1px solid #eff2f4;
+    background: var(--bg-card-alt, #fafafa);
+    border-bottom: 1px solid var(--border, #eff2f4);
 }
 
 .saved-item-img img {
@@ -576,8 +576,8 @@
     flex-shrink: 0;
     border-radius: 6px;
     overflow: hidden;
-    background: #f7f7f7;
-    border: 1px solid #eff2f4;
+    background: var(--bg-card-alt, #f7f7f7);
+    border: 1px solid var(--border, #eff2f4);
 }
 
 .saved-list-img img {
@@ -759,7 +759,7 @@
     .cart-header {
         margin-bottom: 0;
         padding: 14px 15px;
-        border-bottom: 1px solid #eff2f4;
+        border-bottom: 1px solid var(--border, #eff2f4);
         background: var(--bg-card, #fff);
     }
 
@@ -795,7 +795,7 @@
         border-left: none;
         border-right: none;
         border-top: none;
-        border-bottom: 1px solid #eff2f4;
+        border-bottom: 1px solid var(--border, #eff2f4);
     }
 
     .cart-item:first-child {

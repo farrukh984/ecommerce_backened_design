@@ -4,24 +4,24 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
 
 :root {
-  --ck-primary: #0d6efd;
-  --ck-primary-dark: #0b5ed7;
+  --ck-primary: var(--primary, #0d6efd);
+  --ck-primary-dark: var(--primary-hover, #0b5ed7);
   --ck-primary-light: #4895ef;
-  --ck-primary-glow: rgba(13, 110, 253, 0.15);
+  --ck-primary-glow: var(--primary-glow, rgba(13, 110, 253, 0.15));
   --ck-secondary: #f38332;
-  --ck-bg: #f4f5f7;
-  --ck-card-bg: #ffffff;
-  --ck-text-dark: #1c1c1c;
-  --ck-text-medium: #505050;
-  --ck-text-light: #8b96a5;
-  --ck-border: #e3e8ee;
-  --ck-border-focus: #0d6efd;
-  --ck-success: #15803d;
+  --ck-bg: var(--bg-body, #f4f5f7);
+  --ck-card-bg: var(--bg-card, #ffffff);
+  --ck-text-dark: var(--text-primary, #1c1c1c);
+  --ck-text-medium: var(--text-secondary, #505050);
+  --ck-text-light: var(--text-muted, #8b96a5);
+  --ck-border: var(--border, #e3e8ee);
+  --ck-border-focus: var(--primary, #0d6efd);
+  --ck-success: var(--success, #15803d);
   --ck-radius: 12px;
   --ck-radius-lg: 16px;
-  --ck-shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.04);
-  --ck-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
-  --ck-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.1);
+  --ck-shadow-sm: var(--shadow-sm, 0 2px 4px rgba(0, 0, 0, 0.04));
+  --ck-shadow: var(--shadow-md, 0 4px 16px rgba(0, 0, 0, 0.06));
+  --ck-shadow-hover: var(--shadow-lg, 0 8px 24px rgba(0, 0, 0, 0.1));
   --ck-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -164,7 +164,7 @@
   gap: 16px;
   padding: 24px 28px;
   border-bottom: 1px solid var(--ck-border);
-  background: linear-gradient(135deg, #f8fafc, #ffffff);
+  background: var(--bg-card-alt, linear-gradient(135deg, #f8fafc, #ffffff));
 }
 
 .checkout-card-icon {
@@ -309,7 +309,7 @@
   gap: 12px;
   padding: 20px 24px;
   border-bottom: 1px solid var(--ck-border);
-  background: linear-gradient(135deg, #f8fafc, #ffffff);
+  background: var(--bg-card-alt, linear-gradient(135deg, #f8fafc, #ffffff));
 }
 
 .summary-header i {
@@ -349,11 +349,11 @@
   border-radius: 10px;
   margin-bottom: 8px;
   transition: var(--ck-transition);
-  background: #fafbfc;
+  background: var(--bg-card-alt, #fafbfc);
 }
 
 .summary-product:hover {
-  background: #f0f4f8;
+  background: var(--bg-hover, #f0f4f8);
 }
 
 .summary-product:last-child {

@@ -142,11 +142,11 @@
 }
 
 .filter-list::-webkit-scrollbar-track {
-    background: #f1f1f1;
+    background: var(--bg-card-alt, #f1f1f1);
 }
 
 .filter-list::-webkit-scrollbar-thumb {
-    background: #cbd5e0;
+    background: var(--border, #cbd5e0);
     border-radius: 10px;
 }
 
@@ -200,7 +200,7 @@
     flex-direction: column;
     gap: 0;
     flex-shrink: 0;
-    border-left: 1px solid #e3e8ee;
+    border-left: 1px solid var(--border, #e3e8ee);
     margin: 10px;
 }
 
@@ -258,7 +258,7 @@
     align-items: center;
     font-size: 42px;
     /* For the icon fallback */
-    color: #bdc4cc;
+    color: var(--text-muted, #bdc4cc);
     line-height: 1;
 }
 
@@ -945,6 +945,8 @@
     font-size: 14px;
     font-family: 'Inter', sans-serif;
     outline: none;
+    background: var(--bg-input, #fff);
+    color: var(--text-primary, #1c1c1c);
 }
 
 .newsletter-form input:focus {

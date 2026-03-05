@@ -957,14 +957,14 @@
 
     .detail-left-content {
         background: var(--bg-card, #fff);
-        border: 1px solid #e0e0e0;
+        border: 1px solid var(--border, #e0e0e0);
         border-radius: 8px;
         overflow: hidden;
     }
 
     .tabs-nav {
         display: flex;
-        border-bottom: 2px solid #eff2f4;
+        border-bottom: 2px solid var(--border, #eff2f4);
         background: var(--bg-card, #fff);
         padding: 0 20px;
     }
@@ -1500,6 +1500,7 @@
     background: var(--primary, #3b82f6);
     box-shadow: 0 0 10px rgba(59, 130, 246, 0.2);
 }
+
 .desktop-qty-section {
     margin-bottom: 20px;
 }
