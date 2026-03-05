@@ -27,11 +27,16 @@
 </head>
 <body class="auth-body">
 
-    <!-- Global Preloader for Auth -->
-    <div id="auth-loader" style="position:fixed; inset:0; background:var(--auth-bg, #ffffff); z-index:9999; display:flex; align-items:center; justify-content:center;">
-        <div style="width:40px; height:40px; border:4px solid #f3f3f3; border-top:4px solid var(--auth-primary, #4f46e5); border-radius:50%; animation:spin 1s linear infinite;"></div>
+    <!-- Premium Preloader -->
+    <div id="auth-loader">
+        <div class="loader-boxes">
+            <div class="l-box"></div>
+            <div class="l-box"></div>
+            <div class="l-box"></div>
+            <div class="l-box"></div>
+        </div>
+        <div class="loader-text">ShopBrand</div>
     </div>
-    <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
 
     <div class="auth-theme-toggle">
         <button class="theme-btn theme-toggle" title="Toggle Theme">
@@ -44,10 +49,35 @@
     </main>
 
     <script>
+        // Hide loader on load
         window.addEventListener('load', function() {
             const loader = document.getElementById('auth-loader');
             if(loader) {
-                gsap.to(loader, { opacity: 0, duration: 0.5, onComplete: () => loader.remove() });
+                loader.classList.add('hide');
+                setTimeout(() => loader.remove(), 600);
+            }
+        });
+
+        // Show on form submit
+        document.addEventListener('submit', function(e) {
+            if (e.defaultPrevented) return;
+            const loader = document.getElementById('auth-loader');
+            if(!loader) {
+                // Re-create if already removed
+                const newLoader = document.createElement('div');
+                newLoader.id = 'auth-loader';
+                newLoader.innerHTML = `
+                    <div class="loader-boxes">
+                        <div class="l-box"></div>
+                        <div class="l-box"></div>
+                        <div class="l-box"></div>
+                        <div class="l-box"></div>
+                    </div>
+                    <div class="loader-text">ShopBrand</div>
+                `;
+                document.body.appendChild(newLoader);
+            } else {
+                loader.classList.remove('hide');
             }
         });
     </script>
