@@ -90,7 +90,7 @@
     margin: 0;
     font-size: 18px;
     font-weight: 700;
-    color: #fff;
+    color: #ffffff;
 }
 
 .sidebar-head-right {
@@ -104,7 +104,7 @@
     height: 34px;
     border: none;
     background: rgba(255, 255, 255, 0.15);
-    color: #fff;
+    color: #ffffff;
     border-radius: 50%;
     cursor: pointer;
     display: flex;
@@ -222,7 +222,7 @@
     height: 46px;
     border-radius: 50%;
     background: linear-gradient(135deg, #4f46e5, #0ea5e9);
-    color: #fff;
+    color: #ffffff;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -283,7 +283,7 @@
     height: 19px;
     border-radius: 50%;
     background: var(--c-unread);
-    color: #fff;
+    color: #ffffff;
     font-size: 10px;
     font-weight: 700;
     display: flex;
@@ -329,7 +329,7 @@
     height: 38px;
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.2);
-    color: #fff;
+    color: #ffffff;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -347,7 +347,7 @@
     margin: 0;
     font-size: 15px;
     font-weight: 700;
-    color: #fff;
+    color: #ffffff;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -383,7 +383,7 @@
     height: 36px;
     border: none;
     background: rgba(255, 255, 255, 0.15);
-    color: #fff;
+    color: #ffffff;
     border-radius: 50%;
     cursor: pointer;
     display: none;
@@ -408,7 +408,7 @@
     height: 36px;
     border: none;
     background: rgba(255, 255, 255, 0.12);
-    color: #fff;
+    color: #ffffff;
     border-radius: 50%;
     cursor: pointer;
     display: flex;

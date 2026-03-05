@@ -84,8 +84,8 @@
         <div class="form-row">
             <div class="form-group">
                 <label>Options & Stock</label>
-                <div class="options-container" style="display: flex; flex-wrap: wrap; gap: 15px; align-items: center; padding: 15px; background: #f9f9f9; border-radius: 12px; border: 1px solid var(--admin-border);">
-                    <label style="cursor: pointer; margin-bottom: 0; display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 500;">
+                <div class="options-container" style="display: flex; flex-wrap: wrap; gap: 15px; align-items: center; padding: 15px; background: var(--admin-card-alt, #f9f9f9); border-radius: 12px; border: 1px solid var(--admin-border);">
+                    <label style="cursor: pointer; margin-bottom: 0; display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 500; color: var(--admin-text);">
                         <input type="hidden" name="in_stock" value="0"><input type="checkbox" name="in_stock" value="1" checked> In Stock
                     </label>
                     <label style="cursor: pointer; margin-bottom: 0; display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 500;">
@@ -95,8 +95,8 @@
                         <input type="hidden" name="is_active" value="0"><input type="checkbox" name="is_active" value="1" checked> Enabled / Active
                     </label>
                     <div style="flex: 1; min-width: 140px; display: flex; align-items: center; gap: 10px; justify-content: flex-end;">
-                        <span style="font-size: 13px; font-weight: 600; white-space: nowrap;">Stock Qty:</span>
-                        <input type="number" name="stock_quantity" class="form-control" value="100" style="width: 80px; height: 35px; padding: 5px 10px; background: white;">
+                        <span style="font-size: 13px; font-weight: 600; white-space: nowrap; color: var(--admin-text);">Stock Qty:</span>
+                        <input type="number" name="stock_quantity" class="form-control" value="100" style="width: 80px; height: 35px; padding: 5px 10px; background: var(--admin-card, white);">
                     </div>
                 </div>
             </div>
@@ -174,7 +174,7 @@
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
         gap: 10px;
-        background: #fcfcfc;
+        background: var(--admin-card-alt, #fcfcfc);
         padding: 15px;
         border-radius: 8px;
         border: 1px solid var(--admin-border);

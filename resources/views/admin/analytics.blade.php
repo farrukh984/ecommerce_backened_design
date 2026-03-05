@@ -181,6 +181,11 @@
         --glass-border: rgba(255, 255, 255, 0.5);
     }
 
+    [data-theme="dark"] :root {
+        --glass-bg: rgba(30, 41, 59, 0.7);
+        --glass-border: rgba(255, 255, 255, 0.1);
+    }
+
     .analytics-main-grid {
         display: grid;
         grid-template-columns: 2fr 1.2fr;
@@ -237,15 +242,15 @@
 
     .action-header-premium {
         padding: 25px 30px;
-        border-bottom: 1px solid #f1f5f9;
+        border-bottom: 1px solid var(--admin-border, #f1f5f9);
         display: flex;
         justify-content: space-between;
         align-items: center;
-        background: linear-gradient(to right, #ffffff, #fafafa);
+        background: var(--admin-card-alt, linear-gradient(to right, #ffffff, #fafafa));
     }
 
-    .header-info h2 { font-family: 'Outfit', sans-serif; font-size: 18px; font-weight: 800; color: #1e293b; margin-bottom: 4px; }
-    .header-info p { font-size: 13px; color: #64748b; }
+    .header-info h2 { font-family: 'Outfit', sans-serif; font-size: 18px; font-weight: 800; color: var(--admin-text, #1e293b); margin-bottom: 4px; }
+    .header-info p { font-size: 13px; color: var(--admin-text-sub, #64748b); }
 
     .header-badge {
         background: #eff6ff;
@@ -278,7 +283,7 @@
 
     .performer-item {
         padding: 20px 30px;
-        border-bottom: 1px solid #f1f5f9;
+        border-bottom: 1px solid var(--admin-border, #f1f5f9);
         display: flex;
         align-items: center;
         gap: 20px;
@@ -286,13 +291,13 @@
     }
 
     .performer-item:last-child { border-bottom: none; }
-    .performer-item:hover { background: #f8fafc; transform: translateX(5px); }
+    .performer-item:hover { background: var(--admin-card-alt, #f8fafc); transform: translateX(5px); }
 
     .performer-rank {
         width: 32px;
         height: 32px;
-        background: #f1f5f9;
-        color: #475569;
+        background: var(--admin-card-alt, #f1f5f9);
+        color: var(--admin-text-sub, #475569);
         border-radius: 10px;
         display: flex;
         align-items: center;
@@ -313,8 +318,8 @@
     }
 
     .engagement-card {
-        background: #f8fafc;
-        border: 1px solid #f1f5f9;
+        background: var(--admin-card-alt, #f8fafc);
+        border: 1px solid var(--admin-border, #f1f5f9);
         padding: 18px;
         border-radius: 18px;
         display: flex;
@@ -326,10 +331,10 @@
     }
 
     .engagement-card:hover {
-        background: #fff;
+        background: var(--admin-card, #fff);
         transform: translateY(-4px);
         box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-        border-color: #3b82f6;
+        border-color: var(--admin-primary, #3b82f6);
     }
 
     .engagement-avatar {

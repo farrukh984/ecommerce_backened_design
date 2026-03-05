@@ -48,9 +48,9 @@
 <!-- Analytics Chart -->
 <div class="stats-grid" style="grid-template-columns: 1fr; margin-bottom: 24px;">
     <div class="premium-card chart-card">
-        <div class="action-header" style="background: linear-gradient(to right, #ffffff, #f8fafc);">
+        <div class="action-header" style="background: var(--admin-card-alt, #f8fafc);">
             <div class="header-title">
-                <h2 style="color: #1e293b; font-weight: 800;">Revenue Intelligence</h2>
+                <h2 style="color: var(--admin-text, #1e293b); font-weight: 800;">Revenue Intelligence</h2>
                 <p>Real-time analytics & sales performance tracking</p>
             </div>
             <div class="chart-stats-premium" style="display: flex; gap: 24px;">
@@ -86,20 +86,20 @@
         
         <!-- Stock Alerts if any -->
         @if($outOfStockProducts->count() > 0 || $lowStockProducts->count() > 0)
-        <div class="premium-card" style="border-left: 5px solid #ef4444;">
+        <div class="premium-card" style="border-left: 5px solid var(--danger, #ef4444);">
             <div class="action-header alert-header">
                 <div class="header-title">
-                    <h2 style="color: #ef4444;"><i class="fa-solid fa-triangle-exclamation"></i> Critical Inventory</h2>
+                    <h2 style="color: var(--danger, #ef4444);"><i class="fa-solid fa-triangle-exclamation"></i> Critical Inventory</h2>
                     <p>Action required for these items</p>
                 </div>
             </div>
             <div style="padding: 24px;">
                 @if($outOfStockProducts->count() > 0)
                 <div style="margin-bottom: 24px;">
-                    <h4 style="font-size: 13px; font-weight: 700; color: #991b1b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;">Out of Stock</h4>
+                    <h4 style="font-size: 13px; font-weight: 700; color: var(--danger, #991b1b); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;">Out of Stock</h4>
                     <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px;">
                         @foreach($outOfStockProducts->take(6) as $product)
-                        <div style="background: #f8fafc; border: 1px solid #fee2e2; padding: 12px; border-radius: 14px; display: flex; align-items: center; gap: 12px;">
+                        <div style="background: var(--admin-card-alt, #f8fafc); border: 1px solid var(--border, #fee2e2); padding: 12px; border-radius: 14px; display: flex; align-items: center; gap: 12px;">
                             @if($product->image)
                                 <img src="{{ display_image($product->image) }}" style="width: 40px; height: 40px; border-radius: 8px; object-fit: cover;">
                             @endif
@@ -115,10 +115,10 @@
 
                 @if($lowStockProducts->count() > 0)
                 <div>
-                    <h4 style="font-size: 13px; font-weight: 700; color: #92400e; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;">Low Stock Warning</h4>
+                    <h4 style="font-size: 13px; font-weight: 700; color: var(--warning, #92400e); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;">Low Stock Warning</h4>
                     <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px;">
                         @foreach($lowStockProducts->take(6) as $product)
-                        <div style="background: #f8fafc; border: 1px solid #fef3c7; padding: 12px; border-radius: 14px; display: flex; align-items: center; gap: 12px;">
+                        <div style="background: var(--admin-card-alt, #f8fafc); border: 1px solid var(--border, #fef3c7); padding: 12px; border-radius: 14px; display: flex; align-items: center; gap: 12px;">
                             @if($product->image)
                                 <img src="{{ display_image($product->image) }}" style="width: 40px; height: 40px; border-radius: 8px; object-fit: cover;">
                             @endif
@@ -174,7 +174,7 @@
                                     @if($order->user && $order->user->profile_image)
                                         <img src="{{ display_image($order->user->profile_image) }}" style="width: 32px; height: 32px; border-radius: 10px; object-fit: cover;">
                                     @else
-                                        <div style="width: 32px; height: 32px; border-radius: 10px; background: #f1f5f9; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; color: #64748b;">
+                                        <div style="width: 32px; height: 32px; border-radius: 10px; background: var(--admin-card-alt, #f1f5f9); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; color: var(--admin-text-sub, #64748b);">
                                             {{ strtoupper(substr($order->name, 0, 1)) }}
                                         </div>
                                     @endif
@@ -245,7 +245,7 @@
                         <div style="font-size: 12px; font-weight: 700; color: var(--admin-text-sub); text-transform: uppercase;">Hidden</div>
                     </div>
                 </div>
-                <div style="width: 100%; height: 8px; background: #f1f5f9; border-radius: 4px; overflow: hidden; display: flex; margin-bottom: 24px;">
+                <div style="width: 100%; height: 8px; background: var(--admin-card-alt, #f1f5f9); border-radius: 4px; overflow: hidden; display: flex; margin-bottom: 24px;">
                     @php
                         $total = $stats['active_products'] + $stats['inactive_products'];
                         $activePerc = $total > 0 ? ($stats['active_products'] / $total) * 100 : 0;
@@ -302,7 +302,7 @@
                     <div style="padding: 20px; text-align: center; color: #94a3b8;">No recent chats</div>
                 @endforelse
             </div>
-            <div style="padding: 20px; border-top: 1px solid #f1f5f9;">
+            <div style="padding: 20px; border-top: 1px solid var(--admin-border);">
                 <a href="{{ route('admin.messages.index') }}" class="btn-outline" style="width: 100%; justify-content: center;">View All Messages</a>
             </div>
         </div>
@@ -357,7 +357,7 @@
         padding: 0 !important;
         overflow: hidden;
         border: 1px solid var(--admin-border);
-        background: #fff;
+        background: var(--admin-card);
     }
 
     .chart-wrapper-inner {
@@ -414,7 +414,7 @@
     .stat-minimal .value {
         font-size: 18px;
         font-weight: 900;
-        color: #1e293b;
+        color: var(--admin-text, #1e293b);
         font-family: 'Outfit', sans-serif;
     }
     
@@ -441,7 +441,7 @@
         align-items: center;
         gap: 15px;
         padding: 16px 20px;
-        border-bottom: 1px solid #f8fafc;
+        border-bottom: 1px solid var(--admin-border, #f8fafc);
         transition: 0.3s;
         cursor: pointer;
     }

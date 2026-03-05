@@ -32,9 +32,9 @@
                     <td>#{{ $category->id }}</td>
                     <td>
                         @if($category->background_image)
-                            <img src="{{ display_image($category->background_image) }}" width="60" style="border-radius: 4px; border: 1px solid #eee;">
+                            <img src="{{ display_image($category->background_image) }}" width="60" style="border-radius: 4px; border: 1px solid var(--admin-border, #eee);">
                         @else
-                            <div style="width: 60px; height: 40px; background: #eee; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #999;">No Image</div>
+                            <div style="width: 60px; height: 40px; background: var(--admin-card-alt, #eee); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--admin-text-sub, #999);">No Image</div>
                         @endif
                     </td>
                     <td style="font-weight: 600;">{{ $category->name }}</td>
@@ -45,7 +45,7 @@
                             </a>
                             <form action="{{ route('admin.categories.destroy', $category->id) }}" method="POST">
                                 @csrf @method('DELETE')
-                                <button type="submit" class="btn-outline" style="color: #eb001b; cursor: pointer;">
+                                <button type="submit" class="btn-outline" style="color: var(--danger, #eb001b); cursor: pointer; background: transparent;">
                                     <i class="fa-solid fa-trash"></i>
                                 </button>
                             </form>

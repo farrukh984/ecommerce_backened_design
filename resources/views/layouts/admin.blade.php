@@ -206,7 +206,7 @@
                 <a href="{{ route('admin.orders.index') }}" class="menu-item {{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
                     <i class="fa-solid fa-receipt"></i> Orders
                     @if($unviewedOrdersCount > 0)
-                        <span style="background: white; color: var(--admin-primary); border-radius: 6px; padding: 2px 8px; font-size: 10px; font-weight: 800; margin-left: auto; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">{{ $unviewedOrdersCount }}</span>
+                        <span style="background: var(--admin-primary); color: white; border-radius: 6px; padding: 2px 8px; font-size: 10px; font-weight: 800; margin-left: auto; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">{{ $unviewedOrdersCount }}</span>
                     @endif
                 </a>
                 <a href="{{ route('admin.users.index') }}" class="menu-item {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
@@ -215,13 +215,13 @@
                 <a href="{{ route('admin.reviews.index') }}" class="menu-item {{ request()->routeIs('admin.reviews.*') ? 'active' : '' }}">
                     <i class="fa-solid fa-star"></i> Product Reviews
                     @if($unviewedReviewsCount > 0)
-                        <span style="background: white; color: var(--admin-primary); border-radius: 6px; padding: 2px 8px; font-size: 10px; font-weight: 800; margin-left: auto; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">{{ $unviewedReviewsCount }}</span>
+                        <span style="background: var(--admin-primary); color: white; border-radius: 6px; padding: 2px 8px; font-size: 10px; font-weight: 800; margin-left: auto; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">{{ $unviewedReviewsCount }}</span>
                     @endif
                 </a>
                 <a href="{{ route('admin.messages.index') }}" class="menu-item {{ request()->routeIs('admin.messages.*') ? 'active' : '' }}">
                     <i class="fa-solid fa-comments"></i> Inquiries
                     @if($unreadAdminCount > 0)
-                        <span style="background: white; color: var(--admin-primary); border-radius: 6px; padding: 2px 8px; font-size: 10px; font-weight: 800; margin-left: auto; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">{{ $unreadAdminCount }}</span>
+                        <span style="background: var(--admin-primary); color: white; border-radius: 6px; padding: 2px 8px; font-size: 10px; font-weight: 800; margin-left: auto; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">{{ $unreadAdminCount }}</span>
                     @endif
                 </a>
 
@@ -248,7 +248,7 @@
             <div class="sidebar-footer">
                 <a href="{{ route('admin.profile') }}" class="user-profile-badge" style="text-decoration: none;">
                     @if(auth()->user()->profile_image)
-                        <img src="{{ display_image(auth()->user()->profile_image) }}" style="width: 32px; height: 32px; border-radius: 10px; object-fit: cover; border: 2px solid white;">
+                        <img src="{{ display_image(auth()->user()->profile_image) }}" style="width: 32px; height: 32px; border-radius: 10px; object-fit: cover; border: 2px solid var(--admin-card, white);">
                     @else
                         <div class="user-avatar-small">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</div>
                     @endif
@@ -276,8 +276,8 @@
                 </div>
                 <div class="topbar-right">
                     @if($lowStockCount > 0)
-                        <a href="{{ route('admin.products.index') }}" class="stock-warning-pill" style="margin-right: 15px; background: #fff7ed; border: 1px solid #ffedd5; color: #9a3412; padding: 10px 18px; border-radius: 14px; font-size: 12px; font-weight: 800; display: flex; align-items: center; gap: 10px; text-decoration: none; box-shadow: 0 4px 10px rgba(234, 88, 12, 0.1);">
-                            <i class="fa-solid fa-triangle-exclamation" style="color: #ea580c; font-size: 14px;"></i>
+                        <a href="{{ route('admin.products.index') }}" class="stock-warning-pill" style="margin-right: 15px; background: var(--warning-bg, #fff7ed); border: 1px solid var(--warning-border, #ffedd5); color: var(--warning, #9a3412); padding: 10px 18px; border-radius: 14px; font-size: 12px; font-weight: 800; display: flex; align-items: center; gap: 10px; text-decoration: none; box-shadow: 0 4px 10px rgba(234, 88, 12, 0.1);">
+                            <i class="fa-solid fa-triangle-exclamation" style="color: var(--warning); font-size: 14px;"></i>
                             {{ $lowStockCount }} Low Stock Alerts
                         </a>
                     @endif

@@ -12,28 +12,28 @@
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        color: #3b82f6;
+        color: var(--primary, #3b82f6);
         text-decoration: none;
         font-weight: 600;
         font-size: 14px;
         margin-bottom: 24px;
         transition: color 0.2s;
     }
-    .back-link:hover { color: #2563eb; }
+    .back-link:hover { color: var(--primary-hover, #2563eb); }
     .order-detail-grid {
         display: grid;
         grid-template-columns: 1fr 380px;
         gap: 24px;
     }
     .detail-card {
-        background: #fff;
+        background: var(--bg-card, #fff);
         border-radius: 16px;
-        border: 1px solid #f1f5f9;
+        border: 1px solid var(--border, #f1f5f9);
         overflow: hidden;
     }
     .detail-card-header {
         padding: 20px 24px;
-        border-bottom: 1px solid #f1f5f9;
+        border-bottom: 1px solid var(--border, #f1f5f9);
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -43,7 +43,7 @@
     .detail-card-header h3 {
         font-size: 18px;
         font-weight: 800;
-        color: #0f172a;
+        color: var(--text-primary, #0f172a);
         margin: 0;
     }
     .detail-card-body {
@@ -54,7 +54,7 @@
         align-items: center;
         gap: 16px;
         padding: 16px 0;
-        border-bottom: 1px solid #f8fafc;
+        border-bottom: 1px solid var(--border-light, #f8fafc);
     }
     .detail-item-row:last-child {
         border-bottom: none;
@@ -64,18 +64,18 @@
         height: 72px;
         border-radius: 12px;
         object-fit: cover;
-        border: 1px solid #f1f5f9;
+        border: 1px solid var(--border, #f1f5f9);
         flex-shrink: 0;
     }
     .detail-item-placeholder {
         width: 72px;
         height: 72px;
         border-radius: 12px;
-        background: #f1f5f9;
+        background: var(--bg-card-alt, #f1f5f9);
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #cbd5e1;
+        color: var(--text-muted, #cbd5e1);
         font-size: 24px;
         flex-shrink: 0;
     }
@@ -85,19 +85,20 @@
     }
     .detail-item-name {
         font-weight: 700;
-        color: #0f172a;
+        color: var(--text-primary, #0f172a);
         font-size: 15px;
         margin-bottom: 4px;
     }
     .detail-item-attrs {
         font-size: 12px;
-        color: #94a3b8;
+        color: var(--text-muted, #94a3b8);
         display: flex;
         gap: 8px;
         flex-wrap: wrap;
     }
     .detail-item-attr-tag {
-        background: #f1f5f9;
+        background: var(--bg-card-alt, #f1f5f9);
+        color: var(--text-secondary, #475569);
         padding: 2px 8px;
         border-radius: 6px;
         font-size: 11px;
@@ -108,19 +109,19 @@
     }
     .detail-item-price {
         font-weight: 800;
-        color: #0f172a;
+        color: var(--text-primary, #0f172a);
         font-size: 16px;
     }
     .detail-item-unit {
         font-size: 12px;
-        color: #94a3b8;
+        color: var(--text-muted, #94a3b8);
     }
     .order-summary-row {
         display: flex;
         justify-content: space-between;
         padding: 10px 0;
         font-size: 14px;
-        color: #64748b;
+        color: var(--text-secondary, #64748b);
     }
     .order-summary-total {
         display: flex;
@@ -128,21 +129,21 @@
         padding: 14px 0 0;
         font-size: 20px;
         font-weight: 800;
-        color: #0f172a;
-        border-top: 2px solid #f1f5f9;
+        color: var(--text-primary, #0f172a);
+        border-top: 2px solid var(--border, #f1f5f9);
         margin-top: 8px;
     }
     .order-summary-total span:last-child {
-        color: #3b82f6;
+        color: var(--primary, #3b82f6);
     }
     .info-list {
         font-size: 14px;
-        color: #475569;
+        color: var(--text-secondary, #475569);
         line-height: 2;
     }
     .info-list i {
         width: 20px;
-        color: #94a3b8;
+        color: var(--text-muted, #94a3b8);
         margin-right: 8px;
     }
     .status-timeline {
@@ -173,17 +174,17 @@
         z-index: 2;
     }
     .timeline-dot.active {
-        background: linear-gradient(135deg, #3b82f6, #06b6d4);
+        background: var(--gradient, linear-gradient(135deg, #3b82f6, #06b6d4));
         color: white;
         box-shadow: 0 2px 8px rgba(59,130,246,0.3);
     }
     .timeline-dot.completed {
-        background: #16a34a;
+        background: var(--success, #16a34a);
         color: white;
     }
     .timeline-dot.inactive {
-        background: #f1f5f9;
-        color: #cbd5e1;
+        background: var(--bg-card-alt, #f1f5f9);
+        color: var(--text-muted, #cbd5e1);
     }
     .timeline-line {
         position: absolute;
@@ -191,6 +192,7 @@
         top: 32px;
         bottom: 0;
         width: 2px;
+        background: var(--border, #e2e8f0);
         z-index: 1;
     }
     .timeline-step:last-child .timeline-line {
@@ -199,12 +201,12 @@
     .timeline-content h4 {
         margin: 0;
         font-size: 14px;
-        color: #1e293b;
+        color: var(--text-primary, #1e293b);
     }
     .timeline-content p {
         margin: 2px 0 0;
         font-size: 12px;
-        color: #94a3b8;
+        color: var(--text-muted, #94a3b8);
     }
     @media (max-width: 991px) {
         .order-detail-grid {
@@ -247,7 +249,7 @@
                                 ];
                                 $sc = $statusColors[$statusClass] ?? $statusColors['pending'];
                             @endphp
-                            <span style="padding: 6px 16px; border-radius: 20px; background: {{ $sc['bg'] }}; color: {{ $sc['color'] }}; font-weight: 700; font-size: 13px;">
+                            <span style="padding: 6px 16px; border-radius: 20px; background: var(--badge-bg, {{ $sc['bg'] }}); color: var(--badge-text, {{ $sc['color'] }}); font-weight: 700; font-size: 13px;">
                                 {{ ucfirst($order->status) }}
                             </span>
                         </div>
@@ -283,7 +285,7 @@
 
                         <!-- Order Summary -->
                         <div style="padding: 0 24px 24px;">
-                            <div style="background: #f8fafc; border-radius: 12px; padding: 20px;">
+                            <div style="background: var(--bg-card-alt, #f8fafc); border-radius: 12px; padding: 20px;">
                                 <div class="order-summary-row">
                                     <span>Subtotal</span>
                                     <span>${{ number_format($order->total_amount - $order->tax_amount - $order->shipping_amount + $order->discount_amount, 2) }}</span>
@@ -342,9 +344,9 @@
                                             <div class="timeline-line" style="background: #e2e8f0;"></div>
                                         @endif
                                         <div class="timeline-content">
-                                            <h4 style="{{ $i <= $currentIndex && !$isCancelled ? 'color: #0f172a;' : 'color: #cbd5e1;' }}">{{ ucfirst($st) }}</h4>
+                                            <h4 style="{{ $i <= $currentIndex && !$isCancelled ? 'color: var(--text-primary, #0f172a);' : 'color: var(--text-muted, #cbd5e1);' }}">{{ ucfirst($st) }}</h4>
                                             @if($i === $currentIndex && !$isCancelled)
-                                                <p style="color: #3b82f6; font-weight: 600;">Current Status</p>
+                                                <p style="color: var(--primary, #3b82f6); font-weight: 600;">Current Status</p>
                                             @endif
                                         </div>
                                     </div>
@@ -389,7 +391,7 @@
                                 <div><i class="fa-solid fa-calendar"></i>Placed: {{ $order->created_at->format('M d, Y h:i A') }}</div>
                                 <div><i class="fa-solid fa-clock"></i>Updated: {{ $order->updated_at->diffForHumans() }}</div>
                                 @if($order->notes)
-                                    <div style="margin-top: 12px; padding: 12px; background: #f8fafc; border-radius: 8px; font-size: 13px; color: #64748b;">
+                                    <div style="margin-top: 12px; padding: 12px; background: var(--bg-card-alt, #f8fafc); border-radius: 8px; font-size: 13px; color: var(--text-secondary, #64748b);">
                                         <strong>Notes:</strong> {{ $order->notes }}
                                     </div>
                                 @endif
@@ -402,7 +404,7 @@
                     <form method="POST" action="{{ route('user.orders.delete', $order->id) }}" onsubmit="return confirm('Are you sure you want to delete this order permanently?')">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" style="width: 100%; padding: 14px; background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s;" onmouseover="this.style.background='#fee2e2'" onmouseout="this.style.background='#fef2f2'">
+                        <button type="submit" style="width: 100%; padding: 14px; background: var(--bg-card-alt, #fef2f2); color: var(--danger, #dc2626); border: 1px solid var(--border, #fecaca); border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s;" onmouseover="this.style.background='var(--bg-hover)'" onmouseout="this.style.background='var(--bg-card-alt)'">
                             <i class="fa-solid fa-trash"></i> Delete This Order
                         </button>
                     </form>

@@ -92,13 +92,13 @@
         <div class="form-row">
             <div class="form-group">
                 <label>Options & Stock</label>
-                <div style="display: flex; gap: 20px; align-items: center; padding: 10px; background: #f9f9f9; border-radius: 6px;">
-                    <label style="cursor: pointer; margin-bottom: 0;"><input type="hidden" name="in_stock" value="0"><input type="checkbox" name="in_stock" value="1" {{ $product->in_stock ? 'checked' : '' }}> In Stock</label>
-                    <label style="cursor: pointer; margin-bottom: 0;"><input type="hidden" name="is_negotiable" value="0"><input type="checkbox" name="is_negotiable" value="1" {{ $product->is_negotiable ? 'checked' : '' }}> Price Negotiable</label>
-                    <label style="cursor: pointer; margin-bottom: 0;"><input type="hidden" name="is_active" value="0"><input type="checkbox" name="is_active" value="1" {{ $product->is_active ? 'checked' : '' }}> Enabled / Active</label>
+                <div style="display: flex; gap: 20px; align-items: center; padding: 10px; background: var(--admin-card-alt, #f9f9f9); border-radius: 6px; flex-wrap: wrap;">
+                    <label style="cursor: pointer; margin-bottom: 0; color: var(--admin-text);"><input type="hidden" name="in_stock" value="0"><input type="checkbox" name="in_stock" value="1" {{ $product->in_stock ? 'checked' : '' }}> In Stock</label>
+                    <label style="cursor: pointer; margin-bottom: 0; color: var(--admin-text);"><input type="hidden" name="is_negotiable" value="0"><input type="checkbox" name="is_negotiable" value="1" {{ $product->is_negotiable ? 'checked' : '' }}> Price Negotiable</label>
+                    <label style="cursor: pointer; margin-bottom: 0; color: var(--admin-text);"><input type="hidden" name="is_active" value="0"><input type="checkbox" name="is_active" value="1" {{ $product->is_active ? 'checked' : '' }}> Enabled / Active</label>
                     <div style="margin-left: auto; display: flex; align-items: center; gap: 10px;">
-                        <span style="font-size: 13px; font-weight: 600;">Stock Qty:</span>
-                        <input type="number" name="stock_quantity" class="form-control" value="{{ $product->stock_quantity }}" style="width: 80px; height: 30px; padding: 2px 8px;">
+                        <span style="font-size: 13px; font-weight: 600; color: var(--admin-text);">Stock Qty:</span>
+                        <input type="number" name="stock_quantity" class="form-control" value="{{ $product->stock_quantity }}" style="width: 80px; height: 30px; padding: 2px 8px; background: var(--admin-card, white);">
                     </div>
                 </div>
             </div>
@@ -121,10 +121,10 @@
 
         <div class="form-group" style="margin-top: 20px;">
             <label>Features</label>
-            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; background: #fcfcfc; padding: 15px; border-radius: 8px; border: 1px solid var(--admin-border);">
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; background: var(--admin-card-alt, #fcfcfc); padding: 15px; border-radius: 8px; border: 1px solid var(--admin-border);">
                 @php $productFeatures = $product->features()->pluck('features.id')->toArray(); @endphp
                 @foreach($features as $feat)
-                <label style="font-size: 13px; display: flex; align-items: center; gap: 8px; font-weight: 500;">
+                <label style="font-size: 13px; display: flex; align-items: center; gap: 8px; font-weight: 500; color: var(--admin-text);">
                     <input type="checkbox" name="features[]" value="{{ $feat->id }}" {{ in_array($feat->id, $productFeatures) ? 'checked' : '' }}> {{ $feat->name }}
                 </label>
                 @endforeach

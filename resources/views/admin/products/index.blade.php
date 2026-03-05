@@ -20,7 +20,7 @@
 
     @if(session('success'))
         <div style="padding: 12px 24px;">
-            <div style="background: #dcfce7; color: #166534; padding: 12px 16px; border-radius: 8px; font-size: 14px; font-weight: 500;">
+            <div style="background: var(--success-bg, #dcfce7); color: var(--success-text, #166534); padding: 12px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; border: 1px solid var(--success-border, #bbf7d0);">
                 <i class="fa-solid fa-check-circle"></i> {{ session('success') }}
             </div>
         </div>
@@ -46,10 +46,10 @@
                     <td>#{{ $product->id }}</td>
                     <td>
                         <div style="display: flex; align-items: center; gap: 12px;">
-                            <img src="{{ display_image($product->image) }}" style="width: 40px; height: 40px; border-radius: 6px; object-fit: cover; border: 1px solid #eee;">
+                            <img src="{{ display_image($product->image) }}" style="width: 40px; height: 40px; border-radius: 6px; object-fit: cover; border: 1px solid var(--admin-border, #eee);">
                             <div>
-                                <div style="font-weight: 700; color: #1c1c1c;">{{ $product->name }}</div>
-                                <div style="font-size: 11px; color: #8b96a5;">{{ $product->brand }}</div>
+                                <div style="font-weight: 700; color: var(--admin-text, #1c1c1c);">{{ $product->name }}</div>
+                                <div style="font-size: 11px; color: var(--admin-text-sub, #8b96a5);">{{ $product->brand }}</div>
                             </div>
                         </div>
                     </td>
@@ -59,9 +59,9 @@
                         </span>
                     </td>
                     <td>
-                        <div style="font-weight: 700;">${{ number_format($product->price, 2) }}</div>
+                        <div style="font-weight: 700; color: var(--admin-text);">$ {{ number_format($product->price, 2) }}</div>
                         @if($product->old_price)
-                        <div style="font-size: 11px; color: #eb001b; text-decoration: line-through;">${{ number_format($product->old_price, 2) }}</div>
+                        <div style="font-size: 11px; color: var(--danger, #eb001b); text-decoration: line-through;">$ {{ number_format($product->old_price, 2) }}</div>
                         @endif
                     </td>
                     <td>
@@ -71,7 +71,7 @@
                                     id="stock-input-{{ $product->id }}" 
                                     value="{{ $product->stock_quantity }}" 
                                     min="0" 
-                                    style="width: 70px; padding: 6px 8px; border: 1px solid {{ $product->stock_quantity < 10 ? ($product->stock_quantity == 0 ? '#fecaca' : '#fde68a') : '#e2e8f0' }}; border-radius: 8px; font-weight: 700; font-size: 13px; text-align: center; outline: none; transition: all 0.2s; background: {{ $product->stock_quantity == 0 ? '#fef2f2' : ($product->stock_quantity < 10 ? '#fffbeb' : '#fff') }}; color: {{ $product->stock_quantity < 10 ? '#dc2626' : '#1c1c1c' }};"
+                                    style="width: 70px; padding: 6px 8px; border: 1px solid {{ $product->stock_quantity < 10 ? ($product->stock_quantity == 0 ? 'var(--danger)' : 'var(--warning)') : 'var(--admin-border)' }}; border-radius: 8px; font-weight: 700; font-size: 13px; text-align: center; outline: none; transition: all 0.2s; background: {{ $product->stock_quantity == 0 ? 'var(--danger-bg, #fef2f2)' : ($product->stock_quantity < 10 ? 'var(--warning-bg, #fffbeb)' : 'var(--admin-card)') }}; color: {{ $product->stock_quantity < 10 ? 'var(--danger)' : 'var(--admin-text)' }};"
                                     onfocus="this.style.borderColor='var(--admin-primary)'; this.style.boxShadow='0 0 0 3px rgba(37,99,235,0.1)';"
                                     onblur="this.style.boxShadow='none';"
                                     onchange="updateStock({{ $product->id }})">
@@ -92,9 +92,9 @@
                     </td>
                     <td>
                         @if($product->stock_quantity > 0)
-                            <span class="status-label status-active" style="background: #e5f8ed; color: #00b517;">Live</span>
+                            <span class="status-label status-active" style="background: var(--success-bg, #e5f8ed); color: var(--success-text, #00b517);">Live</span>
                         @else
-                            <span class="status-label" style="background: #fee2e2; color: #eb001b; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;">Sold Out</span>
+                            <span class="status-label" style="background: var(--danger-bg, #fee2e2); color: var(--danger, #eb001b); padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;">Sold Out</span>
                         @endif
                     </td>
                     <td>
@@ -122,7 +122,7 @@
                             </a>
                             <form action="{{ route('admin.products.destroy', $product->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this product?')">
                                 @csrf @method('DELETE')
-                                <button type="submit" class="btn-outline" style="padding: 6px 10px; color: #eb001b; cursor: pointer;">
+                                <button type="submit" class="btn-outline" style="padding: 6px 10px; color: var(--danger, #eb001b); cursor: pointer; background: transparent;">
                                     <i class="fa-solid fa-trash"></i>
                                 </button>
                             </form>
@@ -195,20 +195,20 @@
                 
                 // Update input styling
                 if (qty === 0) {
-                    input.style.borderColor = '#fecaca';
-                    input.style.background = '#fef2f2';
-                    input.style.color = '#dc2626';
-                    label.innerHTML = '<span style="font-size: 10px; color: #dc2626; font-weight: 700;"><i class="fa-solid fa-circle-xmark"></i> Out of Stock</span>';
+                    input.style.borderColor = 'var(--danger)';
+                    input.style.background = 'var(--danger-bg)';
+                    input.style.color = 'var(--danger)';
+                    label.innerHTML = '<span style="font-size: 10px; color: var(--danger); font-weight: 700;"><i class="fa-solid fa-circle-xmark"></i> Out of Stock</span>';
                 } else if (qty < 10) {
-                    input.style.borderColor = '#fde68a';
-                    input.style.background = '#fffbeb';
-                    input.style.color = '#dc2626';
-                    label.innerHTML = '<span style="font-size: 10px; color: #d97706; font-weight: 600;"><i class="fa-solid fa-triangle-exclamation"></i> Low Stock</span>';
+                    input.style.borderColor = 'var(--warning)';
+                    input.style.background = 'var(--warning-bg)';
+                    input.style.color = 'var(--warning)';
+                    label.innerHTML = '<span style="font-size: 10px; color: var(--warning); font-weight: 600;"><i class="fa-solid fa-triangle-exclamation"></i> Low Stock</span>';
                 } else {
-                    input.style.borderColor = '#e2e8f0';
-                    input.style.background = '#fff';
-                    input.style.color = '#1c1c1c';
-                    label.innerHTML = '<span style="font-size: 10px; color: #16a34a; font-weight: 600;"><i class="fa-solid fa-check-circle"></i> In Stock</span>';
+                    input.style.borderColor = 'var(--admin-border)';
+                    input.style.background = 'var(--admin-card)';
+                    input.style.color = 'var(--admin-text)';
+                    label.innerHTML = '<span style="font-size: 10px; color: var(--success-text); font-weight: 600;"><i class="fa-solid fa-check-circle"></i> In Stock</span>';
                 }
                 
                 showToast(data.message, 'success');
