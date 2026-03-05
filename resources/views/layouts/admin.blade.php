@@ -140,6 +140,9 @@
 
         // Show on form submit
         document.addEventListener('submit', function(e) {
+            // Stay hidden if standard submission is prevented (e.g., AJAX handling)
+            if (e.defaultPrevented) return;
+
             const loader = document.getElementById('global-loader');
             if(loader) {
                 loader.classList.remove('hide');
