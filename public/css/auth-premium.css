@@ -309,6 +309,9 @@
     gap: 12px;
     text-transform: uppercase;
     letter-spacing: 1px;
+    opacity: 1;
+    /* Force default visibility */
+    visibility: visible !important;
 }
 
 .btn-submit:hover {
@@ -318,6 +321,21 @@
 
 .btn-submit:active {
     transform: scale(0.98);
+}
+
+/* Social Icons Adjustment */
+.btn-social img {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+}
+
+.btn-social i {
+    font-size: 20px;
+}
+
+.btn-social span {
+    margin-left: 10px;
 }
 
 /* Actions */

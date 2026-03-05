@@ -7,7 +7,7 @@
     {{-- RIGHT SIDE: BRAND SHOWCASE --}}
     <div class="auth-right-panel">
         <div class="panel-img-wrap">
-            <img src="{{ asset('images/auth-showcase.png') }}" onerror="this.src='https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=1000'" alt="Showcase">
+            <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=1000" alt="Showcase">
         </div>
         <div class="brand-showcase">
             <h1 class="brand-logo"><i class="fa-solid fa-bag-shopping"></i> ShopBrand.</h1>
@@ -89,11 +89,11 @@
 
                 <div class="social-buttons gs-reveal">
                     <a href="{{ route('google.redirect') }}" class="btn-social">
-                        <img src="https://www.gstatic.com/images/branding/product/2x/googleg_48dp.png" alt="Google" width="20"> 
+                        <img src="https://www.gstatic.com/images/branding/product/2x/googleg_48dp.png" alt="Google"> 
                         <span>Google</span>
                     </a>
                     <a href="{{ route('facebook.redirect') }}" class="btn-social">
-                        <i class="fa-brands fa-facebook" style="color: #1877f2; font-size: 20px;"></i> 
+                        <i class="fa-brands fa-facebook" style="color: #1877f2;"></i> 
                         <span>Facebook</span>
                     </a>
                 </div>
@@ -128,14 +128,18 @@
             ease: "expo.out"
         });
 
-        gsap.from(".gs-reveal", {
-            opacity: 0,
-            y: 20,
-            stagger: 0.08,
-            duration: 0.8,
-            ease: "power2.out",
-            delay: 0.4
-        });
+        gsap.fromTo(".gs-reveal", 
+            { opacity: 0, y: 30 },
+            { 
+                opacity: 1, 
+                y: 0, 
+                stagger: 0.1, 
+                duration: 0.8, 
+                ease: "power3.out", 
+                delay: 0.5,
+                clearProps: "all"
+            }
+        );
 
         gsap.from(".auth-right-panel", {
             x: 50,

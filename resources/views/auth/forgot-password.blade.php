@@ -7,7 +7,7 @@
     {{-- RIGHT SIDE: BRAND SHOWCASE --}}
     <div class="auth-right-panel">
         <div class="panel-img-wrap">
-            <img src="{{ asset('images/auth-showcase.png') }}" onerror="this.src='https://images.unsplash.com/photo-1541345023926-55d6e08bb369?auto=format&fit=crop&q=80&w=1000'" alt="Showcase">
+            <img src="https://images.unsplash.com/photo-1541345023926-55d6e08bb369?auto=format&fit=crop&q=80&w=1000" alt="Showcase">
         </div>
         <div class="brand-showcase">
             <h1 class="brand-logo"><i class="fa-solid fa-bag-shopping"></i> ShopBrand.</h1>
@@ -84,14 +84,18 @@
             ease: "expo.out"
         });
 
-        gsap.from(".gs-reveal", {
-            opacity: 0,
-            y: 20,
-            stagger: 0.08,
-            duration: 0.8,
-            ease: "power2.out",
-            delay: 0.4
-        });
+        gsap.fromTo(".gs-reveal", 
+            { opacity: 0, y: 30 },
+            { 
+                opacity: 1, 
+                y: 0, 
+                stagger: 0.1, 
+                duration: 0.8, 
+                ease: "power3.out", 
+                delay: 0.5,
+                clearProps: "all"
+            }
+        );
     });
 </script>
 @endsection
