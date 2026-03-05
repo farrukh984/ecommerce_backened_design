@@ -184,9 +184,6 @@
                 <a href="{{ route('admin.analytics') }}" class="menu-item {{ request()->routeIs('admin.analytics') ? 'active' : '' }}">
                     <i class="fa-solid fa-wand-magic-sparkles"></i> Insights
                 </a>
-                <a href="{{ url('/') }}" target="_blank" class="menu-item" style="color: var(--admin-primary); border: 1px dashed var(--admin-primary-glow);">
-                    <i class="fa-solid fa-rocket"></i> Launch Website
-                </a>
                 
                 <div class="menu-label">Catalog Management</div>
                 <a href="{{ route('admin.products.index') }}" class="menu-item {{ request()->routeIs('admin.products.*') ? 'active' : '' }}">
@@ -287,7 +284,7 @@
                     <button class="theme-toggle" title="Toggle dark mode" style="margin-right:8px;">
                         <i class="fa-solid fa-moon theme-toggle-icon"></i>
                     </button>
-                    <a href="/" target="_blank" class="btn-outline" style="text-decoration: none;">
+                    <a href="{{ route('home') }}" target="_blank" class="btn-outline" style="text-decoration: none;">
                         <i class="fa-solid fa-globe"></i> Visit Website
                     </a>
                 </div>

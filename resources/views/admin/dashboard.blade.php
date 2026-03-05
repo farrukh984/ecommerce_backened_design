@@ -210,7 +210,7 @@
                 </div>
             </div>
             <div style="padding: 32px; display: flex; flex-direction: column; gap: 12px;">
-                <a href="{{ url('/') }}" target="_blank" class="btn-outline" style="justify-content: center; width: 100%; border-color: var(--admin-primary); color: var(--admin-primary); background: var(--admin-primary-glow);">
+                <a href="{{ route('home') }}" target="_blank" class="btn-outline" style="justify-content: center; width: 100%; border-color: var(--admin-primary); color: var(--admin-primary); background: var(--admin-primary-glow);">
                     <i class="fa-solid fa-globe"></i> View Live Website
                 </a>
                 <a href="{{ route('admin.products.create') }}" class="btn-primary" style="justify-content: center; width: 100%;">
