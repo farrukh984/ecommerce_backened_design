@@ -27,9 +27,13 @@
     }
     .detail-card {
         background: var(--bg-card, #fff);
-        border-radius: 16px;
+        border-radius: 20px;
         border: 1px solid var(--border, #f1f5f9);
         overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    }
+    [data-theme="dark"] .detail-card {
+        box-shadow: 0 4px 25px rgba(0,0,0,0.2);
     }
     .detail-card-header {
         padding: 20px 24px;
@@ -53,8 +57,15 @@
         display: flex;
         align-items: center;
         gap: 16px;
-        padding: 16px 0;
+        padding: 18px;
+        margin: 0 -8px;
+        border-radius: 12px;
+        transition: all 0.3s ease;
         border-bottom: 1px solid var(--border-light, #f8fafc);
+    }
+    .detail-item-row:hover {
+        background: var(--bg-hover, #f8fafc);
+        transform: translateX(5px);
     }
     .detail-item-row:last-child {
         border-bottom: none;
@@ -126,15 +137,16 @@
     .order-summary-total {
         display: flex;
         justify-content: space-between;
-        padding: 14px 0 0;
-        font-size: 20px;
+        padding: 18px 0 0;
+        font-size: 22px;
         font-weight: 800;
         color: var(--text-primary, #0f172a);
-        border-top: 2px solid var(--border, #f1f5f9);
-        margin-top: 8px;
+        border-top: 2px dashed var(--border, #f1f5f9);
+        margin-top: 12px;
     }
     .order-summary-total span:last-child {
         color: var(--primary, #3b82f6);
+        text-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
     }
     .info-list {
         font-size: 14px;
@@ -155,64 +167,135 @@
     .timeline-step {
         display: flex;
         align-items: flex-start;
-        gap: 14px;
+        gap: 18px;
         position: relative;
-        padding-bottom: 24px;
+        padding-bottom: 30px;
     }
-    .timeline-step:last-child {
-        padding-bottom: 0;
-    }
+    .timeline-step:last-child { padding-bottom: 0; }
+    
     .timeline-dot {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 14px;
+        font-size: 16px;
         flex-shrink: 0;
         z-index: 2;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .timeline-dot i { transition: transform 0.3s; }
+    
+    .timeline-dot.completed {
+        background: #16a34a;
+        color: white;
+        box-shadow: 0 4px 12px rgba(22, 163, 74, 0.2);
     }
     .timeline-dot.active {
-        background: var(--gradient, linear-gradient(135deg, #3b82f6, #06b6d4));
+        background: linear-gradient(135deg, #3b82f6, #0ea5e9);
         color: white;
-        box-shadow: 0 2px 8px rgba(59,130,246,0.3);
+        box-shadow: 0 8px 16px rgba(59, 130, 246, 0.3);
+        transform: scale(1.1);
     }
-    .timeline-dot.completed {
-        background: var(--success, #16a34a);
-        color: white;
-    }
+    .timeline-dot.active i { animation: pulseIcon 2s infinite; }
     .timeline-dot.inactive {
         background: var(--bg-card-alt, #f1f5f9);
-        color: var(--text-muted, #cbd5e1);
+        color: var(--text-muted, #94a3b8);
+        border: 1.5px solid var(--border, #e2e8f0);
     }
+    
+    @keyframes pulseIcon {
+        0%, 100% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(0.85); opacity: 0.8; }
+    }
+
     .timeline-line {
         position: absolute;
-        left: 15px;
-        top: 32px;
-        bottom: 0;
+        left: 18px;
+        top: 38px;
+        bottom: -4px;
         width: 2px;
         background: var(--border, #e2e8f0);
         z-index: 1;
+        transition: background 0.3s;
     }
-    .timeline-step:last-child .timeline-line {
-        display: none;
+    .timeline-line.active {
+        background: #16a34a;
     }
+    .timeline-step:last-child .timeline-line { display: none; }
+    
+    .timeline-content { padding-top: 4px; }
     .timeline-content h4 {
         margin: 0;
-        font-size: 14px;
-        color: var(--text-primary, #1e293b);
+        font-size: 15px;
+        font-weight: 700;
+        letter-spacing: -0.3px;
     }
     .timeline-content p {
-        margin: 2px 0 0;
+        margin: 4px 0 0;
         font-size: 12px;
-        color: var(--text-muted, #94a3b8);
+    }
+
+    /* Status Badge Glow Handlers */
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 16px;
+        border-radius: 50px;
+        font-size: 12px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        position: relative;
+        overflow: hidden;
+    }
+    .status-badge::after {
+        content: '';
+        position: absolute;
+        top: 0; left: -100%;
+        width: 100%; height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        animation: shine 3s infinite;
+    }
+    @keyframes shine {
+        0% { left: -100%; }
+        20% { left: 100%; }
+        100% { left: 100%; }
+    }
+
+    .status-dot-blink {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: currentColor;
+        animation: blink 1.5s infinite;
+    }
+    @keyframes blink {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.4; transform: scale(0.8); }
     }
     @media (max-width: 991px) {
         .order-detail-grid {
             grid-template-columns: 1fr !important;
         }
     }
+    /* Status Specific Colors */
+    .status-badge.pending { --badge-bg: #fff8eb; --badge-text: #a16207; }
+    .status-badge.approved { --badge-bg: #e0f2fe; --badge-text: #0369a1; }
+    .status-badge.processing { --badge-bg: #f3e8ff; --badge-text: #7e22ce; }
+    .status-badge.shipped { --badge-bg: #e0f2fe; --badge-text: #0d6efd; }
+    .status-badge.delivered { --badge-bg: #dcfce7; --badge-text: #166534; }
+    .status-badge.cancelled { --badge-bg: #fee2e2; --badge-text: #991b1b; }
+
+    [data-theme="dark"] .status-badge.pending { --badge-bg: rgba(245, 158, 11, 0.15); --badge-text: #fbbf24; }
+    [data-theme="dark"] .status-badge.approved { --badge-bg: rgba(14, 165, 233, 0.15); --badge-text: #38bdf8; }
+    [data-theme="dark"] .status-badge.processing { --badge-bg: rgba(168, 85, 247, 0.15); --badge-text: #c084fc; }
+    [data-theme="dark"] .status-badge.shipped { --badge-bg: rgba(59, 130, 246, 0.15); --badge-text: #60a5fa; }
+    [data-theme="dark"] .status-badge.delivered { --badge-bg: rgba(16, 185, 129, 0.15); --badge-text: #34d399; }
+    [data-theme="dark"] .status-badge.cancelled { --badge-bg: rgba(239, 68, 68, 0.15); --badge-text: #f87171; }
 </style>
 
 <div class="dashboard-container">
@@ -239,17 +322,9 @@
                                     'shipped' => 'shipped',
                                     default => 'pending',
                                 };
-                                $statusColors = [
-                                    'pending' => ['bg' => '#fff8eb', 'color' => '#a16207'],
-                                    'approved' => ['bg' => '#e0f2fe', 'color' => '#0369a1'],
-                                    'processing' => ['bg' => '#f3e8ff', 'color' => '#7e22ce'],
-                                    'shipped' => ['bg' => '#e7f0ff', 'color' => '#0d6efd'],
-                                    'delivered' => ['bg' => '#dcfce7', 'color' => '#166534'],
-                                    'cancelled' => ['bg' => '#fee2e2', 'color' => '#991b1b'],
-                                ];
-                                $sc = $statusColors[$statusClass] ?? $statusColors['pending'];
                             @endphp
-                            <span style="padding: 6px 16px; border-radius: 20px; background: var(--badge-bg, {{ $sc['bg'] }}); color: var(--badge-text, {{ $sc['color'] }}); font-weight: 700; font-size: 13px;">
+                            <span class="status-badge {{ $statusClass }}">
+                                <span class="status-dot-blink"></span>
                                 {{ ucfirst($order->status) }}
                             </span>
                         </div>
@@ -322,41 +397,54 @@
                         </div>
                         <div class="detail-card-body">
                             @php
-                                $statuses = ['pending', 'approved', 'processing', 'shipped', 'delivered'];
-                                $currentIndex = array_search($order->status, $statuses);
+                                $statuses = [
+                                    ['key' => 'pending', 'icon' => 'fa-clock'],
+                                    ['key' => 'approved', 'icon' => 'fa-check-to-slot'],
+                                    ['key' => 'processing', 'icon' => 'fa-gears'],
+                                    ['key' => 'shipped', 'icon' => 'fa-truck-fast'],
+                                    ['key' => 'delivered', 'icon' => 'fa-house-circle-check']
+                                ];
+                                $statusKeys = array_column($statuses, 'key');
+                                $currentIndex = array_search($order->status, $statusKeys);
                                 if ($currentIndex === false) $currentIndex = -1;
-                                $isCancelled = $order->status === 'cancelled';
+                                $isCancelled = in_array($order->status, ['cancelled', 'canceled']);
                             @endphp
                             <div class="status-timeline">
                                 @foreach($statuses as $i => $st)
                                     <div class="timeline-step">
                                         @if($isCancelled)
-                                            <div class="timeline-dot inactive"><i class="fa-solid fa-circle"></i></div>
-                                            <div class="timeline-line" style="background: #e2e8f0;"></div>
+                                            <div class="timeline-dot inactive"><i class="fa-solid {{ $st['icon'] }}"></i></div>
+                                            <div class="timeline-line"></div>
                                         @elseif($i < $currentIndex)
                                             <div class="timeline-dot completed"><i class="fa-solid fa-check"></i></div>
-                                            <div class="timeline-line" style="background: #16a34a;"></div>
+                                            <div class="timeline-line active"></div>
                                         @elseif($i === $currentIndex)
-                                            <div class="timeline-dot active"><i class="fa-solid fa-circle"></i></div>
-                                            <div class="timeline-line" style="background: #e2e8f0;"></div>
+                                            <div class="timeline-dot active"><i class="fa-solid {{ $st['icon'] }}"></i></div>
+                                            <div class="timeline-line"></div>
                                         @else
-                                            <div class="timeline-dot inactive"><i class="fa-solid fa-circle"></i></div>
-                                            <div class="timeline-line" style="background: #e2e8f0;"></div>
+                                            <div class="timeline-dot inactive"><i class="fa-solid {{ $st['icon'] }}"></i></div>
+                                            <div class="timeline-line"></div>
                                         @endif
                                         <div class="timeline-content">
-                                            <h4 style="{{ $i <= $currentIndex && !$isCancelled ? 'color: var(--text-primary, #0f172a);' : 'color: var(--text-muted, #cbd5e1);' }}">{{ ucfirst($st) }}</h4>
+                                            <h4 style="{{ $i <= $currentIndex && !$isCancelled ? 'color: var(--text-primary, #0f172a);' : 'color: var(--text-muted, #94a3b8);' }}">
+                                                {{ ucfirst($st['key']) }}
+                                            </h4>
                                             @if($i === $currentIndex && !$isCancelled)
-                                                <p style="color: var(--primary, #3b82f6); font-weight: 600;">Current Status</p>
+                                                <p style="color: var(--primary, #3b82f6); font-weight: 600;">Current Phase</p>
+                                            @elseif($i < $currentIndex)
+                                                <p style="color: #16a34a; opacity: 0.8;">Completed</p>
+                                            @else
+                                                <p style="color: var(--text-muted, #94a3b8); opacity: 0.6;">Upcoming</p>
                                             @endif
                                         </div>
                                     </div>
                                 @endforeach
                                 @if($isCancelled)
                                     <div class="timeline-step">
-                                        <div class="timeline-dot" style="background: #dc2626; color: white;"><i class="fa-solid fa-times"></i></div>
+                                        <div class="timeline-dot" style="background: #dc2626; color: white; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);"><i class="fa-solid fa-xmark"></i></div>
                                         <div class="timeline-content">
                                             <h4 style="color: #dc2626;">Cancelled</h4>
-                                            <p style="color: #dc2626; font-weight: 600;">Order was cancelled</p>
+                                            <p style="color: #ef4444; font-weight: 600;">Order Termination</p>
                                         </div>
                                     </div>
                                 @endif
