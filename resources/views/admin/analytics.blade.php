@@ -422,6 +422,25 @@
         }
     }
 
+    @media (max-width: 991px) {
+        .admin-main {
+            padding: 20px 15px !important;
+            width: 100% !important;
+            margin-left: 0 !important;
+            overflow-x: hidden;
+        }
+        .analytics-main-grid {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .analytics-left, .analytics-right {
+            width: 100%;
+            gap: 20px;
+        }
+    }
+
     @media (max-width: 768px) {
         .stats-grid {
             grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -435,32 +454,20 @@
 
     @media (max-width: 480px) {
         .chart-box {
-            padding: 10px;
-            height: 280px;
+            padding: 15px;
+            height: 300px;
         }
         .action-header-premium {
-            padding: 15px;
+            padding: 15px 20px;
             flex-direction: column;
             align-items: flex-start;
             gap: 10px;
         }
-        .engagement-grid {
-            padding: 10px;
-        }
         .analytics-main-grid {
             margin-top: 15px;
         }
-    }
-
-    /* Fixed alignment for mobile */
-    @media (max-width: 991px) {
-        .admin-main {
-            padding: 15px !important;
-            width: 100vw !important;
-            overflow-x: hidden;
-        }
-        .analytics-main-grid {
-            width: 100%;
+        .stat-card {
+            padding: 20px;
         }
     }
 </style>
