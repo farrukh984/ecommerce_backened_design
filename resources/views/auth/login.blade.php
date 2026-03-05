@@ -3,23 +3,24 @@
 @section('title', 'Login')
 
 @section('content')
-<div class="split-auth-container">
-    <div class="auth-left">
-        <div class="visual-art">
-            <div class="circle c1"></div>
-            <div class="circle c2"></div>
+<div class="split-auth-container reverse">
+    {{-- RIGHT SIDE: BRAND SHOWCASE WITH IMAGE --}}
+    <div class="auth-right-panel">
+        <div class="panel-img-wrap">
+            <img src="{{ asset('images/auth-showcase.png') }}" onerror="this.src='https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&q=80&w=1000'" alt="Showcase">
         </div>
         <div class="brand-showcase">
             <h1 class="brand-logo"><i class="fa-solid fa-bag-shopping"></i> ShopBrand.</h1>
             <div class="showcase-content">
-                <h2 class="gs-reveal">Welcome Back!</h2>
-                <p class="gs-reveal">Access your account and explore the latest premium trends and exclusive deals curated for you.</p>
+                <h2 class="gs-reveal">Elevate Your<br>Shopping.</h2>
+                <p class="gs-reveal">Join our exclusive community and access premium products with institutional security and breathtaking design.</p>
             </div>
             <p class="copyright">© 2026 ShopBrand Inc. All rights reserved.</p>
         </div>
     </div>
     
-    <div class="auth-right">
+    {{-- LEFT SIDE: LOGIN FORM --}}
+    <div class="auth-left">
         <div class="auth-form-wrapper">
             <div class="mobile-brand">
                 <i class="fa-solid fa-bag-shopping"></i> ShopBrand.
@@ -27,7 +28,7 @@
             
             <div class="form-header">
                 <h3 class="gs-reveal">Sign In</h3>
-                <p class="gs-reveal">Enter your credentials to access your dashboard.</p>
+                <p class="gs-reveal">Welcome back! Please enter your details.</p>
             </div>
 
             <!-- Alert Messages -->
@@ -63,7 +64,7 @@
                         <input type="password" name="password" id="password" placeholder=" " required>
                         <span class="icon"><i class="fa-solid fa-lock"></i></span>
                         <label for="password">Password</label>
-                        <i class="fa-regular fa-eye toggle-password"></i>
+                        <i class="fa-regular fa-eye toggle-password" onclick="togglePass('password', this)"></i>
                     </div>
                 </div>
 
@@ -78,7 +79,7 @@
 
                 <button type="submit" class="btn-submit gs-reveal">
                     <span>Login Securely</span>
-                    <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                    <i class="fa-solid fa-shield-check"></i>
                 </button>
 
                 <div class="divider gs-reveal">
@@ -87,10 +88,12 @@
 
                 <div class="social-buttons gs-reveal">
                     <a href="{{ route('google.redirect') }}" class="btn-social">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_Logo.svg" alt="Google" width="18"> Google
+                        <img src="https://www.gstatic.com/images/branding/product/2x/googleg_48dp.png" alt="Google" width="20"> 
+                        <span>Google</span>
                     </a>
                     <a href="{{ route('facebook.redirect') }}" class="btn-social">
-                        <i class="fa-brands fa-facebook" style="color: #1877f2; font-size: 20px;"></i> Facebook
+                        <i class="fa-brands fa-facebook" style="color: #1877f2; font-size: 20px;"></i> 
+                        <span>Facebook</span>
                     </a>
                 </div>
             </form>
@@ -105,40 +108,41 @@
 
 @section('scripts')
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Toggle Password
-        document.querySelector('.toggle-password').addEventListener('click', function() {
-            const input = document.getElementById('password');
-            const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
-            input.setAttribute('type', type);
-            this.classList.toggle('fa-eye');
-            this.classList.toggle('fa-eye-slash');
-        });
+    function togglePass(id, el) {
+        const input = document.getElementById(id);
+        if (input.type === 'password') {
+            input.type = 'text';
+            el.classList.replace('fa-eye', 'fa-eye-slash');
+        } else {
+            input.type = 'password';
+            el.classList.replace('fa-eye-slash', 'fa-eye');
+        }
+    }
 
+    document.addEventListener('DOMContentLoaded', function() {
         // GSAP Animations
         gsap.from(".split-auth-container", {
             opacity: 0,
-            y: 30,
-            duration: 1,
+            y: 40,
+            duration: 1.2,
             ease: "expo.out"
         });
 
         gsap.from(".gs-reveal", {
             opacity: 0,
             y: 20,
-            stagger: 0.1,
+            stagger: 0.08,
             duration: 0.8,
             ease: "power2.out",
-            delay: 0.3
+            delay: 0.4
         });
 
-        // Interactive button effect
-        const btn = document.querySelector('.btn-submit');
-        btn.addEventListener('mouseenter', () => {
-            gsap.to(btn.querySelector('i'), { x: 5, duration: 0.3 });
-        });
-        btn.addEventListener('mouseleave', () => {
-            gsap.to(btn.querySelector('i'), { x: 0, duration: 0.3 });
+        gsap.from(".auth-right-panel", {
+            x: 50,
+            opacity: 0,
+            duration: 1.2,
+            ease: "expo.out",
+            delay: 0.2
         });
     });
 </script>
