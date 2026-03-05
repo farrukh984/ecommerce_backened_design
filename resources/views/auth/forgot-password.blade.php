@@ -7,7 +7,7 @@
     {{-- RIGHT SIDE: BRAND SHOWCASE --}}
     <div class="auth-right-panel">
         <div class="panel-img-wrap">
-            <img src="https://images.unsplash.com/photo-1541345023926-55d6e08bb369?auto=format&fit=crop&q=80&w=1000" alt="Showcase">
+            <img src="https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&q=80&w=1000" alt="Recovery Showcase">
         </div>
         <div class="brand-showcase">
             <h1 class="brand-logo"><i class="fa-solid fa-bag-shopping"></i> ShopBrand.</h1>
