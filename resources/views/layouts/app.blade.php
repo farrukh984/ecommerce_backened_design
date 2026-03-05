@@ -186,11 +186,11 @@
 
     @hasSection('hide_chrome')
     @else
-        <script src="{{ asset('js/sidebars.js') }}"></script>
+        <script src="{{ asset('js/sidebars.js') }}" defer></script>
     @endif
 
     <!-- GSAP for Smooth Animations -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer></script>
 
     @yield('scripts')
 

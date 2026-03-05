@@ -18,8 +18,8 @@
     <link rel="stylesheet" href="{{ asset('css/admin_premium.css') }}">
     
     <!-- GSAP & Chart.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
     
     <!-- Theme JS (before body to prevent flash) -->
     <script src="{{ asset('js/theme.js') }}"></script>
