@@ -3,7 +3,7 @@
 @section('hide_chrome', true)
 
 @section('content')
-<link rel="stylesheet" href="{{ asset('css/user_dashboard.css') }}">
+<link rel="stylesheet" href="{{ asset('css/user_dashboard.css') }}?v={{ time() }}">
 <style>
 /* ══════════════════════════════════════════════════════════
    CHAT PAGE — Dashboard Blue Theme + Dark/Light Mode
@@ -482,8 +482,8 @@ label.ci-icon-btn { /* same styles via class */ }
                 <div class="chat-sidebar-head">
                     <h3>Chats</h3>
                     <div class="chat-sidebar-head-right">
-                        <button class="dm-toggle" id="dmToggle" title="Toggle dark mode">
-                            <i class="fa-solid fa-moon" id="dmIcon"></i>
+                        <button class="dm-toggle theme-toggle" id="dmToggle" title="Toggle dark mode">
+                            <i class="fa-solid fa-moon theme-toggle-icon" id="dmIcon"></i>
                         </button>
                         <a href="#" class="cs-icon-btn new-btn" onclick="event.preventDefault();startNewChat();">
                             <i class="fa-solid fa-plus"></i> New
@@ -647,11 +647,11 @@ label.ci-icon-btn { /* same styles via class */ }
                     </form>
                 </div>
 
-            @else
+        @else
                 <div class="chat-window">
                     <div class="chat-head" style="justify-content:flex-end;">
-                        <button class="ch-head-btn" id="dmToggle2" onclick="toggleDark()" title="Toggle dark mode" style="background:rgba(255,255,255,0.15);color:#fff;border:none;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;">
-                            <i class="fa-solid fa-moon" id="dmIcon2"></i>
+                        <button class="ch-head-btn theme-toggle" id="dmToggle2" title="Toggle dark mode" style="background:rgba(255,255,255,0.15);color:#fff;border:none;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;">
+                            <i class="fa-solid fa-moon theme-toggle-icon" id="dmIcon2"></i>
                         </button>
                     </div>
                     <div class="chat-empty">
@@ -670,24 +670,6 @@ label.ci-icon-btn { /* same styles via class */ }
 </div>
 
 <script>
-// ── Dark / Light mode ──────────────────────────────────────
-const container = document.getElementById('chatPageContainer');
-const dmIcon    = document.getElementById('dmIcon');
-const dmIcon2   = document.getElementById('dmIcon2');
-
-function setTheme(dark) {
-    document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
-    localStorage.setItem('chatTheme', dark ? 'dark' : 'light');
-    if (dmIcon)  { dmIcon.className  = dark ? 'fa-solid fa-sun'  : 'fa-solid fa-moon'; }
-    if (dmIcon2) { dmIcon2.className = dark ? 'fa-solid fa-sun'  : 'fa-solid fa-moon'; }
-}
-function toggleDark() {
-    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-    setTheme(!isDark);
-}
-// Load saved preference
-setTheme(localStorage.getItem('chatTheme') === 'dark');
-document.getElementById('dmToggle')?.addEventListener('click', toggleDark);
 
 // ── Mobile sidebar ─────────────────────────────────────────
 function openSidebar() {
