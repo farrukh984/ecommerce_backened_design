@@ -68,6 +68,22 @@ class AppServiceProvider extends ServiceProvider
                         ]);
                     }
                 });
+
+                // User Layout Composer (for chat widget unread count)
+                View::composer('layouts.app', function ($view) {
+                    if (Auth::check()) {
+                        $authId = Auth::id();
+                        $unreadCount = Cache::remember("user_unread_messages_{$authId}", 60, function () use ($authId) {
+                            return Message::where('is_read', false)
+                                ->where('user_id', '!=', $authId)
+                                ->whereHas('conversation', function ($q) use ($authId) {
+                                    $q->where('sender_id', $authId)
+                                      ->orWhere('receiver_id', $authId);
+                                })->count();
+                        });
+                        $view->with('unreadUserCount', $unreadCount);
+                    }
+                });
             }
         } catch (\Throwable $e) {
             // ignore

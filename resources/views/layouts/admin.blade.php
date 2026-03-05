@@ -394,7 +394,12 @@
             const chatFooter = document.getElementById('chatPopupFooter');
             const sendForm = document.getElementById('quickSendMessageForm');
             let currentConvId = null;
+            let currentCuAvatar = '';
+            let currentCuInitial = '';
             let pollingInterval = null;
+
+            const myAvatar = "{{ auth()->user()->profile_image ? display_image(auth()->user()->profile_image) : '' }}";
+            const myInitial = "{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}";
 
             window.triggerOpenConv = openConversation;
 
@@ -442,10 +447,10 @@
                     }
 
                     conversations.forEach(conv => {
-                        const name = conv.querySelector('.conv-name')?.textContent || 'User';
-                        const lastMsg = conv.querySelector('.conv-last-msg')?.textContent || '';
-                        const time = conv.querySelector('.conv-time')?.textContent || '';
-                        const unread = conv.querySelector('.conv-unread-badge')?.textContent || '';
+                        const name = conv.querySelector('.c-name')?.textContent.trim() || 'User';
+                        const lastMsg = conv.querySelector('.c-last')?.textContent.trim() || '';
+                        const time = conv.querySelector('.c-time')?.textContent.trim() || '';
+                        const unread = conv.querySelector('.c-badge')?.textContent.trim() || '';
                         const avatar = conv.querySelector('img')?.src || '';
                         const initial = name.charAt(0).toUpperCase();
                         const href = conv.getAttribute('href');
@@ -469,6 +474,8 @@
 
             function openConversation(id, name, avatar, initial) {
                 currentConvId = id;
+                currentCuAvatar = avatar;
+                currentCuInitial = initial;
                 chatBody.innerHTML = '<div class="loader-container"><div class="chat-loader"></div></div>';
                 chatFooter.style.display = 'block';
                 backBtn.style.display = 'block';
@@ -493,16 +500,27 @@
                 .then(html => {
                     const parser = new DOMParser();
                     const doc = parser.parseFromString(html, 'text/html');
-                    const messages = doc.querySelectorAll('.msg-avatar-group');
+                    const rows = doc.querySelectorAll('.msg-row');
                     chatBody.innerHTML = '';
-                    messages.forEach(msg => {
-                        const isSent = msg.classList.contains('sent');
-                        const text = msg.querySelector('.msg-bubble div:not(.msg-time)')?.textContent || '';
-                        const time = msg.querySelector('.msg-time')?.textContent || '';
-                        const bubble = document.createElement('div');
-                        bubble.className = `q-msg-bubble ${isSent ? 'sent' : 'received'}`;
-                        bubble.innerHTML = `<div>${text}</div><span class="q-msg-time">${time}</span>`;
-                        chatBody.appendChild(bubble);
+                    rows.forEach(row => {
+                        const isSent = row.classList.contains('sent');
+                        const text = row.querySelector('.b-text')?.textContent || row.querySelector('.bubble')?.textContent || '';
+                        const time = row.querySelector('.b-meta')?.textContent || '';
+                        
+                        const avHtml = isSent 
+                            ? (myAvatar ? `<img src="${myAvatar}" class="q-sub-avatar">` : `<div class="q-sub-avatar-ph">${myInitial}</div>`)
+                            : (currentCuAvatar ? `<img src="${currentCuAvatar}" class="q-sub-avatar">` : `<div class="q-sub-avatar-ph">${currentCuInitial}</div>`);
+
+                        const msgRow = document.createElement('div');
+                        msgRow.className = `q-msg-row ${isSent ? 'sent' : 'received'}`;
+                        
+                        let inner = '';
+                        if(!isSent) inner += avHtml;
+                        inner += `<div class="q-msg-bubble ${isSent ? 'sent' : 'received'}"><div>${text}</div><span class="q-msg-time">${time}</span></div>`;
+                        if(isSent) inner += avHtml;
+                        
+                        msgRow.innerHTML = inner;
+                        chatBody.appendChild(msgRow);
                     });
                     chatBody.scrollTop = chatBody.scrollHeight;
                 });
@@ -516,10 +534,21 @@
                         data.messages.forEach(msg => {
                             const isSent = msg.user_id == {{ auth()->id() }};
                             const time = new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                            const bubble = document.createElement('div');
-                            bubble.className = `q-msg-bubble ${isSent ? 'sent' : 'received'}`;
-                            bubble.innerHTML = `<div>${msg.message}</div><span class="q-msg-time">${time}</span>`;
-                            chatBody.appendChild(bubble);
+                            
+                            const avHtml = isSent 
+                                ? (myAvatar ? `<img src="${myAvatar}" class="q-sub-avatar">` : `<div class="q-sub-avatar-ph">${myInitial}</div>`)
+                                : (currentCuAvatar ? `<img src="${currentCuAvatar}" class="q-sub-avatar">` : `<div class="q-sub-avatar-ph">${currentCuInitial}</div>`);
+
+                            const msgRow = document.createElement('div');
+                            msgRow.className = `q-msg-row ${isSent ? 'sent' : 'received'}`;
+                            
+                            let inner = '';
+                            if(!isSent) inner += avHtml;
+                            inner += `<div class="q-msg-bubble ${isSent ? 'sent' : 'received'}"><div>${msg.message}</div><span class="q-msg-time">${time}</span></div>`;
+                            if(isSent) inner += avHtml;
+                            
+                            msgRow.innerHTML = inner;
+                            chatBody.appendChild(msgRow);
                         });
                         chatBody.scrollTop = chatBody.scrollHeight;
                     }
@@ -542,10 +571,11 @@
                 .then(data => {
                     if (data.status === 'success') {
                         const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                        const bubble = document.createElement('div');
-                        bubble.className = 'q-msg-bubble sent';
-                        bubble.innerHTML = `<div>${msg}</div><span class="q-msg-time">${time}</span>`;
-                        chatBody.appendChild(bubble);
+                        const avHtml = myAvatar ? `<img src="${myAvatar}" class="q-sub-avatar">` : `<div class="q-sub-avatar-ph">${myInitial}</div>`;
+                        const msgRow = document.createElement('div');
+                        msgRow.className = 'q-msg-row sent';
+                        msgRow.innerHTML = `<div class="q-msg-bubble sent"><div>${msg}</div><span class="q-msg-time">${time}</span></div>${avHtml}`;
+                        chatBody.appendChild(msgRow);
                         chatBody.scrollTop = chatBody.scrollHeight;
                     }
                 });

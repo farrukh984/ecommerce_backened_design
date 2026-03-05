@@ -107,19 +107,36 @@
 
             <div class="msgs-area" id="msgsArea">
                 @foreach($messages as $msg)
-                    <div class="msg-row {{ $msg->user_id===auth()->id()?'sent':'received' }}">
-                        <div id="msg-{{ $msg->id }}" class="bubble {{ $msg->user_id===auth()->id()?'sent':'received' }}">
+                    @php $isMe = $msg->user_id===auth()->id(); @endphp
+                    <div class="msg-row {{ $isMe ? 'sent' : 'received' }}">
+                        @if(!$isMe)
+                            @if($cu->profile_image)
+                                <img src="{{ display_image($cu->profile_image) }}" class="m-avatar">
+                            @else
+                                <div class="m-avatar-ph">{{ strtoupper(substr($cu->name,0,1)) }}</div>
+                            @endif
+                        @endif
+
+                        <div id="msg-{{ $msg->id }}" class="bubble {{ $isMe ? 'sent' : 'received' }}">
                             @if($msg->type==='image'&&$msg->file_path)
                                 <img src="{{ display_image($msg->file_path) }}" class="b-img" onclick="window.open(this.src)">
                             @endif
                             @if($msg->message)<span class="b-text">{{ $msg->message }}</span>@endif
                             <span class="b-meta">
                                 {{ $msg->created_at->format('g:i a') }}
-                                @if($msg->user_id===auth()->id())
+                                @if($isMe)
                                     <i class="fa-solid fa-check-double {{ $msg->is_read?'read':'' }}"></i>
                                 @endif
                             </span>
                         </div>
+
+                        @if($isMe)
+                            @if(auth()->user()->profile_image)
+                                <img src="{{ display_image(auth()->user()->profile_image) }}" class="m-avatar">
+                            @else
+                                <div class="m-avatar-ph">{{ strtoupper(substr(auth()->user()->name,0,1)) }}</div>
+                            @endif
+                        @endif
                     </div>
                 @endforeach
                 <div class="typing-row" id="typingRow">
@@ -280,6 +297,7 @@ let curCat = null;
                 const st=inp.selectionStart,en=inp.selectionEnd;
                 inp.value=inp.value.slice(0,st)+e+inp.value.slice(en);
                 inp.focus(); inp.setSelectionRange(st+e.length,st+e.length);
+                panel.classList.remove('open');
             };
             grid.appendChild(b);
         });
@@ -309,12 +327,28 @@ setInterval(()=>{
         (data.messages||[]).forEach(msg=>{
             if(document.getElementById('msg-'+msg.id)) return;
             const sent=msg.user_id==={{ auth()->id() }};
+            const myAv ="{{ auth()->user()->profile_image ? display_image(auth()->user()->profile_image) : '' }}";
+            const myIn ="{{ strtoupper(substr(auth()->user()->name,0,1)) }}";
+            const cuAv ="{{ $cu->profile_image ? display_image($cu->profile_image) : '' }}";
+            const cuIn ="{{ strtoupper(substr($cu->name,0,1)) }}";
+
             let c='';
             if(msg.type==='image'&&msg.file_path){ const u=msg.file_path.includes('http')?msg.file_path:'/storage/'+msg.file_path; c+=`<img src="${u}" class="b-img" onclick="window.open(this.src)">`; }
             if(msg.message) c+=`<span class="b-text">${msg.message}</span>`;
+            
             const t=new Date(msg.created_at).toLocaleTimeString([],{hour:'numeric',minute:'2-digit',hour12:true});
             const ri=sent?`<i class="fa-solid fa-check-double ${msg.is_read?'read':''}"></i>`:'';
-            const html=`<div class="msg-row ${sent?'sent':'received'}"><div id="msg-${msg.id}" class="bubble ${sent?'sent':'received'}">${c}<span class="b-meta">${t} ${ri}</span></div></div>`;
+            
+            const avHtml = sent 
+                ? (myAv ? `<img src="${myAv}" class="m-avatar">` : `<div class="m-avatar-ph">${myIn}</div>`)
+                : (cuAv ? `<img src="${cuAv}" class="m-avatar">` : `<div class="m-avatar-ph">${cuIn}</div>`);
+
+            let inner = '';
+            if(!sent) inner += avHtml;
+            inner += `<div id="msg-${msg.id}" class="bubble ${sent?'sent':'received'}">${c}<span class="b-meta">${t} ${ri}</span></div>`;
+            if(sent) inner += avHtml;
+
+            const html=`<div class="msg-row ${sent?'sent':'received'}">${inner}</div>`;
             document.getElementById('typingRow').insertAdjacentHTML('beforebegin',html);
             if(msg.id>lastId) lastId=msg.id;
         });

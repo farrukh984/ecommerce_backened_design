@@ -184,6 +184,41 @@
     [data-theme="dark"] :root {
         --glass-bg: rgba(30, 41, 59, 0.7);
         --glass-border: rgba(255, 255, 255, 0.1);
+        --admin-border: #334155;
+    }
+
+    /* Support for dark mode text clarity */
+    [data-theme="dark"] .performer-name,
+    [data-theme="dark"] .engagement-name,
+    [data-theme="dark"] .header-info h2 {
+        color: #f1f5f9 !important;
+    }
+
+    [data-theme="dark"] .performer-meta,
+    [data-theme="dark"] .engagement-msg,
+    [data-theme="dark"] .header-info p {
+        color: #94a3b8 !important;
+    }
+
+    [data-theme="dark"] .stat-card,
+    [data-theme="dark"] .premium-card {
+        background: #1e293b !important;
+        border-color: #334155 !important;
+    }
+
+    [data-theme="dark"] .action-header-premium {
+        background: #1a2332 !important;
+        border-bottom-color: #334155 !important;
+    }
+
+    [data-theme="dark"] .performer-item,
+    [data-theme="dark"] .engagement-card {
+        border-color: #334155 !important;
+    }
+
+    [data-theme="dark"] .performer-item:hover,
+    [data-theme="dark"] .engagement-card:hover {
+        background: rgba(255, 255, 255, 0.03) !important;
     }
 
     .analytics-main-grid {
@@ -306,8 +341,8 @@
         font-size: 13px;
     }
 
-    .performer-name { font-weight: 700; color: #1e293b; font-size: 14px; margin-bottom: 2px; }
-    .performer-meta { font-size: 12px; color: #64748b; font-weight: 500; }
+    .performer-name { font-weight: 700; color: var(--admin-text, #1e293b); font-size: 14px; margin-bottom: 2px; }
+    .performer-meta { font-size: 12px; color: var(--admin-text-sub, #64748b); font-weight: 500; }
 
     /* Engagement Section Styles */
     .engagement-grid {
@@ -368,9 +403,9 @@
     }
 
     .engagement-details { flex: 1; min-width: 0; }
-    .engagement-name { font-weight: 800; font-size: 14px; color: #1e293b; margin-bottom: 2px; }
-    .engagement-msg { font-size: 12px; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; }
-    .engagement-time { font-size: 10px; color: #94a3b8; margin-top: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    .engagement-name { font-weight: 800; font-size: 14px; color: var(--admin-text, #1e293b); margin-bottom: 2px; }
+    .engagement-msg { font-size: 12px; color: var(--admin-text-sub, #64748b); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; }
+    .engagement-time { font-size: 10px; color: var(--admin-text-sub, #94a3b8); margin-top: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
 
     .engagement-action { color: #cbd5e1; font-size: 12px; }
 
@@ -381,7 +416,52 @@
     .bg-emerald { background: #d1fae5; color: #059669; }
 
     @media (max-width: 1200px) {
-        .analytics-main-grid { grid-template-columns: 1fr; }
+        .analytics-main-grid { 
+            grid-template-columns: 1fr; 
+            gap: 20px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .stats-grid {
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+        }
+        .engagement-grid {
+            padding: 15px;
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .chart-box {
+            padding: 10px;
+            height: 280px;
+        }
+        .action-header-premium {
+            padding: 15px;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        .engagement-grid {
+            padding: 10px;
+        }
+        .analytics-main-grid {
+            margin-top: 15px;
+        }
+    }
+
+    /* Fixed alignment for mobile */
+    @media (max-width: 991px) {
+        .admin-main {
+            padding: 15px !important;
+            width: 100vw !important;
+            overflow-x: hidden;
+        }
+        .analytics-main-grid {
+            width: 100%;
+        }
     }
 </style>
 @endsection

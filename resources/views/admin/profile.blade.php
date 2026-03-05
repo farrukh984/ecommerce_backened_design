@@ -316,6 +316,43 @@
     .alert-success { background: var(--success-bg, #f0fdf4); color: var(--success-text, #166534); border: 1px solid var(--success-border, #bbf7d0); }
     .alert-danger { background: var(--danger-bg, #fef2f2); color: var(--danger, #991b1b); border: 1px solid var(--danger-border, #fecaca); }
 
+    /* Dark Mode Overrides */
+    [data-theme="dark"] .metrics-sidebar,
+    [data-theme="dark"] .strength-card,
+    [data-theme="dark"] .status-item,
+    [data-theme="dark"] .security-info-box {
+        background: #1a2332 !important;
+        border-color: #334155 !important;
+    }
+    
+    [data-theme="dark"] .avatar-wrapper {
+        border-color: #1a2332 !important;
+        background: #1e293b !important;
+    }
+    
+    [data-theme="dark"] .avatar-placeholder {
+        background: #1a2332;
+    }
+
+    [data-theme="dark"] .basic-info-icon { background: rgba(79, 70, 229, 0.15); color: #818cf8; }
+    [data-theme="dark"] .address-icon { background: rgba(16, 185, 129, 0.15); color: #4ade80; }
+    [data-theme="dark"] .security-icon { background: rgba(239, 68, 68, 0.15); color: #fb7185; }
+    
+    [data-theme="dark"] .password-notice {
+        background: rgba(245, 158, 11, 0.1);
+        border-color: rgba(245, 158, 11, 0.2);
+        color: #fbbf24;
+    }
+
+    [data-theme="dark"] .change-cover-btn {
+        background: #1e293b;
+        color: #f1f5f9;
+        border: 1px solid #334155;
+    }
+
+    [data-theme="dark"] .alert-success { background: rgba(22, 101, 52, 0.1); color: #4ade80; border-color: rgba(22, 101, 52, 0.2); }
+    [data-theme="dark"] .alert-danger { background: rgba(153, 27, 27, 0.1); color: #fb7185; border-color: rgba(153, 27, 27, 0.2); }
+
     @media (max-width: 991px) {
         .profile-grid { grid-template-columns: 1fr; }
         .metrics-sidebar { position: static; margin-top: 20px; }

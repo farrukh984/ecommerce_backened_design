@@ -192,8 +192,258 @@
         <script src="{{ asset('js/sidebars.js') }}" defer></script>
     @endif
 
+    @auth
+    <!-- Premium Floating Chat Widget -->
+    <div class="admin-chat-widget">
+        <!-- Floating Toggle Button -->
+        <button class="chat-launcher" id="chatLauncher">
+            <div class="launcher-icon">
+                <i class="fa-solid fa-comment-dots"></i>
+            </div>
+            @if(isset($unreadUserCount) && $unreadUserCount > 0)
+                <span class="unread-badge pulse" id="quickUnreadBadge">{{ $unreadUserCount }}</span>
+            @endif
+        </button>
+
+        <!-- Chat Window -->
+        <div class="chat-popup" id="chatPopup">
+            <div class="chat-popup-header">
+                <div class="user-status">
+                    <div class="status-avatar" id="quickChatAvatar">
+                        <i class="fa-solid fa-headset"></i>
+                    </div>
+                    <div class="status-info">
+                        <h4 id="chatPopupTitle">Support Chat</h4>
+                        <p><span class="online-indicator"></span><span id="chatPopupSub">Active Now</span></p>
+                    </div>
+                </div>
+                <div class="chat-actions">
+                    <button id="backToConversations" style="display: none;"><i class="fa-solid fa-chevron-left"></i></button>
+                    <a href="{{ route('user.messages') }}" title="Open Full Inbox"><i class="fa-solid fa-expand"></i></a>
+                    <button id="closeChat"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+            </div>
+            
+            <div class="chat-popup-body" id="quickChatBody">
+                <div class="loader-container">
+                    <div class="chat-loader"></div>
+                </div>
+            </div>
+
+            <div class="chat-popup-footer" id="chatPopupFooter" style="display: none;">
+                <form id="quickSendMessageForm">
+                    @csrf
+                    <input type="hidden" id="quickConvId" name="conversation_id">
+                    <input type="text" placeholder="Type a message..." id="quickMsgInput" name="message" autocomplete="off">
+                    <button type="submit"><i class="fa-solid fa-paper-plane"></i></button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <link rel="stylesheet" href="{{ asset('css/admin_chat_widget.css') }}">
+    @endauth
+
     <!-- GSAP for Smooth Animations -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer></script>
+
+    @auth
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const chatLauncher = document.getElementById('chatLauncher');
+            const chatPopup = document.getElementById('chatPopup');
+            const closeChat = document.getElementById('closeChat');
+            const backBtn = document.getElementById('backToConversations');
+            const chatBody = document.getElementById('quickChatBody');
+            const chatFooter = document.getElementById('chatPopupFooter');
+            const sendForm = document.getElementById('quickSendMessageForm');
+            let currentConvId = null;
+            let currentCuAvatar = '';
+            let currentCuInitial = '';
+            let pollingInterval = null;
+
+            const myAvatar = "{{ auth()->user()->profile_image ? display_image(auth()->user()->profile_image) : '' }}";
+            const myInitial = "{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}";
+
+            chatLauncher?.addEventListener('click', () => {
+                const isActive = chatPopup.style.display === 'flex';
+                if (!isActive) {
+                    gsap.set(chatPopup, { display: 'flex', opacity: 0, scale: 0.8, y: 50 });
+                    gsap.to(chatPopup, { opacity: 1, scale: 1, y: 0, duration: 0.5, ease: "back.out(1.7)" });
+                    loadConversations();
+                } else {
+                    closeChatAction();
+                }
+            });
+
+            closeChat?.addEventListener('click', closeChatAction);
+
+            function closeChatAction() {
+                gsap.to(chatPopup, { opacity: 0, scale: 0.8, y: 50, duration: 0.3, onComplete: () => {
+                    chatPopup.style.display = 'none';
+                    clearInterval(pollingInterval);
+                }});
+            }
+
+            function loadConversations() {
+                currentConvId = null;
+                clearInterval(pollingInterval);
+                chatBody.innerHTML = '<div class="loader-container"><div class="chat-loader"></div></div>';
+                chatFooter.style.display = 'none';
+                backBtn.style.display = 'none';
+                document.getElementById('chatPopupTitle').textContent = 'Support Chat';
+                document.getElementById('chatPopupSub').textContent = 'Active Now';
+                document.getElementById('quickChatAvatar').innerHTML = '<i class="fa-solid fa-headset"></i>';
+
+                fetch('{{ route("user.messages") }}', { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                .then(r => r.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const conversations = doc.querySelectorAll('.conv-item');
+                    
+                    chatBody.innerHTML = '';
+                    if (conversations.length === 0) {
+                        chatBody.innerHTML = '<div class="loader-container"><p style="font-size: 13px; color: #94a3b8;">No messages yet</p></div>';
+                        return;
+                    }
+
+                    conversations.forEach(conv => {
+                        const name = conv.querySelector('.c-name')?.textContent.trim() || 'Admin';
+                        const lastMsg = conv.querySelector('.c-last')?.textContent.trim() || '';
+                        const time = conv.querySelector('.c-time')?.textContent.trim() || '';
+                        const unread = conv.querySelector('.c-badge')?.textContent.trim() || '';
+                        const avatar = conv.querySelector('img')?.src || '';
+                        const initial = name.charAt(0).toUpperCase();
+                        const href = conv.getAttribute('href');
+                        const id = href.substring(href.lastIndexOf('/') + 1);
+
+                        const item = document.createElement('div');
+                        item.className = 'q-conv-item';
+                        item.innerHTML = `
+                            ${avatar ? `<img src="${avatar}" class="q-avatar">` : `<div class="q-avatar-placeholder">${initial}</div>`}
+                            <div class="q-info">
+                                <div class="q-name"><span>${name}</span><span style="font-size:10px; opacity:0.6;">${time}</span></div>
+                                <div class="q-msg">${lastMsg}</div>
+                            </div>
+                            ${unread ? `<div class="q-badge">${unread}</div>` : ''}
+                        `;
+                        item.onclick = () => openConversation(id, name, avatar, initial);
+                        chatBody.appendChild(item);
+                    });
+                });
+            }
+
+            function openConversation(id, name, avatar, initial) {
+                currentConvId = id;
+                currentCuAvatar = avatar;
+                currentCuInitial = initial;
+                chatBody.innerHTML = '<div class="loader-container"><div class="chat-loader"></div></div>';
+                chatFooter.style.display = 'block';
+                backBtn.style.display = 'block';
+                document.getElementById('chatPopupTitle').textContent = name;
+                document.getElementById('quickConvId').value = id;
+                
+                if (avatar) {
+                    document.getElementById('quickChatAvatar').innerHTML = `<img src="${avatar}">`;
+                } else {
+                    document.getElementById('quickChatAvatar').innerHTML = `<div class="q-avatar-placeholder" style="width:100%; height:100%; border-radius:0;">${initial}</div>`;
+                }
+
+                loadMessages(id);
+                pollingInterval = setInterval(() => pollMessages(id), 4000);
+            }
+
+            backBtn?.addEventListener('click', loadConversations);
+
+            function loadMessages(id) {
+                fetch(`{{ url('dashboard/messages') }}/${id}`, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                .then(r => r.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const rows = doc.querySelectorAll('.msg-row');
+                    chatBody.innerHTML = '';
+                    rows.forEach(row => {
+                        const isSent = row.classList.contains('sent');
+                        const text = row.querySelector('.b-text')?.textContent || row.querySelector('.bubble')?.textContent || '';
+                        const time = row.querySelector('.b-meta')?.textContent || '';
+                        
+                        const avHtml = isSent 
+                            ? (myAvatar ? `<img src="${myAvatar}" class="q-sub-avatar">` : `<div class="q-sub-avatar-ph">${myInitial}</div>`)
+                            : (currentCuAvatar ? `<img src="${currentCuAvatar}" class="q-sub-avatar">` : `<div class="q-sub-avatar-ph">${currentCuInitial}</div>`);
+
+                        const msgRow = document.createElement('div');
+                        msgRow.className = `q-msg-row ${isSent ? 'sent' : 'received'}`;
+                        
+                        let inner = '';
+                        if(!isSent) inner += avHtml;
+                        inner += `<div class="q-msg-bubble ${isSent ? 'sent' : 'received'}"><div>${text}</div><span class="q-msg-time">${time}</span></div>`;
+                        if(isSent) inner += avHtml;
+                        
+                        msgRow.innerHTML = inner;
+                        chatBody.appendChild(msgRow);
+                    });
+                    chatBody.scrollTop = chatBody.scrollHeight;
+                });
+            }
+
+            function pollMessages(id) {
+                fetch(`{{ url('dashboard/messages') }}/${id}/poll`, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.messages && data.messages.length > 0) {
+                        data.messages.forEach(msg => {
+                            const isSent = msg.user_id == {{ auth()->id() }};
+                            const time = new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                            
+                            const avHtml = isSent 
+                                ? (myAvatar ? `<img src="${myAvatar}" class="q-sub-avatar">` : `<div class="q-sub-avatar-ph">${myInitial}</div>`)
+                                : (currentCuAvatar ? `<img src="${currentCuAvatar}" class="q-sub-avatar">` : `<div class="q-sub-avatar-ph">${currentCuInitial}</div>`);
+
+                            const msgRow = document.createElement('div');
+                            msgRow.className = `q-msg-row ${isSent ? 'sent' : 'received'}`;
+                            
+                            let inner = '';
+                            if(!isSent) inner += avHtml;
+                            inner += `<div class="q-msg-bubble ${isSent ? 'sent' : 'received'}"><div>${msg.message}</div><span class="q-msg-time">${time}</span></div>`;
+                            if(isSent) inner += avHtml;
+                            
+                            msgRow.innerHTML = inner;
+                            chatBody.appendChild(msgRow);
+                        });
+                        chatBody.scrollTop = chatBody.scrollHeight;
+                    }
+                });
+            }
+
+            sendForm?.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const input = document.getElementById('quickMsgInput');
+                if (!input.value.trim()) return;
+                const msg = input.value;
+                input.value = '';
+
+                fetch('{{ route("user.messages.send") }}', {
+                    method: 'POST',
+                    headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
+                    body: new FormData(sendForm)
+                })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                        const avHtml = myAvatar ? `<img src="${myAvatar}" class="q-sub-avatar">` : `<div class="q-sub-avatar-ph">${myInitial}</div>`;
+                        const msgRow = document.createElement('div');
+                        msgRow.className = 'q-msg-row sent';
+                        msgRow.innerHTML = `<div class="q-msg-bubble sent"><div>${msg}</div><span class="q-msg-time">${time}</span></div>${avHtml}`;
+                        chatBody.appendChild(msgRow);
+                        chatBody.scrollTop = chatBody.scrollHeight;
+                    }
+                });
+            });
+        });
+    </script>
+    @endauth
 
     @yield('scripts')
 

@@ -245,37 +245,49 @@
 /* Messages area */
 .msgs-area {
     flex:1; overflow-y:auto;
-    padding:20px 40px;
-    display:flex; flex-direction:column; gap:4px;
+    padding:20px 15px;
+    display:flex; flex-direction:column; gap:8px;
     min-height:0; scroll-behavior:smooth;
     background: var(--c-chat-bg);
     background-image: radial-gradient(circle at 20% 80%, rgba(79,70,229,0.04) 0%, transparent 50%),
                       radial-gradient(circle at 80% 20%, rgba(14,165,233,0.04) 0%, transparent 50%);
 }
-.msgs-area::-webkit-scrollbar { width:5px; }
+.msgs-area::-webkit-scrollbar { width:6px; }
 .msgs-area::-webkit-scrollbar-thumb { background:var(--c-border); border-radius:10px; }
 
 /* Bubbles */
-.msg-row { display:flex; }
-.msg-row.sent     { justify-content:flex-end; }
-.msg-row.received { justify-content:flex-start; }
+.msg-row { display:flex; align-items:flex-end; gap:10px; max-width:85%; }
+.msg-row.sent     { align-self:flex-end; flex-direction:row; }
+.msg-row.received { align-self:flex-start; }
+
+.m-avatar, .m-avatar-ph {
+    width: 32px; height: 32px; border-radius: 50%;
+    flex-shrink: 0; margin-bottom: 2px;
+}
+.m-avatar { object-fit: cover; border: 1.5px solid var(--c-border); }
+.m-avatar-ph {
+    background: linear-gradient(135deg, #4f46e5, #0ea5e9);
+    color: #fff; display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 13px; border: 1.5px solid rgba(255,255,255,0.2);
+}
+
 .bubble {
-    max-width:65%; padding:9px 12px 5px;
-    border-radius:16px; font-size:14px;
-    line-height:1.55; word-wrap:break-word;
-    position:relative; animation:bubIn 0.2s ease;
+    max-width:100%; padding:10px 14px 6px;
+    border-radius:18px; font-size:14px;
+    line-height:1.5; word-wrap:break-word;
+    position:relative; animation:bubIn 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
 }
 @keyframes bubIn { from{opacity:0;transform:scale(0.94) translateY(6px);} to{opacity:1;transform:scale(1) translateY(0);} }
 .bubble.sent {
     background: var(--c-bubble-me);
     color:#fff; border-bottom-right-radius:4px;
-    box-shadow: 0 3px 12px rgba(14,165,233,0.25);
+    box-shadow: 0 4px 15px rgba(14,165,233,0.2);
 }
 .bubble.received {
     background:var(--c-bubble-them);
     color:var(--c-bubble-them-txt);
     border-bottom-left-radius:4px;
-    box-shadow:0 2px 8px rgba(0,0,0,0.06);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.04);
     border:1px solid var(--c-border);
 }
 .b-text { display:block; margin-right:54px; }
@@ -582,19 +594,36 @@ label.ci-icon-btn { /* same styles via class */ }
                     {{-- Messages --}}
                     <div class="msgs-area" id="msgsArea">
                         @foreach($messages as $msg)
-                            <div class="msg-row {{ $msg->user_id===auth()->id()?'sent':'received' }}">
-                                <div id="msg-{{ $msg->id }}" class="bubble {{ $msg->user_id===auth()->id()?'sent':'received' }}">
+                            @php $isMe = $msg->user_id===auth()->id(); @endphp
+                            <div class="msg-row {{ $isMe ? 'sent' : 'received' }}">
+                                @if(!$isMe)
+                                    @if($cu->profile_image)
+                                        <img src="{{ display_image($cu->profile_image) }}" class="m-avatar">
+                                    @else
+                                        <div class="m-avatar-ph">{{ strtoupper(substr($cu->name,0,1)) }}</div>
+                                    @endif
+                                @endif
+
+                                <div id="msg-{{ $msg->id }}" class="bubble {{ $isMe ? 'sent' : 'received' }}">
                                     @if($msg->type==='image'&&$msg->file_path)
                                         <img src="{{ display_image($msg->file_path) }}" class="b-img" onclick="window.open(this.src)">
                                     @endif
                                     @if($msg->message)<span class="b-text">{{ $msg->message }}</span>@endif
                                     <span class="b-meta">
                                         {{ $msg->created_at->format('g:i a') }}
-                                        @if($msg->user_id===auth()->id())
+                                        @if($isMe)
                                             <i class="fa-solid fa-check-double {{ $msg->is_read?'read':'' }}"></i>
                                         @endif
                                     </span>
                                 </div>
+
+                                @if($isMe)
+                                    @if(auth()->user()->profile_image)
+                                        <img src="{{ display_image(auth()->user()->profile_image) }}" class="m-avatar">
+                                    @else
+                                        <div class="m-avatar-ph">{{ strtoupper(substr(auth()->user()->name,0,1)) }}</div>
+                                    @endif
+                                @endif
                             </div>
                         @endforeach
                         <div class="typing-row" id="typingRow">
@@ -787,7 +816,8 @@ let curCat = null;
                 const inp = document.getElementById('msgInput');
                 const st = inp.selectionStart, en = inp.selectionEnd;
                 inp.value = inp.value.slice(0,st) + e + inp.value.slice(en);
-                inp.focus(); inp.setSelectionRange(st+e.length, st+e.length);
+                inp.focus(); inp.setSelectionRange(st + e.length, st + e.length);
+                panel.classList.remove('open');
             };
             grid.appendChild(b);
         });
@@ -819,6 +849,11 @@ setInterval(()=>{
         (data.messages||[]).forEach(msg=>{
             if(document.getElementById('msg-'+msg.id)) return;
             const sent = msg.user_id === {{ auth()->id() }};
+            const myAv ="{{ auth()->user()->profile_image ? display_image(auth()->user()->profile_image) : '' }}";
+            const myIn ="{{ strtoupper(substr(auth()->user()->name,0,1)) }}";
+            const cuAv ="{{ $cu->profile_image ? display_image($cu->profile_image) : '' }}";
+            const cuIn ="{{ strtoupper(substr($cu->name,0,1)) }}";
+
             let c = '';
             if(msg.type==='image'&&msg.file_path){
                 const u = msg.file_path.includes('http') ? msg.file_path : '/storage/'+msg.file_path;
@@ -827,7 +862,17 @@ setInterval(()=>{
             if(msg.message) c += `<span class="b-text">${msg.message}</span>`;
             const t = new Date(msg.created_at).toLocaleTimeString([],{hour:'numeric',minute:'2-digit',hour12:true});
             const ri = sent ? `<i class="fa-solid fa-check-double ${msg.is_read?'read':''}"></i>` : '';
-            const html = `<div class="msg-row ${sent?'sent':'received'}"><div id="msg-${msg.id}" class="bubble ${sent?'sent':'received'}">${c}<span class="b-meta">${t} ${ri}</span></div></div>`;
+
+            const avHtml = sent 
+                ? (myAv ? `<img src="${myAv}" class="m-avatar">` : `<div class="m-avatar-ph">${myIn}</div>`)
+                : (cuAv ? `<img src="${cuAv}" class="m-avatar">` : `<div class="m-avatar-ph">${cuIn}</div>`);
+
+            let inner = '';
+            if(!sent) inner += avHtml;
+            inner += `<div id="msg-${msg.id}" class="bubble ${sent?'sent':'received'}">${c}<span class="b-meta">${t} ${ri}</span></div>`;
+            if(sent) inner += avHtml;
+
+            const html = `<div class="msg-row ${sent?'sent':'received'}">${inner}</div>`;
             document.getElementById('typingRow').insertAdjacentHTML('beforebegin', html);
             if(msg.id>lastId) lastId=msg.id;
         });

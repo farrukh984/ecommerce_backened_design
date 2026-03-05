@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\AdminOtpMail;
 use App\Mail\Admin\NewUserAlert;
+use App\Mail\LoginAlertMail;
 
 class AuthController extends Controller
 {
@@ -67,6 +68,13 @@ class AuthController extends Controller
             $request->session()->regenerate(); // Security practice
             $this->syncGuestWishlist($request);
 
+            // Send Login Alert Email
+            try {
+                Mail::to($user->email)->send(new LoginAlertMail($user, now()->toDayDateTimeString(), $request->ip()));
+            } catch (\Throwable $e) {
+                \Log::error('Login Alert Email Error (User): ' . $e->getMessage());
+            }
+
             return redirect()->route('user.dashboard');
         }
 
@@ -110,7 +118,13 @@ class AuthController extends Controller
         }
 
         Auth::login($user, true);
-        try { request()->session()->regenerate(); } catch (\Throwable $e) {}
+        try { 
+            request()->session()->regenerate(); 
+            // Send Login Alert Email
+            Mail::to($user->email)->send(new LoginAlertMail($user, now()->toDayDateTimeString(), $request->ip()));
+        } catch (\Throwable $e) {
+            \Log::error('Login Alert Email Error (Admin): ' . $e->getMessage());
+        }
 
         return redirect()->route('admin.dashboard');
     }

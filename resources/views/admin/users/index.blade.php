@@ -38,21 +38,21 @@
 
 <!-- Users Table -->
 <div class="premium-card">
-    <div class="action-header">
+    <div class="action-header responsive-header">
         <div class="header-title">
             <h2>All Registered Users</h2>
             <p>View and manage all users who have signed up</p>
         </div>
-        <div style="display: flex; gap: 10px; align-items: center;">
-            <form method="GET" action="{{ route('admin.users.index') }}" style="display: flex; gap: 10px; align-items: center;">
+        <div class="header-actions">
+            <form method="GET" action="{{ route('admin.users.index') }}" class="search-filter-form">
                 <input type="text" name="search" class="form-control" placeholder="Search users..."
-                       value="{{ request('search') }}" style="max-width: 200px; padding: 8px 14px; font-size: 13px;">
-                <select name="role" class="form-control" onchange="this.form.submit()" style="max-width: 140px; padding: 8px 14px; font-size: 13px;">
+                       value="{{ request('search') }}">
+                <select name="role" class="form-control" onchange="this.form.submit()">
                     <option value="all">All Roles</option>
                     <option value="user" {{ request('role') === 'user' ? 'selected' : '' }}>Customer</option>
                     <option value="admin" {{ request('role') === 'admin' ? 'selected' : '' }}>Admin</option>
                 </select>
-                <button type="submit" class="btn-primary" style="padding: 8px 16px;">
+                <button type="submit" class="btn-primary">
                     <i class="fa-solid fa-search"></i>
                 </button>
             </form>
@@ -92,17 +92,17 @@
                         <td style="color: var(--admin-text-sub);">{{ $user->email }}</td>
                         <td>
                             @if($user->role === 'admin')
-                                <span style="padding: 4px 12px; border-radius: 20px; background: #f3e8ff; color: #7e22ce; font-size: 12px; font-weight: 600;">
+                                <span class="role-badge role-admin">
                                     <i class="fa-solid fa-shield-halved"></i> Admin
                                 </span>
                             @else
-                                <span style="padding: 4px 12px; border-radius: 20px; background: #e0f2fe; color: #0369a1; font-size: 12px; font-weight: 600;">
+                                <span class="role-badge role-user">
                                     <i class="fa-solid fa-user"></i> Customer
                                 </span>
                             @endif
                         </td>
                         <td>
-                            <span style="background: #f1f5f9; padding: 4px 10px; border-radius: 6px; font-size: 13px; font-weight: 600;">
+                            <span class="order-count-pill">
                                 {{ $user->orders_count }}
                             </span>
                         </td>
@@ -127,4 +127,45 @@
     @endif
 </div>
 
+@section('styles')
+<style>
+    .responsive-header { flex-wrap: wrap; gap: 20px; }
+    .search-filter-form { display: flex; gap: 10px; align-items: center; }
+    .search-filter-form .form-control { max-width: 200px; padding: 8px 14px; font-size: 13px; height: 38px; }
+    .search-filter-form .btn-primary { padding: 8px 16px; height: 38px; }
+
+    @media (max-width: 768px) {
+        .responsive-header { flex-direction: column; align-items: stretch; }
+        .search-filter-form { flex-direction: column; }
+        .search-filter-form .form-control { max-width: 100%; width: 100%; }
+        .search-filter-form .btn-primary { width: 100%; justify-content: center; }
+    }
+
+    .role-badge { 
+        padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; 
+        display: inline-flex; align-items: center; gap: 6px;
+    }
+    .role-admin { background: #f3e8ff; color: #7e22ce; }
+    .role-user { background: #e0f2fe; color: #0369a1; }
+    
+    [data-theme="dark"] .role-admin { background: rgba(168, 85, 247, 0.15); color: #c084fc; }
+    [data-theme="dark"] .role-user { background: rgba(14, 165, 233, 0.15); color: #38bdf8; }
+
+    .order-count-pill { 
+        background: var(--admin-card-alt, #f1f5f9); padding: 4px 10px; border-radius: 6px; 
+        font-size: 13px; font-weight: 700; color: var(--admin-text);
+        border: 1px solid var(--admin-border);
+    }
+    
+    [data-theme="dark"] .order-count-pill {
+        background: #1a2332;
+        color: #f1f5f9;
+        border-color: #334155;
+    }
+
+    [data-theme="dark"] .premium-table tr:hover td {
+        background: rgba(255, 255, 255, 0.02);
+    }
+</style>
+@endsection
 @endsection
