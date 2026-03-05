@@ -50,18 +50,18 @@
             @if($user->profile_image)
                 <img src="{{ display_image($user->profile_image) }}" class="profile-avatar" alt="Profile">
             @else
-                <div class="profile-avatar" style="display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #3b82f6, #06b6d4); color: white; font-weight: 800; font-size: 32px;">
+                <div class="profile-avatar" style="display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; font-weight: 800; font-size: 32px;">
                     {{ strtoupper(substr($user->name, 0, 1)) }}
                 </div>
             @endif
-            <div style="position: absolute; bottom: 5px; right: 5px; width: 18px; height: 18px; background: #10b981; border: 3px solid #fff; border-radius: 50%;"></div>
+            <div class="online-indicator"></div>
         </div>
         <h3 class="profile-name">{{ $user->name }}</h3>
         <p class="profile-email">{{ $user->email }}</p>
         
         @if($user->rank)
         <div style="margin-top: 15px;">
-            <span style="background: {{ $user->rank === 'Gold' ? '#fef3c7' : '#f1f5f9' }}; color: {{ $user->rank === 'Gold' ? '#92400e' : '#475569' }}; padding: 4px 12px; border-radius: 50px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">
+            <span class="rank-badge {{ strtolower($user->rank) }}-rank">
                 {{ $user->rank }} Member
             </span>
         </div>

@@ -3,7 +3,8 @@
 @section('hide_chrome', true)
 
 @section('content')
-<link rel="stylesheet" href="{{ asset('css/user_dashboard.css') }}">
+<link rel="stylesheet" href="{{ asset('css/user_dashboard.css') }}?v={{ time() }}">
+<link rel="stylesheet" href="{{ asset('css/user-profile.css') }}?v={{ time() }}">
 
 <div class="dashboard-container">
     @include('user.partials.sidebar', ['active' => 'profile'])
@@ -16,26 +17,26 @@
                     @if(auth()->user()->cover_image)
                         <img src="{{ display_image(auth()->user()->cover_image) }}" id="coverPreviewImg">
                     @else
-                        <div id="coverPreviewImg" style="width: 100%; height: 100%; background: linear-gradient(135deg, var(--primary), var(--secondary)); opacity: 0.8;"></div>
+                        <div class="cover-placeholder" id="coverPreviewImg"></div>
                     @endif
                 </div>
                 
-                <label for="userCoverImage" style="position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.9); padding: 10px 20px; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 8px; box-shadow: var(--shadow-md); border: 1px solid var(--border); color: var(--text-main);">
+                <label for="userCoverImage" class="btn-update-cover">
                     <i class="fa-solid fa-camera"></i> Update Cover
                 </label>
                 <input type="file" name="cover_image" id="userCoverImage" accept="image/*" style="display: none;" onchange="previewCoverImage(this)" form="userProfileForm">
 
                 <!-- Avatar Floating -->
                 <div class="profile-avatar-floating">
-                    <div class="profile-image-container" id="userProfileImgContainer" style="width: 140px; height: 140px; border-radius: 35px; border: 6px solid white; box-shadow: var(--shadow-lg); background: #f8fafc; overflow: hidden; position: relative;">
+                    <div class="profile-image-container" id="userProfileImgContainer">
                         @if(auth()->user()->profile_image)
                             <img src="{{ display_image(auth()->user()->profile_image) }}" id="userPreviewImg" style="width: 100%; height: 100%; object-fit: cover;">
                         @else
-                            <div id="userPreviewImg" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #f1f5f9; color: var(--text-muted); font-size: 40px;">
+                            <div class="avatar-placeholder" id="userPreviewImg">
                                 <i class="fa-solid fa-user"></i>
                             </div>
                         @endif
-                        <label for="userProfileImage" style="position: absolute; inset: 0; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; color: white; opacity: 0; transition: 0.3s; cursor: pointer;">
+                        <label for="userProfileImage" class="avatar-edit-overlay">
                             <i class="fa-solid fa-pen"></i>
                         </label>
                         <input type="file" name="profile_image" id="userProfileImage" accept="image/*" style="display: none;" onchange="previewUserImage(this)" form="userProfileForm">
@@ -43,32 +44,32 @@
                 </div>
             </div>
 
-            <div style="padding: 60px 40px 40px;">
-                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px; flex-wrap: wrap; gap: 20px;">
+            <div class="profile-content">
+                <div class="profile-info-header">
                     <div>
-                        <h2 style="font-family: 'Outfit', sans-serif; font-size: 28px; font-weight: 800; margin: 0 0 8px;">{{ auth()->user()->name }}</h2>
-                        <p style="color: var(--text-sub); font-size: 15px; font-weight: 500; margin: 0;">Update your personal profile and account security settings.</p>
+                        <h2 class="profile-title">{{ auth()->user()->name }}</h2>
+                        <p class="profile-subtitle">Update your personal profile and account security settings.</p>
                     </div>
                     
-                    <div style="min-width: 240px; background: #f8fafc; padding: 20px; border-radius: var(--radius-md); border: 1px solid var(--border);">
-                        <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 10px; font-weight: 700;">
-                            <span style="color: var(--text-main);">Profile Completion</span>
-                            <span style="color: var(--primary);">{{ auth()->user()->profile_completion }}%</span>
+                    <div class="completion-card">
+                        <div class="completion-header">
+                            <span class="label">Profile Completion</span>
+                            <span class="value">{{ auth()->user()->profile_completion }}%</span>
                         </div>
-                        <div style="width: 100%; height: 8px; background: #e2e8f0; border-radius: 10px; overflow: hidden;">
-                            <div style="width: {{ auth()->user()->profile_completion }}%; height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); border-radius: 10px;"></div>
+                        <div class="completion-bar-bg">
+                            <div class="completion-bar-fill" style="width: {{ auth()->user()->profile_completion }}%;"></div>
                         </div>
                     </div>
                 </div>
 
                 @if(session('success'))
-                    <div style="background: #dcfce7; color: #166534; padding: 16px 20px; border-radius: 12px; margin-bottom: 30px; font-weight: 600; display: flex; align-items: center; gap: 12px; border: 1px solid #bbf7d0;">
+                    <div class="alert-success">
                         <i class="fa-solid fa-circle-check"></i> {{ session('success') }}
                     </div>
                 @endif
 
                 @if($errors->any())
-                    <div style="background: #fee2e2; color: #991b1b; padding: 16px 20px; border-radius: 12px; margin-bottom: 30px; font-weight: 600; display: flex; align-items: center; gap: 12px; border: 1px solid #fecaca;">
+                    <div class="alert-error">
                         <i class="fa-solid fa-circle-exclamation"></i> {{ $errors->first() }}
                     </div>
                 @endif
@@ -77,7 +78,7 @@
                     @csrf
                     
                     <div style="margin-bottom: 40px;">
-                        <h3 style="font-family: 'Outfit', sans-serif; font-size: 18px; font-weight: 700; margin: 0 0 20px; display: flex; align-items: center; gap: 10px;">
+                        <h3 class="form-section-title">
                             <i class="fa-solid fa-user-circle" style="color: var(--primary);"></i> Personal Information
                         </h3>
                         <div class="form-grid">
@@ -101,19 +102,17 @@
                     </div>
 
                     <div style="margin-bottom: 40px;">
-                        <h3 style="font-family: 'Outfit', sans-serif; font-size: 18px; font-weight: 700; margin: 0 0 20px; display: flex; align-items: center; gap: 10px;">
-                            <i class="fa-solid fa-location-dot" style="color: var(--primary);"></i> Address Details
+                        <h3 class="form-section-title">
+                            <i class="fa-solid fa-location-dot" style="color: var(--primary);"></i> Shipping Address
                         </h3>
-                        <div class="form-grid" style="grid-template-columns: 1fr;">
+                        <div class="form-grid address-grid">
                             <label>
-                                <span>Full Address</span>
-                                <input type="text" name="address" value="{{ old('address', auth()->user()->address) }}" placeholder="Street address, apartment, suite, etc.">
+                                <span>Street Address</span>
+                                <input type="text" name="address" value="{{ old('address', auth()->user()->address) }}" placeholder="House #, Street...">
                             </label>
-                        </div>
-                        <div class="form-grid" style="grid-template-columns: 1fr 1fr 1fr;">
                             <label>
                                 <span>City</span>
-                                <input type="text" name="city" value="{{ old('city', auth()->user()->city) }}">
+                                <input type="text" name="city" value="{{ old('city', auth()->user()->city) }}" placeholder="Karachi">
                             </label>
                             <label>
                                 <span>State / Province</span>
@@ -127,8 +126,8 @@
                     </div>
 
                     <div style="margin-bottom: 40px;">
-                        <h3 style="font-family: 'Outfit', sans-serif; font-size: 18px; font-weight: 700; margin: 0 0 20px; display: flex; align-items: center; gap: 10px;">
-                            <i class="fa-solid fa-shield-halved" style="color: var(--primary);"></i> Account Security
+                        <h3 class="form-section-title">
+                            <i class="fa-solid fa-lock" style="color: var(--primary);"></i> Change Password
                         </h3>
                         <div class="form-grid">
                             <label>
@@ -147,8 +146,8 @@
                     </div>
 
                     <div style="display: flex; justify-content: flex-end;">
-                        <button type="submit" class="profile-submit-btn">
-                            Save Profile Changes
+                        <button type="submit" class="btn-save-profile">
+                            <i class="fa-solid fa-floppy-disk"></i> Save All Changes
                         </button>
                     </div>
                 </form>

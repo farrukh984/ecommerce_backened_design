@@ -3,7 +3,7 @@
 @section('hide_chrome', true)
 
 @section('content')
-<link rel="stylesheet" href="{{ asset('css/user_dashboard.css') }}">
+<link rel="stylesheet" href="{{ asset('css/user_dashboard.css') }}?v={{ time() }}">
 
 <div class="dashboard-container">
     @include('user.partials.sidebar', ['active' => 'overview'])
@@ -31,7 +31,7 @@
         <!-- Stats Cards -->
         <div class="stats-cards">
             <div class="stat-card">
-                <div class="stat-icon" style="background: #e0f2fe; color: #0ea5e9;">
+                <div class="stat-icon stat-icon-orders">
                     <i class="fa-solid fa-bag-shopping"></i>
                 </div>
                 <div class="stat-info">
@@ -40,7 +40,7 @@
                 </div>
             </div>
             <div class="stat-card">
-                <div class="stat-icon" style="background: #fee2e2; color: #ef4444;">
+                <div class="stat-icon stat-icon-wishlist">
                     <i class="fa-solid fa-heart"></i>
                 </div>
                 <div class="stat-info">
@@ -49,7 +49,7 @@
                 </div>
             </div>
             <div class="stat-card">
-                <div class="stat-icon" style="background: #dcfce7; color: #10b981;">
+                <div class="stat-icon stat-icon-points">
                     <i class="fa-solid fa-star"></i>
                 </div>
                 <div class="stat-info">
@@ -58,7 +58,7 @@
                 </div>
             </div>
             <div class="stat-card">
-                <div class="stat-icon" style="background: #fef3c7; color: #f59e0b;">
+                <div class="stat-icon stat-icon-active">
                     <i class="fa-solid fa-truck-fast"></i>
                 </div>
                 <div class="stat-info">
@@ -72,12 +72,12 @@
         @if($stats['coupon_eligible'] && $stats['coupon_code'])
         <div class="coupon-banner">
             <div>
-                <div style="font-size: 14px; color: #94a3b8; margin-bottom: 8px; font-weight: 600;">ACTIVE REWARD AVAILABLE</div>
-                <h2 style="font-size: 24px; font-weight: 800; margin: 0;">10% Discount Coupon!</h2>
-                <p style="margin: 8px 0 0; opacity: 0.8;">Use this code on your next checkout for instant savings.</p>
+                <div style="font-size: 14px; color: var(--text-muted); margin-bottom: 8px; font-weight: 600;">ACTIVE REWARD AVAILABLE</div>
+                <h2 style="font-size: 24px; font-weight: 800; margin: 0; color: white;">10% Discount Coupon!</h2>
+                <p style="margin: 8px 0 0; opacity: 0.8; color: white;">Use this code on your next checkout for instant savings.</p>
             </div>
             <div class="coupon-code-box">
-                <span style="color: #fbbf24; font-weight: 900; font-size: 22px; letter-spacing: 4px;">{{ $stats['coupon_code'] }}</span>
+                <span style="color: var(--accent); font-weight: 900; font-size: 22px; letter-spacing: 4px;">{{ $stats['coupon_code'] }}</span>
             </div>
         </div>
         @endif
@@ -90,17 +90,6 @@
             </div>
             
             @forelse($recentOrders as $order)
-                @php
-                    $statusStyles = [
-                        'pending'    => ['bg' => '#fef3c7', 'color' => '#92400e'],
-                        'approved'   => ['bg' => '#e0f2fe', 'color' => '#0369a1'],
-                        'processing' => ['bg' => '#f3e8ff', 'color' => '#7e22ce'],
-                        'shipped'    => ['bg' => '#dbeafe', 'color' => '#1e40af'],
-                        'delivered'  => ['bg' => '#dcfce7', 'color' => '#166534'],
-                        'cancelled'  => ['bg' => '#fee2e2', 'color' => '#991b1b'],
-                    ];
-                    $st = $statusStyles[$order->status] ?? $statusStyles['pending'];
-                @endphp
                 <div class="order-item-card" onclick="window.location='{{ route('user.orders.show', $order->id) }}'">
                     <div class="order-image-stack">
                         @foreach($order->items->take(3) as $idx => $item)
@@ -111,15 +100,15 @@
                     </div>
                     
                     <div style="flex: 1;">
-                        <h4 style="margin: 0 0 4px; font-size: 15px; font-weight: 700;">Order ID: #{{ $order->id }}</h4>
+                        <h4 style="margin: 0 0 4px; font-size: 15px; font-weight: 700; color: var(--text-primary);">Order ID: #{{ $order->id }}</h4>
                         <p style="margin: 0; color: var(--text-muted); font-size: 12px; font-weight: 600;">
                             {{ $order->created_at->format('M d, Y') }} • {{ $order->items_count ?? $order->items->count() }} items
                         </p>
                     </div>
                     
                     <div style="text-align: right;">
-                        <div style="font-weight: 800; font-size: 18px; color: var(--text-main); margin-bottom: 6px;">${{ number_format($order->total_amount, 2) }}</div>
-                        <span class="status-check" style="background: {{ $st['bg'] }}; color: {{ $st['color'] }};">
+                        <div style="font-weight: 800; font-size: 18px; color: var(--text-primary); margin-bottom: 6px;">${{ number_format($order->total_amount, 2) }}</div>
+                        <span class="status-pill status-{{ strtolower($order->status) }}">
                             {{ $order->status }}
                         </span>
                     </div>

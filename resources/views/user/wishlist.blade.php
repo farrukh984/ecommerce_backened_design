@@ -4,8 +4,8 @@
 
 @section('content')
 <!-- Include same sidebar layout but with enhanced styling -->
-<link rel="stylesheet" href="{{ asset('css/user_dashboard.css') }}">
-<link rel="stylesheet" href="{{ asset('css/user-wishlist.css') }}">
+<link rel="stylesheet" href="{{ asset('css/user_dashboard.css') }}?v={{ time() }}">
+<link rel="stylesheet" href="{{ asset('css/user-wishlist.css') }}?v={{ time() }}">
 
 <div class="dashboard-container wishlist-layout">
     <div class="wishlist-flex">

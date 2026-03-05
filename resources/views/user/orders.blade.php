@@ -3,8 +3,8 @@
 @section('hide_chrome', true)
 
 @section('content')
-<link rel="stylesheet" href="{{ asset('css/user_dashboard.css') }}">
-<link rel="stylesheet" href="{{ asset('css/user-orders.css') }}">
+<link rel="stylesheet" href="{{ asset('css/user_dashboard.css') }}?v={{ time() }}">
+<link rel="stylesheet" href="{{ asset('css/user-orders.css') }}?v={{ time() }}">
 
 <div class="dashboard-container">
     @include('user.partials.sidebar', ['active' => 'orders'])
