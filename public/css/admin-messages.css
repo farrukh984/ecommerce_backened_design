@@ -491,12 +491,14 @@
 
 .bubble {
     max-width: 100%;
-    padding: 10px 14px 6px;
-    border-radius: 18px;
+    padding: 12px 14px;
+    border-radius: 20px;
     font-size: 14px;
     line-height: 1.5;
     word-wrap: break-word;
     position: relative;
+    overflow: hidden;
+    /* Added to contain children */
     animation: bubIn 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
 }
 
@@ -533,11 +535,18 @@
 }
 
 .b-img {
-    max-width: 260px;
-    border-radius: 10px;
-    margin-bottom: 5px;
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px;
+    margin-bottom: 8px;
     cursor: pointer;
     display: block;
+    transition: transform 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.b-img:hover {
+    transform: scale(1.02);
 }
 
 .b-meta {
