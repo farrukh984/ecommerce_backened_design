@@ -578,15 +578,21 @@
         padding: 24px 15px 6px 45px;
     }
 
-    .input-wrapper label,
     .input-wrapper .icon {
         left: 15px;
+    }
+
+    .input-wrapper label {
+        left: 45px;
     }
 
     .input-wrapper input:focus~label,
     .input-wrapper input:not(:placeholder-shown)~label {
         left: 45px;
+        top: 12px;
+        font-size: 10px;
     }
+
 }
 
 
