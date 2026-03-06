@@ -84,6 +84,57 @@ class AppServiceProvider extends ServiceProvider
                         $view->with('unreadUserCount', $unreadCount);
                     }
                 });
+
+                // Shared Sidebar Composer (fix for N+1 in partials.sidebars)
+                View::composer('partials.sidebars', function ($view) {
+                    if (Auth::check()) {
+                        $authId = Auth::id();
+                        $sidebarData = Cache::remember("user_sidebar_data_{$authId}", 300, function () use ($authId) {
+                            $conversations = \App\Models\Conversation::where('sender_id', $authId)
+                                ->orWhere('receiver_id', $authId)
+                                ->with(['sender', 'receiver', 'messages' => function($q) {
+                                    $q->latest()->limit(1);
+                                }])
+                                ->latest('last_message_at')
+                                ->take(10)
+                                ->get();
+
+                            // Pre-calculate unread counts to avoid N+1 in view
+                            foreach($conversations as $conv) {
+                                $conv->unread_count = Message::where('conversation_id', $conv->id)
+                                    ->where('user_id', '!=', $authId)
+                                    ->where('is_read', false)
+                                    ->count();
+                            }
+
+                            $unreadTotal = Message::where('is_read', false)
+                                ->whereHas('conversation', function($q) use ($authId) {
+                                    $q->where('sender_id', $authId)->orWhere('receiver_id', $authId);
+                                })
+                                ->where('user_id', '!=', $authId)
+                                ->count();
+
+                            $recentOrders = \App\Models\Order::where('user_id', $authId)
+                                ->with('items.product')
+                                ->latest()
+                                ->take(5)
+                                ->get();
+
+                            return [
+                                'conversations' => $conversations,
+                                'unreadTotal' => $unreadTotal,
+                                'recentOrders' => $recentOrders,
+                            ];
+                        });
+
+                        $view->with([
+                            'sidebarConversations' => $sidebarData['conversations'],
+                            'sidebarUnreadTotal' => $sidebarData['unreadTotal'],
+                            'recentOrders' => $sidebarData['recentOrders'],
+                        ]);
+                    }
+                });
+
             }
         } catch (\Throwable $e) {
             // ignore

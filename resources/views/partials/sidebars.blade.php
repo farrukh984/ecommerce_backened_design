@@ -53,25 +53,8 @@
     </div>
     <div class="sidebar-content">
         @auth
-            @php
-                $sidebarConversations = \App\Models\Conversation::where('sender_id', auth()->id())
-                    ->orWhere('receiver_id', auth()->id())
-                    ->with(['sender', 'receiver', 'messages' => function($q) {
-                        $q->latest()->limit(1);
-                    }])
-                    ->latest('last_message_at')
-                    ->take(10)
-                    ->get();
-                $sidebarUnreadTotal = \App\Models\Message::where('is_read', false)
-                    ->whereHas('conversation', function($q) {
-                        $q->where('sender_id', auth()->id())->orWhere('receiver_id', auth()->id());
-                    })
-                    ->where('user_id', '!=', auth()->id())
-                    ->count();
-            @endphp
-
-            @if($sidebarConversations->count())
-                @if($sidebarUnreadTotal > 0)
+            @if(isset($sidebarConversations) && $sidebarConversations->count())
+                @if(isset($sidebarUnreadTotal) && $sidebarUnreadTotal > 0)
                     <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 10px 14px; margin-bottom: 16px; font-size: 13px; color: #1d4ed8; font-weight: 600;">
                         <i class="fa-solid fa-bell"></i> {{ $sidebarUnreadTotal }} unread message{{ $sidebarUnreadTotal > 1 ? 's' : '' }}
                     </div>
@@ -81,23 +64,20 @@
                         @php
                             $sOtherUser = $sConv->sender_id === auth()->id() ? $sConv->receiver : $sConv->sender;
                             $sLastMsg = $sConv->messages->first();
-                            $sUnread = \App\Models\Message::where('conversation_id', $sConv->id)
-                                ->where('user_id', '!=', auth()->id())
-                                ->where('is_read', false)
-                                ->count();
+                            $sUnread = $sConv->unread_count ?? 0;
                         @endphp
                         <a href="{{ route('user.messages.chat', $sConv->id) }}" class="mini-cart-item" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #f1f5f9;">
-                            @if($sOtherUser->profile_image)
+                            @if($sOtherUser && $sOtherUser->profile_image)
                                 <img src="{{ display_image($sOtherUser->profile_image) }}" alt="{{ $sOtherUser->name }}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; flex-shrink: 0; border: 2px solid #e2e8f0;">
                             @else
                                 <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; flex-shrink: 0;">
-                                    {{ strtoupper(substr($sOtherUser->name, 0, 1)) }}
+                                    {{ $sOtherUser ? strtoupper(substr($sOtherUser->name, 0, 1)) : '?' }}
                                 </div>
                             @endif
                             <div class="m-item-info" style="flex: 1; min-width: 0;">
                                 <h5 style="margin: 0 0 2px; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px;">
-                                    {{ $sOtherUser->name }}
-                                    @if($sOtherUser->role === 'admin')
+                                    {{ $sOtherUser->name ?? 'User' }}
+                                    @if($sOtherUser && $sOtherUser->role === 'admin')
                                         <i class="fa-solid fa-circle-check" style="color: #3b82f6; font-size: 11px;"></i>
                                     @endif
                                     @if($sUnread > 0)
@@ -143,10 +123,8 @@
     </div>
     <div class="sidebar-content">
         @auth
-            @php
-                $recentOrders = auth()->user()->orders()->with('items.product')->latest()->take(5)->get();
-            @endphp
-            @if($recentOrders->count())
+            @if(isset($recentOrders) && $recentOrders->count())
+
                 <div class="mini-cart-list">
                     @foreach($recentOrders as $order)
                         @php

@@ -121,12 +121,19 @@
     <script>
         // Once everything is loaded (CSS, Images, etc.), hide the loader
         window.addEventListener('load', function() {
+            hideLoader();
+        });
+
+        // Failsafe: Hide loader after 3 seconds anyway
+        setTimeout(hideLoader, 3000);
+
+        function hideLoader() {
             const loader = document.getElementById('global-loader');
-            setTimeout(() => {
+            if (loader && !loader.classList.contains('hide')) {
                 loader.classList.add('hide');
                 document.body.classList.remove('is-loading');
-            }, 350);
-        });
+            }
+        }
 
         // ──────── IMMEDIATE TRANSITION LOGIC ────────
         // Show loader IMMEDIATELY when a link is clicked or form submitted

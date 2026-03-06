@@ -18,8 +18,16 @@ class UpdateUserLastSeen
     public function handle(Request $request, Closure $next): Response
     {
         if (Auth::check()) {
-            User::where('id', Auth::id())->update(['last_seen_at' => now()]);
+            $userId = Auth::id();
+            $cacheKey = 'user_last_seen_' . $userId;
+
+            // Only update DB if 5 minutes have passed since last update
+            if (!\Illuminate\Support\Facades\Cache::has($cacheKey)) {
+                User::where('id', $userId)->update(['last_seen_at' => now()]);
+                \Illuminate\Support\Facades\Cache::put($cacheKey, true, 300); // 5 minutes
+            }
         }
         return $next($request);
     }
+
 }
