@@ -17,10 +17,18 @@
             </div>
 
             <!-- Change Cover Button -->
-            <label for="adminCoverImage" class="change-cover-btn">
-                <i class="fa-solid fa-camera"></i> <span>Change Cover</span>
-            </label>
+            <div class="cover-actions">
+                @if(auth()->user()->cover_image)
+                    <button type="button" class="remove-image-btn" id="removeCoverBtn" onclick="removeCover()">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                @endif
+                <label for="adminCoverImage" class="change-cover-btn">
+                    <i class="fa-solid fa-camera"></i> <span>Change Cover</span>
+                </label>
+            </div>
             <input type="file" name="cover_image" id="adminCoverImage" accept="image/*" style="display: none;" onchange="previewCoverImage(this)" form="adminProfileForm">
+            <input type="hidden" name="remove_cover_image" id="removeCoverInput" value="0" form="adminProfileForm">
 
             <!-- Avatar & Info Floating -->
             <div class="profile-identity-section">
@@ -35,7 +43,13 @@
                     <label for="adminProfileImage" class="avatar-edit-overlay">
                         <i class="fa-solid fa-pen-to-square"></i>
                     </label>
+                    @if(auth()->user()->profile_image)
+                        <button type="button" class="remove-avatar-btn" id="removeProfileBtn" onclick="removeProfile()">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    @endif
                     <input type="file" name="profile_image" id="adminProfileImage" accept="image/*" style="display: none;" onchange="previewAdminImage(this)" form="adminProfileForm">
+                    <input type="hidden" name="remove_profile_image" id="removeProfileInput" value="0" form="adminProfileForm">
                 </div>
                 <div class="identity-info">
                     <h2>{{ auth()->user()->name }}</h2>
@@ -217,8 +231,19 @@
     .cover-image-container img { width: 100%; height: 100%; object-fit: cover; }
     .cover-placeholder { width: 100%; height: 100%; background: linear-gradient(135deg, var(--admin-primary), var(--admin-secondary)); }
     
+    .cover-actions { position: absolute; top: 20px; right: 20px; display: flex; gap: 10px; z-index: 10; }
+    
+    .remove-image-btn {
+        background: rgba(239, 68, 68, 0.9);
+        color: white; border: none; width: 38px; height: 38px;
+        border-radius: 12px; cursor: pointer; display: flex;
+        align-items: center; justify-content: center; font-size: 14px;
+        backdrop-filter: blur(10px); transition: 0.3s;
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+    }
+    .remove-image-btn:hover { background: #ef4444; transform: translateY(-2px); }
+
     .change-cover-btn {
-        position: absolute; top: 20px; right: 20px;
         background: var(--admin-card, rgba(255,255,255,0.9));
         backdrop-filter: blur(10px);
         padding: 8px 16px;
@@ -228,7 +253,6 @@
         font-weight: 700;
         display: flex; align-items: center; gap: 8px;
         box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        z-index: 10;
     }
 
     .profile-identity-section {
@@ -255,6 +279,18 @@
         color: white; opacity: 0; transition: 0.3s; cursor: pointer;
     }
     .avatar-wrapper:hover .avatar-edit-overlay { opacity: 1; }
+    
+    .remove-avatar-btn {
+        position: absolute; top: 5px; right: 5px;
+        background: #ef4444; color: white; border: none;
+        width: 24px; height: 24px; border-radius: 8px;
+        font-size: 12px; cursor: pointer; z-index: 30;
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3); transition: 0.3s;
+        opacity: 0;
+    }
+    .avatar-wrapper:hover .remove-avatar-btn { opacity: 1; }
+    .remove-avatar-btn:hover { transform: scale(1.1); background: #dc2626; }
 
     .identity-info h2 {
         font-size: 28px; font-weight: 800; color: white;
@@ -399,6 +435,23 @@
                 coverContainer.innerHTML = '<img src="' + e.target.result + '" id="coverPreviewImg" style="animation: fadeIn 0.3s;">';
             };
             reader.readAsDataURL(input.files[0]);
+        }
+    }
+    function removeCover() {
+        if(confirm('Are you sure you want to remove your cover image?')) {
+            document.getElementById('removeCoverInput').value = '1';
+            document.getElementById('coverContainer').innerHTML = '<div id="coverPreviewImg" class="cover-placeholder"></div>';
+            const btn = document.getElementById('removeCoverBtn');
+            if(btn) btn.style.display = 'none';
+        }
+    }
+
+    function removeProfile() {
+        if(confirm('Are you sure you want to remove your profile image?')) {
+            document.getElementById('removeProfileInput').value = '1';
+            document.getElementById('adminPreviewImg').outerHTML = '<div id="adminPreviewImg" class="avatar-placeholder">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</div>';
+            const btn = document.getElementById('removeProfileBtn');
+            if(btn) btn.style.display = 'none';
         }
     }
 </script>

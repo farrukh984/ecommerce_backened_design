@@ -6,6 +6,68 @@
 <link rel="stylesheet" href="{{ asset('css/user_dashboard.css') }}?v={{ time() }}">
 <link rel="stylesheet" href="{{ asset('css/user-profile.css') }}?v={{ time() }}">
 
+@section('styles')
+<style>
+    .header-actions-premium {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        display: flex;
+        gap: 12px;
+        z-index: 10;
+    }
+
+    .btn-remove-cover {
+        background: rgba(239, 68, 68, 0.85);
+        color: white;
+        border: none;
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(8px);
+    }
+
+    .btn-remove-cover:hover {
+        background: #ef4444;
+        transform: translateY(-2px);
+    }
+
+    .btn-remove-avatar {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        background: #ef4444;
+        color: white;
+        border: none;
+        width: 28px;
+        height: 28px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 20;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
+        opacity: 0;
+    }
+
+    .profile-image-container:hover .btn-remove-avatar {
+        opacity: 1;
+    }
+
+    .btn-remove-avatar:hover {
+        transform: scale(1.1);
+        background: #dc2626;
+    }
+</style>
+@endsection
+
 <div class="dashboard-container">
     @include('user.partials.sidebar', ['active' => 'profile'])
 
@@ -21,10 +83,18 @@
                     @endif
                 </div>
                 
-                <label for="userCoverImage" class="btn-update-cover">
-                    <i class="fa-solid fa-camera"></i> Update Cover
-                </label>
+                <div class="header-actions-premium">
+                    @if(auth()->user()->cover_image)
+                        <button type="button" class="btn-remove-cover" id="removeCoverBtn" onclick="removeCover()">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    @endif
+                    <label for="userCoverImage" class="btn-update-cover">
+                        <i class="fa-solid fa-camera"></i> Update Cover
+                    </label>
+                </div>
                 <input type="file" name="cover_image" id="userCoverImage" accept="image/*" style="display: none;" onchange="previewCoverImage(this)" form="userProfileForm">
+                <input type="hidden" name="remove_cover_image" id="removeCoverInput" value="0" form="userProfileForm">
 
                 <!-- Avatar Floating -->
                 <div class="profile-avatar-floating">
@@ -39,7 +109,13 @@
                         <label for="userProfileImage" class="avatar-edit-overlay">
                             <i class="fa-solid fa-pen"></i>
                         </label>
+                        @if(auth()->user()->profile_image)
+                            <button type="button" class="btn-remove-avatar" id="removeProfileBtn" onclick="removeProfile()">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        @endif
                         <input type="file" name="profile_image" id="userProfileImage" accept="image/*" style="display: none;" onchange="previewUserImage(this)" form="userProfileForm">
+                        <input type="hidden" name="remove_profile_image" id="removeProfileInput" value="0" form="userProfileForm">
                     </div>
                 </div>
             </div>
@@ -192,5 +268,22 @@
     const avatarOverlay = avatarContainer.querySelector('label');
     avatarContainer.addEventListener('mouseenter', () => avatarOverlay.style.opacity = '1');
     avatarContainer.addEventListener('mouseleave', () => avatarOverlay.style.opacity = '0');
+    function removeCover() {
+        if(confirm('Are you sure you want to remove your cover image?')) {
+            document.getElementById('removeCoverInput').value = '1';
+            document.getElementById('coverPreviewImg').outerHTML = '<div class="cover-placeholder" id="coverPreviewImg"></div>';
+            const btn = document.getElementById('removeCoverBtn');
+            if(btn) btn.style.display = 'none';
+        }
+    }
+
+    function removeProfile() {
+        if(confirm('Are you sure you want to remove your profile image?')) {
+            document.getElementById('removeProfileInput').value = '1';
+            document.getElementById('userPreviewImg').outerHTML = '<div class="avatar-placeholder" id="userPreviewImg"><i class="fa-solid fa-user"></i></div>';
+            const btn = document.getElementById('removeProfileBtn');
+            if(btn) btn.style.display = 'none';
+        }
+    }
 </script>
 @endsection

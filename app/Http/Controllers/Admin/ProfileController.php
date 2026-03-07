@@ -44,10 +44,14 @@ class ProfileController extends Controller
 
         if ($request->hasFile('profile_image')) {
             $user->profile_image = Cloudinary::uploadApi()->upload($request->file('profile_image')->getRealPath(), ['folder' => 'profile_images'])['secure_url'];
+        } elseif ($request->boolean('remove_profile_image')) {
+            $user->profile_image = null;
         }
 
         if ($request->hasFile('cover_image')) {
             $user->cover_image = Cloudinary::uploadApi()->upload($request->file('cover_image')->getRealPath(), ['folder' => 'cover_images'])['secure_url'];
+        } elseif ($request->boolean('remove_cover_image')) {
+            $user->cover_image = null;
         }
 
         $user->name = $validated['name'];
