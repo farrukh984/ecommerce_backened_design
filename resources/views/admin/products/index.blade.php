@@ -3,6 +3,12 @@
 @section('title', 'Products Management')
 @section('header_title', 'Manage Products')
 
+@section('topbar_actions')
+<a href="{{ route('admin.products.create') }}" class="btn-primary">
+    <i class="fa-solid fa-plus-circle"></i> Add Product
+</a>
+@endsection
+
 @section('admin_content')
 
 <div class="premium-card">
@@ -11,11 +17,8 @@
             <h2>Product List</h2>
             <p>Showing all products available in your storage</p>
         </div>
-        <div class="header-actions">
-            <a href="{{ route('admin.products.create') }}" class="btn-primary">
-                <i class="fa-solid fa-plus"></i> Add Product
-            </a>
-        </div>
+    </div>
+
     <div class="table-responsive">
         <table class="premium-table">
             <thead>

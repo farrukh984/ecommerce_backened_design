@@ -3,6 +3,12 @@
 @section('title', 'Suppliers')
 @section('header_title', 'Manage Suppliers')
 
+@section('topbar_actions')
+<a href="{{ route('admin.suppliers.create') }}" class="btn-primary">
+    <i class="fa-solid fa-plus-circle"></i> Add Supplier
+</a>
+@endsection
+
 @section('admin_content')
 
 <div class="premium-card" style="max-width: 1000px;">
@@ -11,9 +17,6 @@
             <h2>Supplier List</h2>
             <p>Managing product sources and partners</p>
         </div>
-        <a href="{{ route('admin.suppliers.create') }}" class="btn-primary">
-            <i class="fa-solid fa-plus"></i> Add Supplier
-        </a>
     </div>
 
     <div class="table-responsive">

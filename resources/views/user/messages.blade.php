@@ -724,13 +724,27 @@ document.getElementById('convSearch')?.addEventListener('input', function() {
 
 // ── Start new chat ─────────────────────────────────────────
 function startNewChat() {
+    // Show loader manually since we are handling the navigation via JS
+    if (typeof showLoader === 'function') showLoader();
+    
     fetch('{{ route("user.messages.send") }}', {
         method:'POST',
         headers:{'X-CSRF-TOKEN':'{{ csrf_token() }}','Content-Type':'application/json','Accept':'application/json'},
         body: JSON.stringify({ receiver_id: {{ $admin ? $admin->id : 1 }}, message: 'Hello! I need help.' })
-    }).then(r=>r.json()).then(d=>{
-        if(d.status==='success')
+    })
+    .then(r => r.json())
+    .then(d => {
+        if(d.status === 'success') {
             window.location.href = "{{ route('user.messages.chat',':id') }}".replace(':id', d.message.conversation_id);
+        } else {
+            if (typeof hideLoader === 'function') hideLoader();
+            alert('Could not start chat. Please try again.');
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        if (typeof hideLoader === 'function') hideLoader();
+        alert('Something went wrong. Please refresh.');
     });
 }
 

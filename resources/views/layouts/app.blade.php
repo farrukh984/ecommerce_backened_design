@@ -138,43 +138,49 @@
         // ──────── IMMEDIATE TRANSITION LOGIC ────────
         // Show loader IMMEDIATELY when a link is clicked or form submitted
         document.addEventListener('click', function(e) {
+            // If another handler already called preventDefault(), don't show loader
+            if (e.defaultPrevented) return;
+
             const link = e.target.closest('a');
-            if (link && 
-                link.href && 
-                !link.href.startsWith('#') && 
-                !link.href.includes('javascript:') &&
-                !link.getAttribute('target') && 
-                !e.ctrlKey && !e.shiftKey && !e.metaKey &&
-                link.hostname === window.location.hostname) {
+            if (link) {
+                const href = link.getAttribute('href');
                 
-                const loader = document.getElementById('global-loader');
-                if(loader) {
-                    loader.classList.remove('hide');
-                    document.body.classList.add('is-loading');
-                }
+                // Skip if no href, or it's an internal hash/javascript link
+                if (!href || href.startsWith('#') || href.startsWith('javascript:')) return;
+
+                // Skip if it opens in a new tab/window
+                if (link.getAttribute('target') === '_blank') return;
+
+                // Skip if it's a cross-origin link
+                if (link.hostname !== window.location.hostname) return;
+
+                // Skip if a modifier key is pressed (standard browser behavior for new tab)
+                if (e.ctrlKey || e.shiftKey || e.metaKey) return;
+                
+                showLoader();
             }
         });
+
+        function showLoader() {
+            const loader = document.getElementById('global-loader');
+            if(loader) {
+                loader.classList.remove('hide');
+                document.body.classList.add('is-loading');
+            }
+        }
 
         // Show on form submit
         document.addEventListener('submit', function(e) {
             // Stay hidden if standard submission is prevented (e.g., AJAX handling)
             if (e.defaultPrevented) return;
 
-            const loader = document.getElementById('global-loader');
-            if(loader) {
-                loader.classList.remove('hide');
-                document.body.classList.add('is-loading');
-            }
+            showLoader();
         });
 
         // Hide when navigating back (BFcache)
         window.addEventListener('pageshow', function(event) {
             if (event.persisted) {
-                const loader = document.getElementById('global-loader');
-                if(loader) {
-                    loader.classList.add('hide');
-                    document.body.classList.remove('is-loading');
-                }
+                hideLoader();
             }
         });
     </script>
@@ -248,6 +254,24 @@
         </div>
     </div>
     <link rel="stylesheet" href="{{ asset('css/admin_chat_widget.css') }}">
+    
+    <script>
+        // Global Quick Chat Function
+        window.openQuickChat = function(id, name, avatar, initial) {
+            const popup = document.getElementById('chatPopup');
+            if (popup && !popup.classList.contains('active')) {
+                const launcher = document.getElementById('chatLauncher');
+                if(launcher) launcher.click();
+            }
+            
+            // Wait for internal logic to initialize
+            setTimeout(() => {
+                if (window.triggerChatConv) {
+                    window.triggerChatConv(id, name, avatar, initial);
+                }
+            }, 100);
+        };
+    </script>
     @endauth
 
     <!-- GSAP for Smooth Animations -->
@@ -271,24 +295,42 @@
             const myAvatar = "{{ auth()->user()->profile_image ? display_image(auth()->user()->profile_image) : '' }}";
             const myInitial = "{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}";
 
-            chatLauncher?.addEventListener('click', () => {
-                const isActive = chatPopup.style.display === 'flex';
-                if (!isActive) {
-                    gsap.set(chatPopup, { display: 'flex', opacity: 0, scale: 0.8, y: 50 });
-                    gsap.to(chatPopup, { opacity: 1, scale: 1, y: 0, duration: 0.5, ease: "back.out(1.7)" });
+            window.triggerChatConv = openConversation;
+
+            chatLauncher?.addEventListener('click', (e) => {
+                e.preventDefault();
+                const isOpen = chatPopup.classList.contains('active');
+                
+                if (!isOpen) {
+                    chatPopup.classList.add('active');
+                    if (window.gsap) {
+                        gsap.set(chatPopup, { display: 'flex', opacity: 0, scale: 0.8, transformOrigin: 'bottom right' });
+                        gsap.to(chatPopup, { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(1.5)" });
+                    } else {
+                        chatPopup.style.display = 'flex';
+                    }
                     loadConversations();
                 } else {
                     closeChatAction();
                 }
             });
 
-            closeChat?.addEventListener('click', closeChatAction);
+            closeChat?.addEventListener('click', (e) => {
+                e.preventDefault();
+                closeChatAction();
+            });
 
             function closeChatAction() {
-                gsap.to(chatPopup, { opacity: 0, scale: 0.8, y: 50, duration: 0.3, onComplete: () => {
+                chatPopup.classList.remove('active');
+                if (window.gsap) {
+                    gsap.to(chatPopup, { opacity: 0, scale: 0.8, duration: 0.3, ease: "power2.in", onComplete: () => {
+                        chatPopup.style.display = 'none';
+                        clearInterval(pollingInterval);
+                    }});
+                } else {
                     chatPopup.style.display = 'none';
                     clearInterval(pollingInterval);
-                }});
+                }
             }
 
             function loadConversations() {
@@ -454,14 +496,39 @@
 
     <!-- Global SweetAlert2 Handling -->
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const theme = document.documentElement.getAttribute('data-theme') || 'light';
-            const swalConfig = {
-                background: theme === 'dark' ? '#1f2937' : '#fff',
-                color: theme === 'dark' ? '#f3f4f6' : '#1f2937'
-            };
+        const theme = document.documentElement.getAttribute('data-theme') || 'light';
+        const swalConfig = {
+            background: theme === 'dark' ? '#1f2937' : '#fff',
+            color: theme === 'dark' ? '#f3f4f6' : '#1f2937',
+            customClass: {
+                container: 'swal-on-top'
+            }
+        };
 
-            @if(session('success'))
+        // Standardized SweetAlert2 Delete Confirmation
+        window.confirmAction = function(e, options = {}) {
+            e.preventDefault();
+            const form = e.target.closest('form');
+            
+            Swal.fire({
+                title: options.title || 'Are you sure?',
+                text: options.text || "This action cannot be undone!",
+                icon: options.icon || 'warning',
+                showCancelButton: true,
+                confirmButtonColor: options.confirmColor || '#0ea5e9',
+                cancelButtonColor: options.cancelColor || '#64748b',
+                confirmButtonText: options.confirmText || 'Yes, proceed!',
+                ...swalConfig
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        };
+
+        // Session Alerts
+        @if(session('success'))
+            setTimeout(() => {
                 Swal.fire({
                     ...swalConfig,
                     icon: 'success',
@@ -470,47 +537,34 @@
                     timer: 4000,
                     showConfirmButton: false
                 });
-            @endif
+            }, 500);
+        @endif
 
-            @if(session('error'))
+        @if(session('error'))
+            setTimeout(() => {
                 Swal.fire({
                     ...swalConfig,
                     icon: 'error',
                     title: 'Error!',
                     text: "{{ session('error') }}"
                 });
-            @endif
+            }, 500);
+        @endif
 
-            @if($errors->any())
+        @if($errors->any())
+            setTimeout(() => {
                 Swal.fire({
                     ...swalConfig,
                     icon: 'error',
                     title: 'Validation Error',
                     text: "{{ $errors->first() }}"
                 });
-            @endif
-
-            window.confirmAction = function(e, options = {}) {
-                e.preventDefault();
-                const form = e.target.closest('form');
-                
-                Swal.fire({
-                    title: options.title || 'Are you sure?',
-                    text: options.text || "This action cannot be undone!",
-                    icon: options.icon || 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: options.confirmColor || '#0ea5e9',
-                    cancelButtonColor: options.cancelColor || '#64748b',
-                    confirmButtonText: options.confirmText || 'Yes, proceed!',
-                    ...swalConfig
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        form.submit();
-                    }
-                });
-            };
-        });
+            }, 500);
+        @endif
     </script>
+    <style>
+        .swal-on-top { z-index: 10000001 !important; }
+    </style>
 
     @yield('scripts')
 

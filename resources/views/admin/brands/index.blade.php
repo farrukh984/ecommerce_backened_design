@@ -3,6 +3,12 @@
 @section('title', 'Brands')
 @section('header_title', 'Manage Brands')
 
+@section('topbar_actions')
+<a href="{{ route('admin.brands.create') }}" class="btn-primary">
+    <i class="fa-solid fa-plus-circle"></i> Add Brand
+</a>
+@endsection
+
 @section('admin_content')
 
 <div class="premium-card" style="max-width: 900px;">
@@ -11,9 +17,6 @@
             <h2>Brand List</h2>
             <p>Managing manufacturer names</p>
         </div>
-        <a href="{{ route('admin.brands.create') }}" class="btn-primary">
-            <i class="fa-solid fa-plus"></i> Add Brand
-        </a>
     </div>
 
     <div class="table-responsive">

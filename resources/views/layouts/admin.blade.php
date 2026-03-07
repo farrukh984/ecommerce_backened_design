@@ -125,43 +125,49 @@
         // ──────── IMMEDIATE TRANSITION LOGIC ────────
         // Show loader IMMEDIATELY when a link is clicked or form submitted
         document.addEventListener('click', function(e) {
+            // If the event was already canceled (e.g. by a specific button handler), don't show loader
+            if (e.defaultPrevented) return;
+
             const link = e.target.closest('a');
-            if (link && 
-                link.href && 
-                !link.href.startsWith('#') && 
-                !link.href.includes('javascript:') &&
-                !link.getAttribute('target') && 
-                !e.ctrlKey && !e.shiftKey && !e.metaKey &&
-                link.hostname === window.location.hostname) {
+            if (link) {
+                const href = link.getAttribute('href');
                 
-                const loader = document.getElementById('global-loader');
-                if(loader) {
-                    loader.classList.remove('hide');
-                    document.body.classList.add('is-loading');
-                }
+                // Skip if no href, or it's an internal hash/javascript link
+                if (!href || href.startsWith('#') || href.startsWith('javascript:')) return;
+
+                // Skip if it opens in a new tab/window
+                if (link.getAttribute('target') === '_blank') return;
+
+                // Skip if it's a cross-origin link
+                if (link.hostname !== window.location.hostname) return;
+
+                // Skip if a modifier key is pressed (standard browser behavior for new tab)
+                if (e.ctrlKey || e.shiftKey || e.metaKey) return;
+                
+                showLoader();
             }
         });
+
+        function showLoader() {
+            const loader = document.getElementById('global-loader');
+            if(loader) {
+                loader.classList.remove('hide');
+                document.body.classList.add('is-loading');
+            }
+        }
 
         // Show on form submit
         document.addEventListener('submit', function(e) {
             // Stay hidden if standard submission is prevented (e.g., AJAX handling)
             if (e.defaultPrevented) return;
 
-            const loader = document.getElementById('global-loader');
-            if(loader) {
-                loader.classList.remove('hide');
-                document.body.classList.add('is-loading');
-            }
+            showLoader();
         });
 
         // Hide when navigating back (BFcache)
         window.addEventListener('pageshow', function(event) {
             if (event.persisted) {
-                const loader = document.getElementById('global-loader');
-                if(loader) {
-                    loader.classList.add('hide');
-                    document.body.classList.remove('is-loading');
-                }
+                hideLoader();
             }
         });
     </script>
@@ -279,6 +285,7 @@
                     <h1>@yield('header_title', 'Dashboard')</h1>
                 </div>
                 <div class="topbar-right">
+                    @yield('topbar_actions')
                     @if($lowStockCount > 0)
                         <a href="{{ route('admin.products.index') }}" class="stock-warning-pill" style="margin-right: 15px; background: var(--warning-bg, #fff7ed); border: 1px solid var(--warning-border, #ffedd5); color: var(--warning, #9a3412); padding: 10px 18px; border-radius: 14px; font-size: 12px; font-weight: 800; display: flex; align-items: center; gap: 10px; text-decoration: none; box-shadow: 0 4px 10px rgba(234, 88, 12, 0.1);">
                             <i class="fa-solid fa-triangle-exclamation" style="color: var(--warning); font-size: 14px;"></i>
@@ -373,11 +380,10 @@
 
         // Global Quick Chat Function
         window.openQuickChat = function(id, name, avatar, initial) {
-            const launcher = document.getElementById('chatLauncher');
             const popup = document.getElementById('chatPopup');
-            
-            if (popup.style.display !== 'flex') {
-                launcher.click();
+            if (!popup.classList.contains('active')) {
+                const launcher = document.getElementById('chatLauncher');
+                if(launcher) launcher.click();
             }
             
             // Wait for internal logic to initialize
@@ -407,24 +413,40 @@
 
             window.triggerOpenConv = openConversation;
 
-            chatLauncher.addEventListener('click', () => {
-                const isActive = chatPopup.style.display === 'flex';
-                if (!isActive) {
-                    gsap.set(chatPopup, { display: 'flex', opacity: 0, scale: 0.8, y: 50 });
-                    gsap.to(chatPopup, { opacity: 1, scale: 1, y: 0, duration: 0.5, ease: "back.out(1.7)" });
+            chatLauncher.addEventListener('click', (e) => {
+                e.preventDefault();
+                const isOpen = chatPopup.classList.contains('active');
+                
+                if (!isOpen) {
+                    chatPopup.classList.add('active');
+                    if (window.gsap) {
+                        gsap.set(chatPopup, { display: 'flex', opacity: 0, scale: 0.8, transformOrigin: 'bottom right' });
+                        gsap.to(chatPopup, { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(1.5)" });
+                    } else {
+                        chatPopup.style.display = 'flex';
+                    }
                     loadConversations();
                 } else {
                     closeChatAction();
                 }
             });
 
-            closeChat.addEventListener('click', closeChatAction);
+            closeChat.addEventListener('click', (e) => {
+                e.preventDefault();
+                closeChatAction();
+            });
 
             function closeChatAction() {
-                gsap.to(chatPopup, { opacity: 0, scale: 0.8, y: 50, duration: 0.3, onComplete: () => {
+                chatPopup.classList.remove('active');
+                if (window.gsap) {
+                    gsap.to(chatPopup, { opacity: 0, scale: 0.8, duration: 0.3, ease: "power2.in", onComplete: () => {
+                        chatPopup.style.display = 'none';
+                        clearInterval(pollingInterval);
+                    }});
+                } else {
                     chatPopup.style.display = 'none';
                     clearInterval(pollingInterval);
-                }});
+                }
             }
 
             function loadConversations() {
@@ -435,6 +457,8 @@
                 backBtn.style.display = 'none';
                 document.getElementById('chatPopupTitle').textContent = 'Live Support';
                 document.getElementById('chatPopupSub').textContent = 'Active Now';
+                const statusInfo = document.querySelector('.status-info p');
+                if(statusInfo) statusInfo.innerHTML = '<span class="online-indicator"></span> <span>Active Now</span>';
                 document.getElementById('quickChatAvatar').innerHTML = '<i class="fa-solid fa-headset"></i>';
 
                 fetch('{{ route("admin.messages.index") }}', { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
@@ -590,43 +614,16 @@
         const theme = document.documentElement.getAttribute('data-theme') || 'light';
         const swalConfig = {
             background: theme === 'dark' ? '#1e293b' : '#fff',
-            color: theme === 'dark' ? '#f1f5f9' : '#1e293b'
+            color: theme === 'dark' ? '#f1f5f9' : '#1e293b',
+            customClass: {
+                container: 'swal-on-top'
+            }
         };
-
-        @if(session('success'))
-            Swal.fire({
-                ...swalConfig,
-                icon: 'success',
-                title: 'Success!',
-                text: "{{ session('success') }}",
-                timer: 4000,
-                showConfirmButton: false
-            });
-        @endif
-
-        @if(session('error'))
-            Swal.fire({
-                ...swalConfig,
-                icon: 'error',
-                title: 'Error!',
-                text: "{{ session('error') }}"
-            });
-        @endif
-
-        @if($errors->any())
-            Swal.fire({
-                ...swalConfig,
-                icon: 'error',
-                title: 'Validation Error',
-                text: "{{ $errors->first() }}"
-            });
-        @endif
 
         // Standardized SweetAlert2 Delete Confirmation
         window.confirmAction = function(e, options = {}) {
             e.preventDefault();
             const form = e.target.closest('form');
-            const theme = document.documentElement.getAttribute('data-theme') || 'light';
             
             Swal.fire({
                 title: options.title || 'Are you sure?',
@@ -636,15 +633,52 @@
                 confirmButtonColor: options.confirmColor || '#ef4444',
                 cancelButtonColor: options.cancelColor || '#64748b',
                 confirmButtonText: options.confirmText || 'Yes, proceed!',
-                background: theme === 'dark' ? '#1e293b' : '#fff',
-                color: theme === 'dark' ? '#f1f5f9' : '#1e293b'
+                ...swalConfig
             }).then((result) => {
                 if (result.isConfirmed) {
                     form.submit();
                 }
             });
         };
-    });
-</script>
+
+        // Session Alerts
+        @if(session('success'))
+            setTimeout(() => {
+                Swal.fire({
+                    ...swalConfig,
+                    icon: 'success',
+                    title: 'Success!',
+                    text: "{{ session('success') }}",
+                    timer: 4000,
+                    showConfirmButton: false
+                });
+            }, 500);
+        @endif
+
+        @if(session('error'))
+            setTimeout(() => {
+                Swal.fire({
+                    ...swalConfig,
+                    icon: 'error',
+                    title: 'Error!',
+                    text: "{{ session('error') }}"
+                });
+            }, 500);
+        @endif
+
+        @if($errors->any())
+            setTimeout(() => {
+                Swal.fire({
+                    ...swalConfig,
+                    icon: 'error',
+                    title: 'Validation Error',
+                    text: "{{ $errors->first() }}"
+                });
+            }, 500);
+        @endif
+    </script>
+    <style>
+        .swal-on-top { z-index: 10000001 !important; }
+    </style>
 </body>
 </html>

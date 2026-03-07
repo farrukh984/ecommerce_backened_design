@@ -2,6 +2,11 @@
 
 @section('title', 'Categories')
 @section('header_title', 'Manage Categories')
+@section('topbar_actions')
+<a href="{{ route('admin.categories.create') }}" class="btn-primary">
+    <i class="fa-solid fa-plus-circle"></i> Add Category
+</a>
+@endsection
 
 @section('admin_content')
 
@@ -11,9 +16,6 @@
             <h2>Category List</h2>
             <p>Group your products together</p>
         </div>
-        <a href="{{ route('admin.categories.create') }}" class="btn-primary">
-            <i class="fa-solid fa-plus"></i> Add Category
-        </a>
     </div>
 
     <div class="table-responsive">

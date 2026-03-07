@@ -3,6 +3,12 @@
 @section('title', 'Manage Deals')
 @section('header_title', 'Deals & Countdown Management')
 
+@section('topbar_actions')
+<a href="{{ route('admin.deals.create') }}" class="btn-primary">
+    <i class="fa-solid fa-plus-circle"></i> Create New Deal
+</a>
+@endsection
+
 @section('admin_content')
 
 <div class="premium-card">
@@ -11,9 +17,6 @@
             <h2>All Deals</h2>
             <p>Manage your deals and set countdown timers</p>
         </div>
-        <a href="{{ route('admin.deals.create') }}" class="btn-primary">
-            <i class="fa-solid fa-plus-circle"></i> Create New Deal
-        </a>
     </div>
     <div class="table-responsive">
         <table class="premium-table">
