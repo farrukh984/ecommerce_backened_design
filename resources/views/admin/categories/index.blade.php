@@ -43,7 +43,7 @@
                             <a href="{{ route('admin.categories.edit', $category->id) }}" class="btn-outline" style="color: var(--admin-primary);">
                                 <i class="fa-solid fa-pen"></i>
                             </a>
-                            <form action="{{ route('admin.categories.destroy', $category->id) }}" method="POST">
+                            <form action="{{ route('admin.categories.destroy', $category->id) }}" method="POST" onsubmit="confirmAction(event, {title: 'Delete Category?'})">
                                 @csrf @method('DELETE')
                                 <button type="submit" class="btn-outline" style="color: var(--danger, #eb001b); cursor: pointer; background: transparent;">
                                     <i class="fa-solid fa-trash"></i>

@@ -13,6 +13,10 @@
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
+    <!-- SweetAlert2 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
     <!-- CSS -->
     <link rel="stylesheet" href="{{ asset('css/dark-mode.css') }}">
     <link rel="stylesheet" href="{{ asset('css/admin_premium.css') }}">
@@ -581,6 +585,66 @@
                 });
             });
         });
-    </script>
+
+        // Global SweetAlert2 Session Handling
+        const theme = document.documentElement.getAttribute('data-theme') || 'light';
+        const swalConfig = {
+            background: theme === 'dark' ? '#1e293b' : '#fff',
+            color: theme === 'dark' ? '#f1f5f9' : '#1e293b'
+        };
+
+        @if(session('success'))
+            Swal.fire({
+                ...swalConfig,
+                icon: 'success',
+                title: 'Success!',
+                text: "{{ session('success') }}",
+                timer: 4000,
+                showConfirmButton: false
+            });
+        @endif
+
+        @if(session('error'))
+            Swal.fire({
+                ...swalConfig,
+                icon: 'error',
+                title: 'Error!',
+                text: "{{ session('error') }}"
+            });
+        @endif
+
+        @if($errors->any())
+            Swal.fire({
+                ...swalConfig,
+                icon: 'error',
+                title: 'Validation Error',
+                text: "{{ $errors->first() }}"
+            });
+        @endif
+
+        // Standardized SweetAlert2 Delete Confirmation
+        window.confirmAction = function(e, options = {}) {
+            e.preventDefault();
+            const form = e.target.closest('form');
+            const theme = document.documentElement.getAttribute('data-theme') || 'light';
+            
+            Swal.fire({
+                title: options.title || 'Are you sure?',
+                text: options.text || "This action cannot be undone!",
+                icon: options.icon || 'warning',
+                showCancelButton: true,
+                confirmButtonColor: options.confirmColor || '#ef4444',
+                cancelButtonColor: options.cancelColor || '#64748b',
+                confirmButtonText: options.confirmText || 'Yes, proceed!',
+                background: theme === 'dark' ? '#1e293b' : '#fff',
+                color: theme === 'dark' ? '#f1f5f9' : '#1e293b'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        };
+    });
+</script>
 </body>
 </html>

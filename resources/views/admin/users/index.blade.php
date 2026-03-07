@@ -5,21 +5,6 @@
 
 @section('admin_content')
 
-<!-- Alert Messages -->
-@if(session('success'))
-    <div class="alert alert-success" style="margin-bottom: 24px; padding: 16px 24px; border-radius: 14px; background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.2); color: #16a34a; display: flex; align-items: center; gap: 12px; font-weight: 600;">
-        <i class="fa-solid fa-circle-check"></i>
-        {{ session('success') }}
-    </div>
-@endif
-
-@if(session('error'))
-    <div class="alert alert-danger" style="margin-bottom: 24px; padding: 16px 24px; border-radius: 14px; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #dc2626; display: flex; align-items: center; gap: 12px; font-weight: 600;">
-        <i class="fa-solid fa-circle-exclamation"></i>
-        {{ session('error') }}
-    </div>
-@endif
-
 <!-- User Stats -->
 <div class="stats-grid">
     <div class="stat-card">
@@ -125,10 +110,10 @@
                         <td style="color: var(--admin-text-sub);">{{ $user->created_at->format('M d, Y') }}</td>
                         <td style="text-align: right;">
                             @if($user->id !== auth()->id())
-                                <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this user? This action cannot be undone.')" style="display: inline-block;">
+                                <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" class="delete-user-form" style="display: inline-block;">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn-delete-icon" title="Delete User">
+                                    <button type="button" class="btn-delete-icon" title="Delete User" onclick="confirmDelete(this)">
                                         <i class="fa-solid fa-trash-can"></i>
                                     </button>
                                 </form>
@@ -155,6 +140,54 @@
         </div>
     @endif
 </div>
+
+@section('scripts')
+<script>
+    function confirmDelete(button) {
+        const form = button.closest('.delete-user-form');
+        Swal.fire({
+            title: 'Delete User?',
+            text: "This action cannot be undone and will permanently remove this user and all their data.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: 'Yes, delete permanently!',
+            background: document.documentElement.getAttribute('data-theme') === 'dark' ? '#1e293b' : '#fff',
+            color: document.documentElement.getAttribute('data-theme') === 'dark' ? '#f1f5f9' : '#1e293b'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    }
+
+    // Success/Error Alerts from Session
+    document.addEventListener('DOMContentLoaded', () => {
+        @if(session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: "{{ session('success') }}",
+                timer: 4000,
+                showConfirmButton: false,
+                background: document.documentElement.getAttribute('data-theme') === 'dark' ? '#1e293b' : '#fff',
+                color: document.documentElement.getAttribute('data-theme') === 'dark' ? '#f1f5f9' : '#1e293b'
+            });
+        @endif
+
+        @if(session('error'))
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: "{{ session('error') }}",
+                background: document.documentElement.getAttribute('data-theme') === 'dark' ? '#1e293b' : '#fff',
+                color: document.documentElement.getAttribute('data-theme') === 'dark' ? '#f1f5f9' : '#1e293b'
+            });
+        @endif
+    });
+</script>
+@endsection
 
 @section('styles')
 <style>

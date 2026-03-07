@@ -13,14 +13,6 @@
         </div>
     </div>
 
-    @if(session('success'))
-        <div style="padding: 12px 24px;">
-            <div style="background: #dcfce7; color: #166534; padding: 12px 16px; border-radius: 8px; font-size: 14px; font-weight: 500;">
-                <i class="fa-solid fa-check-circle"></i> {{ session('success') }}
-            </div>
-        </div>
-    @endif
-
     <div class="table-responsive">
         <table class="premium-table">
             <thead>
@@ -85,7 +77,7 @@
                                         <button type="submit" class="btn-primary" style="padding: 6px 12px; font-size: 11px;">Approve</button>
                                     </form>
                                 @endif
-                                <form method="POST" action="{{ route('admin.reviews.destroy', $review) }}" onsubmit="return confirm('Delete this review?')">
+                                <form method="POST" action="{{ route('admin.reviews.destroy', $review) }}" onsubmit="confirmAction(event, {title: 'Delete Review?'})">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" style="background: #fee2e2; color: #991b1b; border: none; padding: 6px 12px; border-radius: 8px; font-size: 11px; cursor: pointer;">Delete</button>

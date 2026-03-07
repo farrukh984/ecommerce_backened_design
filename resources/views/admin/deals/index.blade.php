@@ -5,12 +5,6 @@
 
 @section('admin_content')
 
-@if(session('success'))
-<div style="background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; padding: 16px 24px; border-radius: 14px; margin-bottom: 24px; font-weight: 600; display: flex; align-items: center; gap: 10px;">
-    <i class="fa-solid fa-check-circle"></i> {{ session('success') }}
-</div>
-@endif
-
 <div class="premium-card">
     <div class="action-header">
         <div class="header-title">
@@ -68,7 +62,7 @@
                             <a href="{{ route('admin.deals.edit', $deal->id) }}" class="btn-outline" style="padding: 6px 14px; font-size: 12px;">
                                 <i class="fa-solid fa-pen"></i>
                             </a>
-                            <form method="POST" action="{{ route('admin.deals.destroy', $deal->id) }}" onsubmit="return confirm('Delete this deal?')">
+                            <form method="POST" action="{{ route('admin.deals.destroy', $deal->id) }}" onsubmit="confirmAction(event, {title: 'Delete Deal?'})">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn-outline" style="padding: 6px 14px; font-size: 12px; color: #dc2626; border-color: #fecaca;">

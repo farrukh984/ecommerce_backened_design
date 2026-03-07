@@ -489,7 +489,7 @@
                     
                     <!-- Delete Order -->
                     @if(in_array($order->status, ['pending', 'cancelled']))
-                    <form method="POST" action="{{ route('user.orders.delete', $order->id) }}" onsubmit="return confirm('Are you sure you want to delete this order permanently?')">
+                    <form method="POST" action="{{ route('user.orders.delete', $order->id) }}" onsubmit="confirmAction(event, {title: 'Delete Order?', text: 'This will permanently remove the order from your history.'})">
                         @csrf
                         @method('DELETE')
                         <button type="submit" style="width: 100%; padding: 14px; background: var(--bg-card-alt, #fef2f2); color: var(--danger, #dc2626); border: 1px solid var(--border, #fecaca); border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s;" onmouseover="this.style.background='var(--bg-hover)'" onmouseout="this.style.background='var(--bg-card-alt)'">

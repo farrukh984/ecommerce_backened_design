@@ -907,7 +907,16 @@ document.getElementById('msgForm').addEventListener('submit', function(e){
         body:fd
     }).then(r=>r.json()).then(d=>{
         if(d.status==='success') inp.focus();
-        else{ inp.value=orig; alert('Error: could not send'); }
+        else {
+            inp.value=orig;
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: 'Error sending message. Please try again.',
+                background: document.documentElement.getAttribute('data-theme') === 'dark' ? '#1f2937' : '#fff',
+                color: document.documentElement.getAttribute('data-theme') === 'dark' ? '#f3f4f6' : '#1f2937'
+            });
+        }
     }).catch(()=>{inp.value=orig;}).finally(()=>{sb.disabled=false;});
 });
 @endif

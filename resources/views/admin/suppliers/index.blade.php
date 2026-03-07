@@ -16,12 +16,6 @@
         </a>
     </div>
 
-    @if(session('success'))
-        <div class="alert alert-success mt-4">
-            {{ session('success') }}
-        </div>
-    @endif
-
     <div class="table-responsive">
         <table class="premium-table">
             <thead>
@@ -72,7 +66,7 @@
                             <a href="{{ route('admin.suppliers.edit', $supplier->id) }}" class="btn-outline" style="color: var(--admin-primary);">
                                 <i class="fa-solid fa-pen"></i>
                             </a>
-                            <form action="{{ route('admin.suppliers.destroy', $supplier->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this supplier?')">
+                            <form action="{{ route('admin.suppliers.destroy', $supplier->id) }}" method="POST" onsubmit="confirmAction(event, {title: 'Delete Supplier?'})">
                                 @csrf @method('DELETE')
                                 <button type="submit" class="btn-outline" style="color: #eb001b; cursor: pointer;">
                                     <i class="fa-solid fa-trash"></i>

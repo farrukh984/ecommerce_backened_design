@@ -452,6 +452,66 @@
     </script>
     @endauth
 
+    <!-- Global SweetAlert2 Handling -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const theme = document.documentElement.getAttribute('data-theme') || 'light';
+            const swalConfig = {
+                background: theme === 'dark' ? '#1f2937' : '#fff',
+                color: theme === 'dark' ? '#f3f4f6' : '#1f2937'
+            };
+
+            @if(session('success'))
+                Swal.fire({
+                    ...swalConfig,
+                    icon: 'success',
+                    title: 'Success!',
+                    text: "{{ session('success') }}",
+                    timer: 4000,
+                    showConfirmButton: false
+                });
+            @endif
+
+            @if(session('error'))
+                Swal.fire({
+                    ...swalConfig,
+                    icon: 'error',
+                    title: 'Error!',
+                    text: "{{ session('error') }}"
+                });
+            @endif
+
+            @if($errors->any())
+                Swal.fire({
+                    ...swalConfig,
+                    icon: 'error',
+                    title: 'Validation Error',
+                    text: "{{ $errors->first() }}"
+                });
+            @endif
+
+            window.confirmAction = function(e, options = {}) {
+                e.preventDefault();
+                const form = e.target.closest('form');
+                
+                Swal.fire({
+                    title: options.title || 'Are you sure?',
+                    text: options.text || "This action cannot be undone!",
+                    icon: options.icon || 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: options.confirmColor || '#0ea5e9',
+                    cancelButtonColor: options.cancelColor || '#64748b',
+                    confirmButtonText: options.confirmText || 'Yes, proceed!',
+                    ...swalConfig
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            };
+        });
+    </script>
+
     @yield('scripts')
 
 </body>

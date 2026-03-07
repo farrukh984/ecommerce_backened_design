@@ -66,18 +66,6 @@
         </div>
 
         <div class="profile-content-body">
-            @if(session('success'))
-                <div class="alert alert-success">
-                    <i class="fa-solid fa-circle-check"></i> {{ session('success') }}
-                </div>
-            @endif
-
-            @if($errors->any())
-                <div class="alert alert-danger">
-                    <i class="fa-solid fa-circle-exclamation"></i> {{ $errors->first() }}
-                </div>
-            @endif
-
             <form method="POST" action="{{ route('admin.profile.update') }}" class="profile-form" enctype="multipart/form-data" id="adminProfileForm">
                 @csrf
                 
@@ -438,21 +426,65 @@
         }
     }
     function removeCover() {
-        if(confirm('Are you sure you want to remove your cover image?')) {
-            document.getElementById('removeCoverInput').value = '1';
-            document.getElementById('coverContainer').innerHTML = '<div id="coverPreviewImg" class="cover-placeholder"></div>';
-            const btn = document.getElementById('removeCoverBtn');
-            if(btn) btn.style.display = 'none';
-        }
+        Swal.fire({
+            title: 'Remove Cover Image?',
+            text: "This will remove your current cover image.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: 'Yes, remove it!',
+            background: document.documentElement.getAttribute('data-theme') === 'dark' ? '#1e293b' : '#fff',
+            color: document.documentElement.getAttribute('data-theme') === 'dark' ? '#f1f5f9' : '#1e293b'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('removeCoverInput').value = '1';
+                document.getElementById('coverContainer').innerHTML = '<div id="coverPreviewImg" class="cover-placeholder"></div>';
+                const btn = document.getElementById('removeCoverBtn');
+                if(btn) btn.style.display = 'none';
+                
+                Swal.fire({
+                    title: 'Removed!',
+                    text: 'Image has been removed from view. Save changes to finalize.',
+                    icon: 'success',
+                    timer: 2000,
+                    showConfirmButton: false,
+                    background: document.documentElement.getAttribute('data-theme') === 'dark' ? '#1e293b' : '#fff',
+                    color: document.documentElement.getAttribute('data-theme') === 'dark' ? '#f1f5f9' : '#1e293b'
+                });
+            }
+        });
     }
 
     function removeProfile() {
-        if(confirm('Are you sure you want to remove your profile image?')) {
-            document.getElementById('removeProfileInput').value = '1';
-            document.getElementById('adminPreviewImg').outerHTML = '<div id="adminPreviewImg" class="avatar-placeholder">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</div>';
-            const btn = document.getElementById('removeProfileBtn');
-            if(btn) btn.style.display = 'none';
-        }
+        Swal.fire({
+            title: 'Remove Profile Image?',
+            text: "This will remove your current profile picture.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: 'Yes, remove it!',
+            background: document.documentElement.getAttribute('data-theme') === 'dark' ? '#1e293b' : '#fff',
+            color: document.documentElement.getAttribute('data-theme') === 'dark' ? '#f1f5f9' : '#1e293b'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('removeProfileInput').value = '1';
+                document.getElementById('adminPreviewImg').outerHTML = '<div id="adminPreviewImg" class="avatar-placeholder">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</div>';
+                const btn = document.getElementById('removeProfileBtn');
+                if(btn) btn.style.display = 'none';
+
+                Swal.fire({
+                    title: 'Removed!',
+                    text: 'Image has been removed from view. Save changes to finalize.',
+                    icon: 'success',
+                    timer: 2000,
+                    showConfirmButton: false,
+                    background: document.documentElement.getAttribute('data-theme') === 'dark' ? '#1e293b' : '#fff',
+                    color: document.documentElement.getAttribute('data-theme') === 'dark' ? '#f1f5f9' : '#1e293b'
+                });
+            }
+        });
     }
 </script>
 @endsection

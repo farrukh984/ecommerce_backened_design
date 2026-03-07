@@ -16,16 +16,6 @@
                 <i class="fa-solid fa-plus"></i> Add Product
             </a>
         </div>
-    </div>
-
-    @if(session('success'))
-        <div style="padding: 12px 24px;">
-            <div style="background: var(--success-bg, #dcfce7); color: var(--success-text, #166534); padding: 12px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; border: 1px solid var(--success-border, #bbf7d0);">
-                <i class="fa-solid fa-check-circle"></i> {{ session('success') }}
-            </div>
-        </div>
-    @endif
-
     <div class="table-responsive">
         <table class="premium-table">
             <thead>
@@ -120,7 +110,7 @@
                             <a href="{{ route('admin.products.edit', $product->id) }}" class="btn-outline" style="padding: 6px 10px; color: var(--admin-primary);">
                                 <i class="fa-solid fa-pen"></i>
                             </a>
-                            <form action="{{ route('admin.products.destroy', $product->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this product?')">
+                            <form action="{{ route('admin.products.destroy', $product->id) }}" method="POST" onsubmit="confirmAction(event, {title: 'Delete Product?'})">
                                 @csrf @method('DELETE')
                                 <button type="submit" class="btn-outline" style="padding: 6px 10px; color: var(--danger, #eb001b); cursor: pointer; background: transparent;">
                                     <i class="fa-solid fa-trash"></i>

@@ -31,17 +31,6 @@
                 <p class="gs-reveal">Join our exclusive premium network today.</p>
             </div>
 
-            <!-- Validation Errors -->
-            @if($errors->any())
-                <div class="alert alert-danger gs-reveal">
-                    <ul style="list-style: none; padding: 0; margin: 0;">
-                        @foreach ($errors->all() as $error)
-                            <li><i class="fa-solid fa-circle-exclamation"></i> {{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-
             <form method="POST" action="{{ route('register.store') }}" id="register-form">
                 @csrf
                 
@@ -148,6 +137,31 @@
             ease: "expo.out",
             delay: 0.2
         });
+    });
+
+    // Success/Error Alerts from Session
+    document.addEventListener('DOMContentLoaded', () => {
+        @if(session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: "{{ session('success') }}",
+                timer: 4000,
+                showConfirmButton: false,
+                background: document.documentElement.getAttribute('data-theme') === 'dark' ? '#1f2937' : '#fff',
+                color: document.documentElement.getAttribute('data-theme') === 'dark' ? '#f3f4f6' : '#1f2937'
+            });
+        @endif
+
+        @if($errors->any())
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: "{{ $errors->first() }}",
+                background: document.documentElement.getAttribute('data-theme') === 'dark' ? '#1f2937' : '#fff',
+                color: document.documentElement.getAttribute('data-theme') === 'dark' ? '#f3f4f6' : '#1f2937'
+            });
+        @endif
     });
 </script>
 @endsection

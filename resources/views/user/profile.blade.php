@@ -137,19 +137,6 @@
                         </div>
                     </div>
                 </div>
-
-                @if(session('success'))
-                    <div class="alert-success">
-                        <i class="fa-solid fa-circle-check"></i> {{ session('success') }}
-                    </div>
-                @endif
-
-                @if($errors->any())
-                    <div class="alert-error">
-                        <i class="fa-solid fa-circle-exclamation"></i> {{ $errors->first() }}
-                    </div>
-                @endif
-
                 <form method="POST" action="{{ route('user.profile.update') }}" class="profile-form" enctype="multipart/form-data" id="userProfileForm">
                     @csrf
                     
@@ -269,21 +256,65 @@
     avatarContainer.addEventListener('mouseenter', () => avatarOverlay.style.opacity = '1');
     avatarContainer.addEventListener('mouseleave', () => avatarOverlay.style.opacity = '0');
     function removeCover() {
-        if(confirm('Are you sure you want to remove your cover image?')) {
-            document.getElementById('removeCoverInput').value = '1';
-            document.getElementById('coverPreviewImg').outerHTML = '<div class="cover-placeholder" id="coverPreviewImg"></div>';
-            const btn = document.getElementById('removeCoverBtn');
-            if(btn) btn.style.display = 'none';
-        }
+        Swal.fire({
+            title: 'Remove Cover Image?',
+            text: "This will remove your current cover image.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#0ea5e9',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: 'Yes, remove it!',
+            background: document.documentElement.getAttribute('data-theme') === 'dark' ? '#1f2937' : '#fff',
+            color: document.documentElement.getAttribute('data-theme') === 'dark' ? '#f3f4f6' : '#1f2937'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('removeCoverInput').value = '1';
+                document.getElementById('coverPreviewImg').outerHTML = '<div class="cover-placeholder" id="coverPreviewImg"></div>';
+                const btn = document.getElementById('removeCoverBtn');
+                if(btn) btn.style.display = 'none';
+
+                Swal.fire({
+                    title: 'Removed!',
+                    text: 'Image has been removed. Save profile to finalize.',
+                    icon: 'success',
+                    timer: 2000,
+                    showConfirmButton: false,
+                    background: document.documentElement.getAttribute('data-theme') === 'dark' ? '#1f2937' : '#fff',
+                    color: document.documentElement.getAttribute('data-theme') === 'dark' ? '#f3f4f6' : '#1f2937'
+                });
+            }
+        });
     }
 
     function removeProfile() {
-        if(confirm('Are you sure you want to remove your profile image?')) {
-            document.getElementById('removeProfileInput').value = '1';
-            document.getElementById('userPreviewImg').outerHTML = '<div class="avatar-placeholder" id="userPreviewImg"><i class="fa-solid fa-user"></i></div>';
-            const btn = document.getElementById('removeProfileBtn');
-            if(btn) btn.style.display = 'none';
-        }
+        Swal.fire({
+            title: 'Remove Profile Picture?',
+            text: "This will remove your current profile picture.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#0ea5e9',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: 'Yes, remove it!',
+            background: document.documentElement.getAttribute('data-theme') === 'dark' ? '#1f2937' : '#fff',
+            color: document.documentElement.getAttribute('data-theme') === 'dark' ? '#f3f4f6' : '#1f2937'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('removeProfileInput').value = '1';
+                document.getElementById('userPreviewImg').outerHTML = '<div class="avatar-placeholder" id="userPreviewImg"><i class="fa-solid fa-user"></i></div>';
+                const btn = document.getElementById('removeProfileBtn');
+                if(btn) btn.style.display = 'none';
+
+                Swal.fire({
+                    title: 'Removed!',
+                    text: 'Image has been removed. Save profile to finalize.',
+                    icon: 'success',
+                    timer: 2000,
+                    showConfirmButton: false,
+                    background: document.documentElement.getAttribute('data-theme') === 'dark' ? '#1f2937' : '#fff',
+                    color: document.documentElement.getAttribute('data-theme') === 'dark' ? '#f3f4f6' : '#1f2937'
+                });
+            }
+        });
     }
 </script>
 @endsection
