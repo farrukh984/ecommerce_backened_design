@@ -16,16 +16,26 @@ class HomeController extends Controller
                     $q->where('is_active', true);
                 }])->get(),
                 'recommended' => Product::where('is_active', true)->latest()->take(10)->get(),
-                'deals' => Product::where('is_active', true)->whereNotNull('old_price')->take(6)->get(),
-                'activeDeal' => Deal::activeDeal()
             ];
         });
+
+        // Always check for all active deals fresh (outside cache) 
+        // to ensure the list is accurate and only shows products selected by admin
+        $activeDeals = Deal::where('is_active', true)
+            ->where('end_date', '>', now())
+            ->with('product')
+            ->orderBy('end_date', 'asc')
+            ->take(6)
+            ->get();
+
+        // The first one is used for the main countdown timer
+        $activeDeal = $activeDeals->first();
 
         return view('pages.home', [
             'categories' => $homeData['categories'],
             'recommended' => $homeData['recommended'],
-            'deals' => $homeData['deals'],
-            'activeDeal' => $homeData['activeDeal']
+            'deals' => $activeDeals, // Pass the collection of active deals
+            'activeDeal' => $activeDeal
         ]);
     }
 

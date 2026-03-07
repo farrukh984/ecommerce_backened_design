@@ -84,11 +84,12 @@
 
 
     <!-- ================= DEALS SECTION ================= -->
+    @if($activeDeal)
     <div class="deals-section">
 
         <div class="deals-info">
-            <h3>{{ $activeDeal?->title ?? 'Deals and offers' }}</h3>
-            <p class="deals-sub">{{ $activeDeal?->description ?? 'Hygiene equipments' }}</p>
+            <h3>{{ $activeDeal->title }}</h3>
+            <p class="deals-sub">{{ $activeDeal->description }}</p>
             <div class="countdown" id="countdown">
                 <div class="count-box">
                     <span class="count-num" id="days">00</span>
@@ -110,17 +111,34 @@
         </div>
 
         <div class="deals-grid">
-            @foreach($deals as $deal)
+            @foreach($deals as $item)
+            @if($item->product)
             <div class="deal-item">
-                <a href="{{ route('products.show', $deal->id) }}" class="deal-link">
-                    <img src="{{ display_image($deal->image) }}" alt="{{ $deal->name }}">
-                    <p>{{ $deal->name }}</p>
-                    <span class="discount">-{{ $deal->discount }}%</span>
+                <a href="{{ route('products.show', $item->product_id) }}" class="deal-link">
+                    <img src="{{ display_image($item->product->image) }}" alt="{{ $item->product->name }}">
+                    <p>{{ $item->product->name }}</p>
+                    
+                    @php
+                        $discountedPrice = $item->product->price * (1 - $item->discount_percent / 100);
+                    @endphp
+                    
+                    <div class="deal-price-info" style="margin-bottom: 8px;">
+                        <span style="font-weight: 700; color: var(--text-primary); font-size: 15px;">
+                            ${{ number_format($discountedPrice, 2) }}
+                        </span>
+                        <span style="text-decoration: line-through; color: var(--text-muted, #8b96a5); font-size: 12px; margin-left: 4px;">
+                            ${{ number_format($item->product->price, 2) }}
+                        </span>
+                    </div>
+
+                    <span class="discount">-{{ $item->discount_percent }}%</span>
                 </a>
             </div>
+            @endif
             @endforeach
         </div>
     </div>
+    @endif
 
 
     <!-- @foreach($categories as $category)
@@ -431,6 +449,9 @@ function startCountdown() {
             document.getElementById('hours').textContent = '00';
             document.getElementById('minutes').textContent = '00';
             document.getElementById('seconds').textContent = '00';
+            // Hide section when time is up
+            const section = document.querySelector('.deals-section');
+            if(section) section.style.display = 'none';
             return;
         }
 
