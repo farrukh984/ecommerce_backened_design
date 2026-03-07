@@ -5,6 +5,21 @@
 
 @section('admin_content')
 
+<!-- Alert Messages -->
+@if(session('success'))
+    <div class="alert alert-success" style="margin-bottom: 24px; padding: 16px 24px; border-radius: 14px; background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.2); color: #16a34a; display: flex; align-items: center; gap: 12px; font-weight: 600;">
+        <i class="fa-solid fa-circle-check"></i>
+        {{ session('success') }}
+    </div>
+@endif
+
+@if(session('error'))
+    <div class="alert alert-danger" style="margin-bottom: 24px; padding: 16px 24px; border-radius: 14px; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #dc2626; display: flex; align-items: center; gap: 12px; font-weight: 600;">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        {{ session('error') }}
+    </div>
+@endif
+
 <!-- User Stats -->
 <div class="stats-grid">
     <div class="stat-card">
@@ -69,6 +84,7 @@
                     <th>Role</th>
                     <th>Orders</th>
                     <th>Joined</th>
+                    <th style="text-align: right;">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -107,10 +123,23 @@
                             </span>
                         </td>
                         <td style="color: var(--admin-text-sub);">{{ $user->created_at->format('M d, Y') }}</td>
+                        <td style="text-align: right;">
+                            @if($user->id !== auth()->id())
+                                <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this user? This action cannot be undone.')" style="display: inline-block;">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn-delete-icon" title="Delete User">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </button>
+                                </form>
+                            @else
+                                <span style="font-size: 11px; color: var(--admin-text-sub); font-style: italic;">Current Account</span>
+                            @endif
+                        </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" style="text-align: center; padding: 40px; color: var(--admin-text-sub);">
+                        <td colspan="7" style="text-align: center; padding: 40px; color: var(--admin-text-sub);">
                             <i class="fa-solid fa-users" style="font-size: 40px; margin-bottom: 12px; display: block; opacity: 0.3;"></i>
                             No users found.
                         </td>
@@ -165,6 +194,31 @@
 
     [data-theme="dark"] .premium-table tr:hover td {
         background: rgba(255, 255, 255, 0.02);
+    }
+
+    .btn-delete-icon {
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        color: #ef4444;
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-delete-icon:hover {
+        background: #ef4444;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
+
+    [data-theme="dark"] .btn-delete-icon {
+        background: rgba(239, 68, 68, 0.15);
     }
 </style>
 @endsection

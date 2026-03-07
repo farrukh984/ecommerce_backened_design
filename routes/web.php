@@ -150,6 +150,7 @@ Route::middleware(['auth', 'is_admin'])
 
         // Users
         Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
+        Route::delete('/users/{user}', [AdminUserController::class, 'destroy'])->name('users.destroy');
 
         // Admin Profile
         Route::get('/profile', [AdminProfileController::class, 'index'])->name('profile');
