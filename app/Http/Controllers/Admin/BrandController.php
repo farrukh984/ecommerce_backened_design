@@ -23,7 +23,7 @@ class BrandController extends Controller
     {
         $request->validate(['name' => 'required|string|unique:brands,name']);
         Brand::create(['name' => $request->name]);
-        return redirect()->route('admin.brands.index');
+        return redirect()->route('admin.brands.index')->with('success', 'Brand created successfully.');
     }
 
     public function edit(Brand $brand)
@@ -35,12 +35,12 @@ class BrandController extends Controller
     {
         $request->validate(['name' => 'required|string|unique:brands,name,' . $brand->id]);
         $brand->update(['name' => $request->name]);
-        return redirect()->route('admin.brands.index');
+        return redirect()->route('admin.brands.index')->with('success', 'Brand updated successfully.');
     }
 
     public function destroy(Brand $brand)
     {
         $brand->delete();
-        return redirect()->route('admin.brands.index');
+        return redirect()->route('admin.brands.index')->with('success', 'Brand deleted successfully.');
     }
 }

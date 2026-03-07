@@ -21,9 +21,8 @@ class FeatureController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate(['name' => 'required|string|unique:features,name']);
         Feature::create(['name' => $request->name]);
-        return redirect()->route('admin.features.index');
+        return redirect()->route('admin.features.index')->with('success', 'Feature created successfully.');
     }
 
     public function edit(Feature $feature)
@@ -33,14 +32,13 @@ class FeatureController extends Controller
 
     public function update(Request $request, Feature $feature)
     {
-        $request->validate(['name' => 'required|string|unique:features,name,' . $feature->id]);
         $feature->update(['name' => $request->name]);
-        return redirect()->route('admin.features.index');
+        return redirect()->route('admin.features.index')->with('success', 'Feature updated successfully.');
     }
 
     public function destroy(Feature $feature)
     {
         $feature->delete();
-        return redirect()->route('admin.features.index');
+        return redirect()->route('admin.features.index')->with('success', 'Feature deleted successfully.');
     }
 }

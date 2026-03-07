@@ -21,9 +21,8 @@ class ConditionController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate(['name' => 'required|string|unique:conditions,name']);
         Condition::create(['name' => $request->name]);
-        return redirect()->route('admin.conditions.index');
+        return redirect()->route('admin.conditions.index')->with('success', 'Condition created successfully.');
     }
 
     public function edit(Condition $condition)
@@ -33,14 +32,13 @@ class ConditionController extends Controller
 
     public function update(Request $request, Condition $condition)
     {
-        $request->validate(['name' => 'required|string|unique:conditions,name,' . $condition->id]);
         $condition->update(['name' => $request->name]);
-        return redirect()->route('admin.conditions.index');
+        return redirect()->route('admin.conditions.index')->with('success', 'Condition updated successfully.');
     }
 
     public function destroy(Condition $condition)
     {
         $condition->delete();
-        return redirect()->route('admin.conditions.index');
+        return redirect()->route('admin.conditions.index')->with('success', 'Condition deleted successfully.');
     }
 }

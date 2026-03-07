@@ -33,7 +33,7 @@ class CategoryController extends Controller
 
 
         Category::create($data);
-        return redirect()->route('admin.categories.index');
+        return redirect()->route('admin.categories.index')->with('success', 'Category created successfully.');
     }
 
     public function edit(Category $category)
@@ -54,12 +54,12 @@ class CategoryController extends Controller
 
 
         $category->update($data);
-        return redirect()->route('admin.categories.index');
+        return redirect()->route('admin.categories.index')->with('success', 'Category updated successfully.');
     }
 
     public function destroy(Category $category)
     {
         $category->delete();
-        return redirect()->route('admin.categories.index');
+        return redirect()->route('admin.categories.index')->with('success', 'Category deleted successfully.');
     }
 }

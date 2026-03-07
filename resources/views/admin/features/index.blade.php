@@ -35,9 +35,9 @@
                             <a href="{{ route('admin.features.edit', $feature->id) }}" class="btn-outline" style="color: var(--admin-primary);">
                                 <i class="fa-solid fa-pen"></i>
                             </a>
-                            <form action="{{ route('admin.features.destroy', $feature->id) }}" method="POST">
+                            <form action="{{ route('admin.features.destroy', $feature->id) }}" method="POST" onsubmit="confirmAction(event, {title: 'Delete Feature?'})">
                                 @csrf @method('DELETE')
-                                <button type="submit" class="btn-outline" style="color: #eb001b; cursor: pointer;">
+                                <button type="submit" class="btn-outline" style="color: #eb001b; cursor: pointer; background: transparent; border: none;">
                                     <i class="fa-solid fa-trash"></i>
                                 </button>
                             </form>

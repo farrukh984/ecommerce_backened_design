@@ -35,9 +35,9 @@
                             <a href="{{ route('admin.conditions.edit', $condition->id) }}" class="btn-outline" style="color: var(--admin-primary);">
                                 <i class="fa-solid fa-pen"></i>
                             </a>
-                            <form action="{{ route('admin.conditions.destroy', $condition->id) }}" method="POST">
+                            <form action="{{ route('admin.conditions.destroy', $condition->id) }}" method="POST" onsubmit="confirmAction(event, {title: 'Delete Condition?'})">
                                 @csrf @method('DELETE')
-                                <button type="submit" class="btn-outline" style="color: #eb001b; cursor: pointer;">
+                                <button type="submit" class="btn-outline" style="color: #eb001b; cursor: pointer; background: transparent; border: none;">
                                     <i class="fa-solid fa-trash"></i>
                                 </button>
                             </form>
