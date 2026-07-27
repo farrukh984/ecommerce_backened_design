@@ -1,79 +1,74 @@
 @extends('layouts.auth')
 
 @section('title', 'Verify OTP')
-
-@section('styles')
-    <link rel="stylesheet" href="{{ asset('css/login.css') }}">
+@section('showcase-image', asset('images/auth/security-shield.png'))
+@section('showcase-alt', 'Secure Verification')
+@section('showcase-badge', 'VERIFICATION')
+@section('showcase-title')
+Almost <span>There!</span>
 @endsection
+@section('showcase-desc', 'Enter the verification code we sent to your email to complete the password reset process.')
 
 @section('content')
-<div class="split-auth-container">
-    <!-- LEFT BRAND PANEL -->
-    <div class="auth-left">
-        <div class="brand-showcase">
-            <h1 class="brand-logo"><i class="fa-solid fa-bag-shopping"></i> ShopBrand.</h1>
-            <div class="showcase-content">
-                <h2>Verify Your Identity</h2>
-                <p>Please check your email for the 6‑digit OTP code to reset your password. It expires in 10 minutes.</p>
-            </div>
-            <!-- Decorative animated circles -->
-            <div class="visual-art">
-                <div class="circle c1"></div>
-                <div class="circle c2"></div>
-                <div class="circle c3"></div>
-            </div>
-            <p class="copyright">© 2026 ShopBrand Inc. All rights reserved.</p>
-        </div>
+<div class="auth-card">
+    <!-- Branding -->
+    <div class="auth-brand">
+        <span class="auth-brand-icon"><i class="fa-solid fa-gem"></i></span>
+        <div class="auth-brand-name">{{ config('app.name') }}</div>
     </div>
 
-    <!-- RIGHT FORM PANEL -->
-    <div class="auth-right">
-        <div class="auth-form-wrapper">
-            <div class="mobile-brand">
-                <i class="fa-solid fa-bag-shopping"></i> ShopBrand.
-            </div>
+    <!-- Header -->
+    <div class="form-header">
+        <div class="form-header-label gs-reveal">VERIFICATION</div>
+        <h3 class="gs-reveal">Enter OTP Code</h3>
+        <p class="gs-reveal">We've sent a 6‑digit code to {{ session('reset_email') }}</p>
+    </div>
 
-            <div class="form-header">
-                <h3>Enter OTP</h3>
-                <p>We've sent a 6‑digit code to {{ session('reset_email') }}.</p>
-            </div>
+    @if(session('success'))
+        <div class="alert alert-success gs-reveal">
+            <i class="fa-solid fa-circle-check"></i> {{ session('success') }}
+        </div>
+    @endif
 
-            @if(session('success'))
-                <div class="alert alert-success">
-                    <i class="fa-solid fa-circle-check"></i> {{ session('success') }}
-                </div>
-            @endif
+    @if($errors->any())
+        <div class="alert alert-danger gs-reveal">
+            <ul style="list-style: none; padding: 0; margin: 0;">
+                @foreach ($errors->all() as $error)
+                    <li><i class="fa-solid fa-circle-exclamation"></i> {{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
-            @if($errors->any())
-                <div class="alert alert-danger">
-                    <ul style="list-style: none; padding: 0; margin: 0;">
-                        @foreach ($errors->all() as $error)
-                            <li><i class="fa-solid fa-circle-exclamation"></i> {{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-
-            <form method="POST" action="{{ route('password.otp.verify') }}">
-                @csrf
-
-                <div class="form-group">
-                    <div class="input-wrapper">
-                        <input type="text" name="otp" id="otp" placeholder=" " required maxlength="6" inputmode="numeric" pattern="\d*" autofocus>
-                        <span class="icon"><i class="fa-solid fa-shield-halved"></i></span>
-                        <label for="otp">6‑digit OTP Code</label>
-                    </div>
-                </div>
-
-                <button type="submit" class="btn-submit">
-                    Verify Code <i class="fa-solid fa-paper-plane"></i>
-                </button>
-            </form>
-
-            <div class="bottom-text">
-                <a href="{{ route('password.request') }}">← Try another email</a>
+    <form method="POST" action="{{ route('password.otp.verify') }}">
+        @csrf
+        <div class="form-group gs-reveal">
+            <div class="input-wrapper">
+                <span class="icon"><i class="fa-solid fa-shield-halved"></i></span>
+                <input type="text" name="otp" id="otp" placeholder=" " required maxlength="6" inputmode="numeric" pattern="\d*" autofocus>
+                <label for="otp">6‑digit OTP Code</label>
             </div>
         </div>
+
+        <button type="submit" class="btn-submit gs-reveal" style="margin-top: 6px;">
+            <span>VERIFY CODE</span>
+            <i class="fa-solid fa-check-circle"></i>
+        </button>
+    </form>
+
+    <div class="bottom-text gs-reveal" style="margin-top: 24px;">
+        <a href="{{ route('password.request') }}"><i class="fa-solid fa-arrow-left"></i> Try another email</a>
+    </div>
+
+    <div class="security-badge gs-reveal">
+        <i class="fa-solid fa-shield-halved"></i>
+        <span>Secure verification</span>
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+    // Layout handles all GSAP animations
+</script>
 @endsection

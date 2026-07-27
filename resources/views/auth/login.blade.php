@@ -1,90 +1,83 @@
 @extends('layouts.auth')
 
-@section('title', 'Login')
+@section('title', 'Sign In')
+@section('showcase-image', asset('images/auth/watch-showcase.png'))
+@section('showcase-alt', 'Luxury Watch Showcase')
+@section('showcase-badge', 'PREMIUM COLLECTION')
+@section('showcase-title')
+Discover <span>Timeless</span> Elegance
+@endsection
+@section('showcase-desc', 'Explore our curated collection of luxury timepieces crafted with precision and passion.')
 
 @section('content')
-<div class="split-auth-container reverse">
-    {{-- RIGHT SIDE: BRAND SHOWCASE WITH IMAGE --}}
-    <div class="auth-right-panel">
-        <div class="panel-img-wrap">
-            <img src="https://images.unsplash.com/photo-1607083206968-13611e3d76db?auto=format&fit=crop&q=80&w=1000" alt="Login Showcase">
-        </div>
-        <div class="brand-showcase">
-            <h1 class="brand-logo"><i class="fa-solid fa-bag-shopping"></i> ShopBrand.</h1>
-            <div class="showcase-content">
-                <h2 class="gs-reveal">Elevate Your<br>Shopping.</h2>
-                <p class="gs-reveal">Join our exclusive community and access premium products with institutional security and breathtaking design.</p>
-            </div>
-            <p class="copyright">© 2026 ShopBrand Inc. All rights reserved.</p>
-        </div>
+<div class="auth-card">
+    <!-- Branding -->
+    <div class="auth-brand">
+        <span class="auth-brand-icon"><i class="fa-solid fa-gem"></i></span>
+        <div class="auth-brand-name">{{ config('app.name') }}</div>
     </div>
-    
-    {{-- LEFT SIDE: LOGIN FORM --}}
-    <div class="auth-left">
-        <div class="auth-form-wrapper">
-            <div class="mobile-brand">
-                <i class="fa-solid fa-bag-shopping"></i> ShopBrand.
-            </div>
-            
-            <div class="form-header">
-                <h3 class="gs-reveal">Sign In</h3>
-                <p class="gs-reveal">Welcome back! Please enter your details.</p>
-            </div>
 
-            <form method="POST" action="{{ route('login.store') }}" id="login-form">
-                @csrf
-                
-                <div class="form-group gs-reveal">
-                    <div class="input-wrapper">
-                        <input type="email" name="email" id="email" placeholder=" " required value="{{ old('email') }}">
-                        <span class="icon"><i class="fa-regular fa-envelope"></i></span>
-                        <label for="email">Email Address</label>
-                    </div>
-                </div>
+    <!-- Header -->
+    <div class="form-header">
+        <div class="form-header-label gs-reveal">WELCOME BACK</div>
+        <h3 class="gs-reveal">Sign In to Your Account</h3>
+    </div>
 
-                <div class="form-group gs-reveal">
-                    <div class="input-wrapper">
-                        <input type="password" name="password" id="password" placeholder=" " required>
-                        <span class="icon"><i class="fa-solid fa-lock"></i></span>
-                        <label for="password">Password</label>
-                        <i class="fa-regular fa-eye toggle-password" onclick="togglePass('password', this)"></i>
-                    </div>
-                </div>
-
-                <div class="form-actions gs-reveal">
-                    <label class="custom-checkbox">
-                        <input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}>
-                        <span class="checkmark"></span>
-                        <span>Remember me</span>
-                    </label>
-                    <a href="{{ route('password.request') }}" class="forgot-link">Forgot Password?</a>
-                </div>
-
-                <button type="submit" class="btn-submit gs-reveal">
-                    <span>Login Securely</span>
-                    <i class="fa-solid fa-shield-check"></i>
-                </button>
-
-                <div class="divider gs-reveal">
-                    <span>Or continue with</span>
-                </div>
-
-                <div class="social-buttons gs-reveal">
-                    <a href="{{ route('google.redirect') }}" class="btn-social">
-                        <img src="https://www.gstatic.com/images/branding/product/2x/googleg_48dp.png" alt="Google"> 
-                        <span>Google</span>
-                    </a>
-                    <a href="{{ route('facebook.redirect') }}" class="btn-social">
-                        <i class="fa-brands fa-facebook" style="color: #1877f2;"></i> 
-                        <span>Facebook</span>
-                    </a>
-                </div>
-            </form>
-
-            <div class="bottom-text gs-reveal">
-                Don't have an account? <a href="{{ route('register') }}">Create Account</a>
+    <!-- Form -->
+    <form method="POST" action="{{ route('login.store') }}" id="login-form">
+        @csrf
+        <div class="form-group gs-reveal">
+            <div class="input-wrapper">
+                <span class="icon"><i class="fa-regular fa-envelope"></i></span>
+                <input type="email" name="email" id="email" placeholder=" " required value="{{ old('email') }}">
+                <label for="email">Email Address</label>
             </div>
         </div>
+
+        <div class="form-group gs-reveal">
+            <div class="input-wrapper">
+                <span class="icon"><i class="fa-solid fa-lock"></i></span>
+                <input type="password" name="password" id="password" placeholder=" " required>
+                <label for="password">Password</label>
+                <i class="fa-regular fa-eye toggle-password" onclick="togglePass('password', this)"></i>
+            </div>
+        </div>
+
+        <div class="form-actions gs-reveal">
+            <label class="custom-checkbox">
+                <input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}>
+                <span class="checkmark"></span>
+                <span>Remember me</span>
+            </label>
+            <a href="{{ route('password.request') }}" class="forgot-link">Forgot Password?</a>
+        </div>
+
+        <button type="submit" class="btn-submit gs-reveal">
+            <span>SIGN IN</span>
+            <i class="fa-solid fa-arrow-right"></i>
+        </button>
+
+        <div class="divider gs-reveal"><span>OR</span></div>
+
+        <div class="social-buttons gs-reveal">
+            <a href="{{ route('google.redirect') }}" class="btn-social">
+                <img src="https://www.gstatic.com/images/branding/product/2x/googleg_48dp.png" alt="Google"> 
+                <span>Google</span>
+            </a>
+            <a href="{{ route('facebook.redirect') }}" class="btn-social">
+                <i class="fa-brands fa-facebook" style="color: #1877f2;"></i> 
+                <span>Facebook</span>
+            </a>
+        </div>
+    </form>
+
+    <div class="bottom-text gs-reveal">
+        Don't have an account? <a href="{{ route('register') }}" class="flip-trigger">Create Account</a>
+    </div>
+
+    <div class="security-badge gs-reveal">
+        <i class="fa-solid fa-shield-halved"></i>
+        <span>Protected by 256-bit SSL encryption</span>
     </div>
 </div>
 @endsection
@@ -92,69 +85,20 @@
 @section('scripts')
 <script>
     function togglePass(id, el) {
-        const input = document.getElementById(id);
-        if (input.type === 'password') {
-            input.type = 'text';
-            el.classList.replace('fa-eye', 'fa-eye-slash');
-        } else {
-            input.type = 'password';
-            el.classList.replace('fa-eye-slash', 'fa-eye');
-        }
+        const i = document.getElementById(id);
+        if (i.type === 'password') { i.type = 'text'; el.classList.replace('fa-eye', 'fa-eye-slash'); }
+        else { i.type = 'password'; el.classList.replace('fa-eye-slash', 'fa-eye'); }
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
-        // GSAP Animations
-        gsap.from(".split-auth-container", {
-            opacity: 0,
-            y: 40,
-            duration: 1.2,
-            ease: "expo.out"
-        });
-
-        gsap.fromTo(".gs-reveal", 
-            { opacity: 0, y: 30 },
-            { 
-                opacity: 1, 
-                y: 0, 
-                stagger: 0.1, 
-                duration: 0.8, 
-                ease: "power3.out", 
-                delay: 0.5,
-                clearProps: "all" // Important: clears inline styles after animation
-            }
-        );
-
-        gsap.from(".auth-right-panel", {
-            x: 50,
-            opacity: 0,
-            duration: 1.2,
-            ease: "expo.out",
-            delay: 0.2
-        });
-    });
-
-    // Success/Error Alerts from Session
     document.addEventListener('DOMContentLoaded', () => {
+        const dk = document.documentElement.getAttribute('data-theme') !== 'light';
         @if(session('success'))
-            Swal.fire({
-                icon: 'success',
-                title: 'Success!',
-                text: "{{ session('success') }}",
-                timer: 4000,
-                showConfirmButton: false,
-                background: document.documentElement.getAttribute('data-theme') === 'dark' ? '#1f2937' : '#fff',
-                color: document.documentElement.getAttribute('data-theme') === 'dark' ? '#f3f4f6' : '#1f2937'
-            });
+            Swal.fire({ icon:'success', title:'Success!', text:"{{ session('success') }}", timer:4000, showConfirmButton:false,
+                background: dk?'#0f172a':'#fff', color: dk?'#e2e8f0':'#0f172a', iconColor:'#06b6d4' });
         @endif
-
         @if($errors->any())
-            Swal.fire({
-                icon: 'error',
-                title: 'Error!',
-                text: "{{ $errors->first() }}",
-                background: document.documentElement.getAttribute('data-theme') === 'dark' ? '#1f2937' : '#fff',
-                color: document.documentElement.getAttribute('data-theme') === 'dark' ? '#f3f4f6' : '#1f2937'
-            });
+            Swal.fire({ icon:'error', title:'Error!', text:"{{ $errors->first() }}",
+                background: dk?'#0f172a':'#fff', color: dk?'#e2e8f0':'#0f172a' });
         @endif
     });
 </script>
