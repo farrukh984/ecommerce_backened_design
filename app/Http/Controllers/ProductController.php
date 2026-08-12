@@ -17,7 +17,7 @@ class ProductController extends Controller
 
         public function index(Request $request)
         {
-            $query = Product::query()->where('is_active', true)->with('category');
+            $query = Product::query()->where('is_active', true)->with(['category', 'condition']);
 
             // Search by q (name or category)
             if ($q = $request->query('q')) {
@@ -122,6 +122,7 @@ class ProductController extends Controller
 
             // Similar products from same category
             $similarProducts = Product::where('is_active', true)
+                ->with('category')
                 ->where('category_id', $product->category_id)
                 ->where('id', '!=', $product->id)
                 ->take(6)
@@ -129,9 +130,9 @@ class ProductController extends Controller
 
             if ($similarProducts->count() < 6) {
                 $more = Product::where('is_active', true)
+                    ->with('category')
                     ->where('id', '!=', $product->id)
                     ->whereNotIn('id', $similarProducts->pluck('id'))
-                    ->inRandomOrder()
                     ->take(6 - $similarProducts->count())
                     ->get();
                 $similarProducts = $similarProducts->merge($more);
@@ -142,6 +143,7 @@ class ProductController extends Controller
                 ? auth()->user()->wishlistItems()->pluck('product_id')->all()
                 : session()->get('wishlist', []);
             $youMayLike = Product::where('is_active', true)
+                ->with('category')
                 ->whereIn('id', $wishlistIds)
                 ->where('id', '!=', $product->id)
                 ->take(6)
@@ -151,8 +153,8 @@ class ProductController extends Controller
             if($youMayLike->count() < 6) {
                 $countNeeded = 6 - $youMayLike->count();
                 $randomExtra = Product::where('is_active', true)
+                    ->with('category')
                     ->whereNotIn('id', array_merge($wishlistIds, [$product->id]))
-                    ->inRandomOrder()
                     ->take($countNeeded)
                     ->get();
                 $youMayLike = $youMayLike->merge($randomExtra);

@@ -35,11 +35,9 @@
 
     <!-- Theme JS (runs before body to prevent flash) -->
     <script src="{{ asset('js/theme.js') }}"></script>
-    <!-- Loader CSS -->
+    @if(request()->routeIs('home'))
+    <!-- Loader CSS (Home Page Only) -->
     <style>
-        /* ══════════════════════════════════════════════════════════
-           GLOBAL PAGE LOADER (PREMIUM)
-           ══════════════════════════════════════════════════════════ */
         #global-loader {
             position: fixed;
             top: 0; left: 0;
@@ -50,10 +48,10 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.6s;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
         }
         [data-theme="dark"] #global-loader {
-            background: #0f172a; /* MATCH var(--bg-body) */
+            background: #0f172a;
         }
         
         .loader-boxes {
@@ -104,10 +102,12 @@
             pointer-events: none;
         }
     </style>
+    @endif
 </head>
-<body class="@yield('body_class') is-loading">
+<body class="@yield('body_class') {{ request()->routeIs('home') ? 'is-loading' : '' }}">
 
-    <!-- Global Preloader -->
+    @if(request()->routeIs('home'))
+    <!-- Global Preloader (Home Page Only) -->
     <div id="global-loader">
         <div class="loader-boxes">
             <div class="l-box"></div>
@@ -119,13 +119,11 @@
     </div>
 
     <script>
-        // Once everything is loaded (CSS, Images, etc.), hide the loader
         window.addEventListener('load', function() {
             hideLoader();
         });
 
-        // Failsafe: Hide loader after 3 seconds anyway
-        setTimeout(hideLoader, 3000);
+        setTimeout(hideLoader, 2000);
 
         function hideLoader() {
             const loader = document.getElementById('global-loader');
@@ -134,56 +132,8 @@
                 document.body.classList.remove('is-loading');
             }
         }
-
-        // ──────── IMMEDIATE TRANSITION LOGIC ────────
-        // Show loader IMMEDIATELY when a link is clicked or form submitted
-        document.addEventListener('click', function(e) {
-            // If another handler already called preventDefault(), don't show loader
-            if (e.defaultPrevented) return;
-
-            const link = e.target.closest('a');
-            if (link) {
-                const href = link.getAttribute('href');
-                
-                // Skip if no href, or it's an internal hash/javascript link
-                if (!href || href.startsWith('#') || href.startsWith('javascript:')) return;
-
-                // Skip if it opens in a new tab/window
-                if (link.getAttribute('target') === '_blank') return;
-
-                // Skip if it's a cross-origin link
-                if (link.hostname !== window.location.hostname) return;
-
-                // Skip if a modifier key is pressed (standard browser behavior for new tab)
-                if (e.ctrlKey || e.shiftKey || e.metaKey) return;
-                
-                showLoader();
-            }
-        });
-
-        function showLoader() {
-            const loader = document.getElementById('global-loader');
-            if(loader) {
-                loader.classList.remove('hide');
-                document.body.classList.add('is-loading');
-            }
-        }
-
-        // Show on form submit
-        document.addEventListener('submit', function(e) {
-            // Stay hidden if standard submission is prevented (e.g., AJAX handling)
-            if (e.defaultPrevented) return;
-
-            showLoader();
-        });
-
-        // Hide when navigating back (BFcache)
-        window.addEventListener('pageshow', function(event) {
-            if (event.persisted) {
-                hideLoader();
-            }
-        });
     </script>
+    @endif
 
     @hasSection('hide_chrome')
     @else

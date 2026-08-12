@@ -15,7 +15,7 @@ class HomeController extends Controller
                 'categories' => Category::with(['products' => function($q) {
                     $q->where('is_active', true);
                 }])->get(),
-                'recommended' => Product::where('is_active', true)->latest()->take(10)->get(),
+                'recommended' => Product::where('is_active', true)->with('category')->latest()->take(10)->get(),
             ];
         });
 
