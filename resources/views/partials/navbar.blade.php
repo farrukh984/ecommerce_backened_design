@@ -96,14 +96,14 @@
                 <a href="{{ route('products.index') }}"><i class="fa-solid fa-bars"></i> All category</a>
                 <a href="{{ route('pages.hotOffers') }}">Hot offers</a>
                 <a href="{{ route('pages.giftBoxes') }}">Gift boxes</a>
-                <a href="{{ route('products.index') }}">Projects</a>
+                <a href="{{ route('products.index') }}">Products</a>
                 <a href="{{ route('products.index') }}">Menu item</a>
                 <a href="{{ route('pages.help') }}">Help <i class="fa-solid fa-chevron-down"></i></a>
             </div>
             <div class="right-links">
                 <span>English, USD <i class="fa-solid fa-chevron-down"></i></span>
                 <span>Ship to <img src="https://flagcdn.com/20x15/de.png" alt="DE" class="flag-icon"> <i class="fa-solid fa-chevron-down"></i></span>
-            </div>
+            </div> 
         </div>
     </nav>
 
