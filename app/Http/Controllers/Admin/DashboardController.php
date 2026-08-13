@@ -34,9 +34,9 @@ class DashboardController extends Controller
         // Out of stock products
         $outOfStockProducts = Product::where('stock_quantity', '<=', 0)->take(10)->get();
 
-        // Low stock products (between 1-9)
+        // Low stock products (between 1-3)
         $lowStockProducts = Product::where('stock_quantity', '>', 0)
-            ->where('stock_quantity', '<', 10)
+            ->where('stock_quantity', '<=', 3)
             ->orderBy('stock_quantity', 'asc')
             ->take(10)
             ->get();

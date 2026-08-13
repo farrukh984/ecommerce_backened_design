@@ -56,7 +56,7 @@ class AppServiceProvider extends ServiceProvider
                                     })->count(),
                                 'unviewedOrders' => Order::where('is_viewed', false)->count(),
                                 'unviewedReviews' => ProductReview::where('is_viewed', false)->count(),
-                                'lowStockCount'  => Product::where('stock_quantity', '<', 10)->count(),
+                                'lowStockCount'  => Product::where('stock_quantity', '>', 0)->where('stock_quantity', '<=', 3)->count(),
                             ];
                         });
 

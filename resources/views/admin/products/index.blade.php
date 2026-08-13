@@ -64,7 +64,7 @@
                                     id="stock-input-{{ $product->id }}" 
                                     value="{{ $product->stock_quantity }}" 
                                     min="0" 
-                                    style="width: 70px; padding: 6px 8px; border: 1px solid {{ $product->stock_quantity < 10 ? ($product->stock_quantity == 0 ? 'var(--danger)' : 'var(--warning)') : 'var(--admin-border)' }}; border-radius: 8px; font-weight: 700; font-size: 13px; text-align: center; outline: none; transition: all 0.2s; background: {{ $product->stock_quantity == 0 ? 'var(--danger-bg, #fef2f2)' : ($product->stock_quantity < 10 ? 'var(--warning-bg, #fffbeb)' : 'var(--admin-card)') }}; color: {{ $product->stock_quantity < 10 ? 'var(--danger)' : 'var(--admin-text)' }};"
+                                    style="width: 70px; padding: 6px 8px; border: 1px solid {{ $product->stock_quantity <= 3 ? ($product->stock_quantity == 0 ? 'var(--danger)' : 'var(--warning)') : 'var(--admin-border)' }}; border-radius: 8px; font-weight: 700; font-size: 13px; text-align: center; outline: none; transition: all 0.2s; background: {{ $product->stock_quantity == 0 ? 'var(--danger-bg, #fef2f2)' : ($product->stock_quantity <= 3 ? 'var(--warning-bg, #fffbeb)' : 'var(--admin-card)') }}; color: {{ $product->stock_quantity <= 3 ? 'var(--warning-text, #d97706)' : 'var(--admin-text)' }};"
                                     onfocus="this.style.borderColor='var(--admin-primary)'; this.style.boxShadow='0 0 0 3px rgba(37,99,235,0.1)';"
                                     onblur="this.style.boxShadow='none';"
                                     onchange="updateStock({{ $product->id }})">
@@ -74,7 +74,7 @@
                             </button>
                         </div>
                         <div id="stock-label-{{ $product->id }}" style="margin-top: 4px;">
-                            @if($product->stock_quantity > 0 && $product->stock_quantity < 10)
+                            @if($product->stock_quantity > 0 && $product->stock_quantity <= 3)
                                 <span style="font-size: 10px; color: #d97706; font-weight: 600;"><i class="fa-solid fa-triangle-exclamation"></i> Low Stock</span>
                             @elseif($product->stock_quantity == 0)
                                 <span style="font-size: 10px; color: #dc2626; font-weight: 700;"><i class="fa-solid fa-circle-xmark"></i> Out of Stock</span>
@@ -192,7 +192,7 @@
                     input.style.background = 'var(--danger-bg)';
                     input.style.color = 'var(--danger)';
                     label.innerHTML = '<span style="font-size: 10px; color: var(--danger); font-weight: 700;"><i class="fa-solid fa-circle-xmark"></i> Out of Stock</span>';
-                } else if (qty < 10) {
+                } else if (qty <= 3) {
                     input.style.borderColor = 'var(--warning)';
                     input.style.background = 'var(--warning-bg)';
                     input.style.color = 'var(--warning)';
